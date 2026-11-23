@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>N2 受験室 — 日本語能力試験 学習プラットフォーム</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23EDEAE1'/%3E%3Ccircle cx='32' cy='32' r='25' fill='none' stroke='%23AE3A2B' stroke-width='3'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='serif' font-size='26' fill='%23AE3A2B'%3EN2%3C/text%3E%3C/svg%3E">
+<style>
+/* ============================================================
+   N2 受験室 — 答案用紙と朱筆の質感
+   色：紙（生成り）／墨／朱／青磁。角丸は最小、罫線で組む。
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#EDEAE1;
+  --card:#F7F5EE;
+  --ink:#1B1A16;
+  --ink2:#56534A;
+  --ink3:#8C8678;
+  --line:#D5CFC0;
+  --shu:#AE3A2B;
+  --shu-soft:#E3CCC5;
+  --celadon:#4C6C5F;
+  --celadon-soft:#CFDBD3;
+  --serif:"Hiragino Mincho ProN","Yu Mincho","Songti SC","Noto Serif JP",serif;
+  --sans:"Hiragino Sans","PingFang SC","Heiti SC",system-ui,-apple-system,sans-serif;
+}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.75;-webkit-font-smoothing:antialiased}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='g' opacity='0.14'/%3E%3C/svg%3E");
+}
+a{color:inherit;text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
+input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,h4,p{margin:0}
+ul,ol{margin:0}
+:focus-visible{outline:2px solid var(--shu);outline-offset:3px}
+
+/* ---------- skeleton ---------- */
+.shell{position:relative;z-index:1;min-height:100vh}
+.rail{position:sticky;top:0;z-index:30;background:var(--paper);border-bottom:1px solid var(--line);padding:10px 16px 6px}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.seal-mini{width:26px;height:26px;flex:0 0 auto;border:2px solid var(--shu);display:grid;place-items:center;font-family:var(--serif);font-size:.82rem;line-height:1;color:var(--shu);transform:rotate(-4deg)}
+.brand b{font-family:var(--serif);font-size:1rem;font-weight:600;letter-spacing:.14em}
+.brand em{font-style:normal;font-size:.7rem;color:var(--ink3);letter-spacing:.16em;margin-left:auto}
+.nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{position:relative;padding:5px 12px;font-size:.87rem;letter-spacing:.12em;color:var(--ink2);white-space:nowrap}
+.nav a:hover{background:rgba(27,26,22,.05);text-decoration:none}
+.nav a.on{color:var(--ink);font-weight:600}
+.nav a.on::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:2px;background:var(--shu)}
+.rail-foot{display:none}
+.main{padding:20px 16px 64px;min-width:0}
+.wrap{max-width:900px;margin:0 auto}
+
+@media(min-width:760px){
+  .main{padding:34px 36px 80px}
+}
+@media(min-width:900px){
+  .shell{display:grid;grid-template-columns:236px minmax(0,1fr);align-items:start}
+  .rail{position:sticky;top:0;height:100vh;border-right:1px solid var(--line);border-bottom:0;padding:26px 22px;display:flex;flex-direction:column}
+  .brand{flex-direction:column;align-items:flex-start;gap:8px;margin-bottom:24px}
+  .seal-mini{width:36px;height:36px;font-size:1.05rem}
+  .brand b{font-size:1.6rem;line-height:1.4;letter-spacing:.28em}
+  .brand em{margin:0;font-size:.68rem;letter-spacing:.2em}
+  .nav{flex-direction:column;overflow:visible;border-top:1px solid var(--line);padding-top:4px}
+  .nav a{padding:10px 0;font-size:.95rem;letter-spacing:.18em;border-bottom:1px solid rgba(213,207,192,.55)}
+  .nav a.on{color:var(--shu)}
+  .nav a.on::after{display:none}
+  .rail-foot{display:block;margin-top:auto;padding-top:18px;font-size:.72rem;color:var(--ink3);line-height:2;letter-spacing:.04em}
+  .rail-foot b{display:block;font-family:var(--serif);font-size:.9rem;color:var(--ink);letter-spacing:.08em}
+}
+
+/* ---------- 見出し ---------- */
+.pagehead{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;border-bottom:2px solid var(--ink);padding-bottom:9px;margin-bottom:22px}
+.pagehead h1{font-family:var(--serif);font-size:1.4rem;font-weight:600;letter-spacing:.16em}
+.pagehead p{font-size:.74rem;color:var(--ink3);letter-spacing:.06em;margin-left:auto}
+.hero{padding:18px 0 4px;display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+@media(min-width:720px){.hero{grid-template-columns:minmax(0,1fr) 168px;align-items:center}}
+.hero-date{font-size:.76rem;letter-spacing:.14em;color:var(--ink3);border-bottom:1px solid var(--line);display:inline-block;padding-bottom:4px}
+.hero h1{font-family:var(--serif);font-size:clamp(1.5rem,4.6vw,2.4rem);font-weight:600;line-height:1.45;margin-top:12px;letter-spacing:.03em}
+.hero h1 .num{font-size:1.45em;color:var(--shu);vertical-align:-.08em;margin:0 .06em}
+.hero-sub{font-size:.86rem;color:var(--ink2);line-height:1.8;margin-top:10px;max-width:34em}
+.hero-sub b{font-family:var(--serif);font-weight:600;color:var(--ink)}
+.hero-acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.stampbox{display:grid;place-items:center;padding-top:6px}
+.seal{width:132px;height:132px;transform:rotate(-8deg);opacity:.94;filter:saturate(.95)}
+@media(min-width:720px){.seal{width:154px;height:154px}}
+
+.kpi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:2px solid var(--ink);margin-top:24px}
+.kpi>div{padding:13px 12px 15px;border-bottom:1px solid var(--line)}
+.kpi>div:nth-child(odd){border-right:1px solid var(--line)}
+.kpi b{display:block;font-family:var(--serif);font-size:1.42rem;font-weight:600;line-height:1.3;font-variant-numeric:tabular-nums}
+.kpi b small{font-size:.62em;color:var(--ink3);font-family:var(--sans);margin-left:2px}
+.kpi span{display:block;font-size:.72rem;color:var(--ink3);letter-spacing:.08em;margin-top:3px}
+@media(min-width:720px){
+  .kpi{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .kpi>div{border-bottom:0;border-right:1px solid var(--line);padding:15px 16px}
+  .kpi>div:nth-child(odd){border-right:1px solid var(--line)}
+  .kpi>div:last-child{border-right:0}
+}
+
+.sec{margin-top:32px}
+.sec-h{margin-bottom:12px}
+.sec-top{display:flex;align-items:center;gap:10px}
+.sec-h h2{font-family:var(--serif);font-size:1rem;font-weight:600;letter-spacing:.14em;white-space:nowrap}
+.sec-h .rule{flex:1;height:1px;background:var(--line);min-width:12px}
+.sec-h .note{font-size:.72rem;color:var(--ink3);letter-spacing:.04em;white-space:nowrap}
+.sec-h .desc{font-size:.78rem;color:var(--ink2);margin-top:5px;line-height:1.7}
+
+/* ---------- レベル／分野メーター ---------- */
+.lv{display:grid;grid-template-columns:46px minmax(0,1fr) 92px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid rgba(213,207,192,.75)}
+.lv b{font-family:var(--serif);font-size:.94rem;font-weight:600;letter-spacing:.08em}
+.lv .track{height:7px;background:rgba(27,26,22,.075);position:relative;overflow:hidden}
+.lv .track i{display:block;height:100%;background:var(--ink);transition:width .3s}
+.lv .track i.hi{background:var(--shu)}
+.lv .track i.mid{background:var(--celadon)}
+.lv span{font-size:.72rem;color:var(--ink3);text-align:right;font-variant-numeric:tabular-nums}
+.lv .name{display:flex;align-items:baseline;gap:5px}
+
+/* ---------- 今日の一手 ---------- */
+.acts{border-top:1px solid var(--ink)}
+.act{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}
+.act b{display:block;font-size:.93rem;font-weight:600;line-height:1.6}
+.act p{font-size:.76rem;color:var(--ink2);line-height:1.65;margin-top:1px}
+.act .btn{white-space:nowrap}
+
+/* ---------- 学習路線 ---------- */
+.tl{margin-top:6px}
+.tl-row{display:grid;grid-template-columns:78px 20px minmax(0,1fr);align-items:start}
+.tl-time{font-size:.72rem;color:var(--ink3);text-align:right;padding:2px 10px 0 0;line-height:26px;font-variant-numeric:tabular-nums}
+.tl-time span{display:block}
+.tl-cell{position:relative;align-self:stretch;min-height:44px}
+.tl-cell::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line);transform:translateX(-50%)}
+.tl-row:first-child .tl-cell::before{top:13px}
+.tl-row:last-child .tl-cell::before{bottom:calc(100% - 13px)}
+.tl-dot{position:absolute;left:50%;top:8.5px;width:9px;height:9px;border-radius:50%;background:var(--ink);transform:translateX(-50%);z-index:1}
+.tl-body{padding:0 0 20px 4px}
+.tl-body strong{display:block;font-size:.94rem;font-weight:600;line-height:26px;letter-spacing:.02em}
+.tl-body p{font-size:.76rem;color:var(--ink2);line-height:1.7;margin-top:1px}
+.tl-dot.now{background:var(--shu);box-shadow:0 0 0 3px rgba(174,58,43,.16)}
+.tl-body.now strong{color:var(--shu)}
+.badge-now{display:inline-block;font-size:.62rem;letter-spacing:.1em;border:1px solid var(--shu);color:var(--shu);padding:0 5px;margin-left:6px;vertical-align:1px;line-height:1.6}
+
+/* ---------- 直近の学習 ---------- */
+.spark{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;align-items:end;height:92px;border-bottom:1px solid var(--line);padding-bottom:1px}
+.spark-col{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:5px}
+.spark-col i{display:block;width:100%;background:rgba(27,26,22,.55);min-height:2px}
+.spark-col.hi i{background:var(--shu)}
+.spark-col em{font-size:.66rem;font-style:normal;color:var(--ink3)}
+.spark-legend{display:flex;justify-content:space-between;font-size:.72rem;color:var(--ink3);margin-top:8px}
+
+/* ---------- ボタン・チップ ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border:1px solid var(--ink);border-radius:2px;background:transparent;font-size:.86rem;letter-spacing:.1em;transition:background .16s,color .16s,border-color .16s}
+.btn:hover{background:var(--ink);color:var(--paper);text-decoration:none}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn.primary:hover{background:var(--shu);border-color:var(--shu);color:#fff}
+.btn.ghost{border-color:var(--line);color:var(--ink2)}
+.btn.ghost:hover{border-color:var(--ink);background:transparent;color:var(--ink)}
+.btn.sm{min-height:36px;padding:0 13px;font-size:.78rem}
+.btn[disabled]{opacity:.38;pointer-events:none}
+.chip{display:inline-block;font-size:.68rem;letter-spacing:.12em;padding:1px 7px;border:1px solid var(--line);color:var(--ink2);line-height:1.9}
+.chip.lv{border-color:var(--ink);color:var(--ink);font-family:var(--serif);letter-spacing:.08em}
+.chip.cat{border-color:var(--shu-soft);color:var(--shu)}
+.chip.g{border-color:var(--line);color:var(--celadon)}
+
+/* ---------- 練習設定 ---------- */
+.panel{border:1px solid var(--line);background:var(--card);padding:16px}
+.panel-t{font-family:var(--serif);font-size:.95rem;letter-spacing:.12em;margin-bottom:4px}
+.frow{display:grid;grid-template-columns:74px minmax(0,1fr);gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid rgba(213,207,192,.6)}
+.frow:last-child{border-bottom:0}
+.frow label{font-size:.8rem;color:var(--ink2);letter-spacing:.08em}
+select,input[type=date],input[type=number],input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--line);background:#FBFAF4;border-radius:2px;font-size:16px}
+select{appearance:none;-webkit-appearance:none;padding-right:30px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 5 5-5' fill='none' stroke='%2356534A' stroke-width='1.2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
+.hint{font-size:.74rem;color:var(--ink3);line-height:1.7}
+.hint b{color:var(--ink2);font-weight:600}
+.legend{display:flex;gap:6px;align-items:baseline;font-size:.72rem;color:var(--ink3);margin-top:10px;line-height:1.7}
+.legend .key{flex:0 0 auto;border:1px solid var(--line);padding:0 5px;color:var(--ink2)}
+
+/* ---------- 問題 ---------- */
+.prog{height:2px;background:rgba(27,26,22,.1);margin-bottom:16px}
+.prog i{display:block;height:100%;background:var(--shu);transition:width .25s}
+.qmeta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.qmeta .idx{margin-left:auto;font-size:.74rem;color:var(--ink3);font-variant-numeric:tabular-nums;letter-spacing:.06em}
+.passage{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px 16px;margin:12px 0 2px;font-family:var(--serif);font-size:1rem;line-height:2.05;letter-spacing:.02em}
+.passage p{margin:0 0 .55em}
+.passage p:last-child{margin-bottom:0}
+.qbody{font-family:var(--serif);font-size:1.12rem;line-height:2.05;letter-spacing:.02em;margin:10px 0 0;padding:12px 14px;background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.qask{display:flex;gap:8px;font-size:.88rem;line-height:1.75;margin-top:14px;align-items:flex-start}
+.qask::before{content:"問";flex:0 0 auto;width:20px;height:20px;margin-top:3px;display:grid;place-items:center;font-family:var(--serif);font-size:.72rem;border:1px solid var(--shu);color:var(--shu)}
+.opts{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:8px}
+.opt{display:flex;align-items:center;gap:13px;width:100%;min-height:48px;padding:9px 13px;border:1px solid var(--line);border-radius:2px;background:transparent;transition:border-color .14s,background .14s}
+.opt:hover:not(.locked){border-color:var(--ink);background:#F3F0E7}
+.opt .bub{flex:0 0 auto;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--ink3);display:grid;place-items:center;font-size:.76rem;color:var(--ink3);line-height:1}
+.opt .tx{flex:1;min-width:0;font-size:.95rem;letter-spacing:.02em}
+.opt:not(.locked) .tx{font-family:var(--serif);font-size:1rem}
+.opt.sel .bub{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.opt.correct{border-color:var(--celadon);background:rgba(76,108,95,.08)}
+.opt.correct .bub{background:var(--celadon);border-color:var(--celadon);color:#fff}
+.opt.wrong{border-color:var(--shu);background:rgba(174,58,43,.07)}
+.opt.wrong .bub{background:var(--shu);border-color:var(--shu);color:#fff}
+.opt.locked{cursor:default}
+
+.fb{margin-top:20px;border-top:1px solid var(--ink);padding-top:14px;animation:rise .2s ease-out}
+@keyframes rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.fb-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.fb-top b{font-family:var(--serif);font-size:1rem;letter-spacing:.06em}
+.fb-top b.ok{color:var(--celadon)}
+.fb-top b.ng{color:var(--shu)}
+.fb-top span{font-size:.8rem;color:var(--ink2)}
+.fb .exp{font-size:.88rem;line-height:1.85;margin-top:8px;color:var(--ink)}
+.fb .gpt{font-size:.8rem;color:var(--celadon);margin-top:8px;line-height:1.7}
+.fb .gpt b{font-family:var(--serif);font-weight:600}
+.notes{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;margin-top:12px;padding-top:10px;border-top:1px dotted var(--line)}
+@media(min-width:640px){.notes{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 18px}}
+.notes div{display:flex;align-items:baseline;gap:7px;font-size:.78rem;line-height:1.8;min-width:0}
+.notes b{font-family:var(--serif);font-size:.92rem;font-weight:600;flex:0 0 auto}
+.notes span{color:var(--shu);flex:0 0 auto;letter-spacing:.02em}
+.notes em{font-style:normal;color:var(--ink2);min-width:0}
+.fb-act{margin-top:16px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.usln{font-size:.85rem;line-height:1.85;color:var(--ink2);margin-top:10px;padding-left:10px;border-left:2px solid var(--celadon)}
+.exbox{margin-top:12px;padding:10px 13px;background:rgba(174,58,43,.045);border-top:1px solid var(--line)}
+.ex-h{font-size:.7rem;letter-spacing:.14em;color:var(--shu);margin-bottom:7px}
+.ex-row{margin-bottom:9px}
+.ex-row:last-child{margin-bottom:0}
+.ex-l{display:inline-block;font-size:.68rem;color:var(--celadon);border:1px solid var(--line);padding:0 5px;margin-right:6px;vertical-align:3px;letter-spacing:.04em}
+.ex-j{display:block;font-family:var(--serif);font-size:.95rem;line-height:1.95;margin-top:4px}
+.ex-t{display:block;font-size:.8rem;color:var(--ink2);line-height:1.7;margin-top:2px}
+
+/* ---------- 栞 ---------- */
+.fav{border:0;background:none;padding:0;margin:0;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3);vertical-align:middle}
+.fav svg{fill:none;stroke:currentColor;stroke-width:1.3}
+.fav:hover{color:var(--shu);background:rgba(174,58,43,.1)}
+.fav.on{color:var(--shu)}
+.fav.on svg{fill:var(--shu);stroke:var(--shu)}
+.qmeta .fav{margin-left:2px}
+.notes .fav{margin-left:auto;flex:0 0 auto}
+.gpt .fav{vertical-align:-6px;margin-left:4px}
+.fvlist{margin-top:2px}
+.fvrow{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:flex-start;justify-content:space-between;padding:11px 0;border-bottom:1px dotted var(--line)}
+.fvmain{flex:1 1 240px;min-width:0}
+.fvmain b{display:block;font-family:var(--serif);font-size:.95rem;font-weight:600;line-height:1.75;letter-spacing:.02em}
+.fvword{font-family:var(--serif);font-size:1.06rem;line-height:2;letter-spacing:.02em}
+.fvmean{font-size:.82rem;color:var(--ink2);line-height:1.75}
+.fvsrc{font-size:.72rem;color:var(--ink3);letter-spacing:.05em;margin-top:3px}
+.fvex{font-family:var(--serif);font-size:.86rem;color:var(--ink2);line-height:1.85;margin-top:3px}
+.fvact{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+
+/* ---------- 結果 ---------- */
+.res-head{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--ink);padding-bottom:14px}
+.res-score{font-family:var(--serif);font-size:2.5rem;line-height:1.1;font-weight:600;font-variant-numeric:tabular-nums}
+.res-score small{font-size:.72rem;color:var(--ink3);font-family:var(--sans);margin-left:4px}
+.res-meta{font-size:.8rem;color:var(--ink2);line-height:1.9}
+.res-meta b{font-variant-numeric:tabular-nums}
+.res-list{margin-top:12px}
+.res-row{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid rgba(213,207,192,.7);font-size:.84rem}
+.res-row .m{font-family:var(--serif);font-size:.9rem;color:var(--celadon);text-align:center}
+.res-row .m.ng{color:var(--shu)}
+.res-row .t{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink2)}
+.res-row .r{font-size:.72rem;color:var(--ink3);letter-spacing:.06em}
+
+/* ---------- 復習 ---------- */
+details{border-bottom:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 0}
+summary::-webkit-details-marker{display:none}
+summary .s-t{min-width:0}
+summary .s-t b{display:block;font-family:var(--serif);font-size:.95rem;font-weight:600;line-height:1.6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+summary .s-t span{display:block;font-size:.72rem;color:var(--ink3);line-height:1.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+summary .s-r{font-size:.72rem;color:var(--shu);letter-spacing:.08em;white-space:nowrap}
+summary .s-r i{font-style:normal;color:var(--ink3);margin-left:6px}
+.dbody{padding:2px 0 18px}
+.dbody .exp{font-size:.84rem;line-height:1.8;color:var(--ink);margin-top:8px}
+.pill{display:inline-block;font-size:.68rem;letter-spacing:.1em;padding:1px 7px;border:1px solid var(--line);color:var(--ink3)}
+
+/* ---------- 分析 ---------- */
+.tbl{width:100%;border-collapse:collapse;table-layout:fixed}
+.tbl col{}
+.tbl th{font-size:.7rem;letter-spacing:.1em;color:var(--ink3);text-align:left;padding:6px 8px;border-bottom:1px solid var(--ink);font-weight:400}
+.tbl td{font-size:.84rem;padding:8px;border-bottom:1px solid rgba(213,207,192,.75);color:var(--ink);vertical-align:middle;overflow:hidden;text-overflow:ellipsis}
+.tbl td.num{font-variant-numeric:tabular-nums;text-align:right;color:var(--ink2)}
+.tbl td.weak{color:var(--shu)}
+.mini-bar{height:5px;background:rgba(27,26,22,.08);position:relative;min-width:30px}
+.mini-bar i{display:block;height:100%;background:var(--celadon)}
+.mini-bar i.low{background:var(--shu)}
+.mini-bar i.mid{background:var(--ink2)}
+.adv{border-top:1px solid var(--ink)}
+.adv-row{display:grid;grid-template-columns:18px minmax(0,1fr);gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.adv-row .d{font-family:var(--serif);font-size:.9rem;color:var(--shu);line-height:1.8}
+.adv-row b{display:block;font-size:.88rem;font-weight:600;line-height:1.6}
+.adv-row p{font-size:.78rem;color:var(--ink2);line-height:1.7;margin-top:2px}
+
+/* ---------- 情報 ---------- */
+.news{margin-top:4px}
+.news-row{display:grid;grid-template-columns:74px minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.news-row .d{font-size:.74rem;color:var(--ink3);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.news-row .h{font-size:.83rem;line-height:1.7}
+.news-row .h a{color:var(--ink)}
+.news-row .h a:hover{color:var(--shu)}
+.news-row .tag{display:inline-block;font-size:.66rem;letter-spacing:.08em;border:1px solid rgba(27,26,22,.28);color:var(--ink3);padding:1px 5px;margin-left:6px;vertical-align:1px}
+.news-row .tag.warn{border-color:rgba(174,58,43,.45);color:var(--shu)}
+.src{font-size:.72rem;color:var(--ink3);letter-spacing:.02em;line-height:1.75}
+.src a{color:var(--celadon)}
+.quote{border-left:2px solid var(--shu);padding:2px 0 2px 12px;margin:8px 0 0;font-size:.82rem;color:var(--ink2);line-height:1.9}
+.quote .cn{display:block;color:var(--ink3);font-size:.75rem;margin-top:3px}
+.keylist{list-style:none;display:grid;gap:8px}
+.keylist li{font-size:.8rem;line-height:1.75;padding-left:14px;position:relative;color:var(--ink2)}
+.keylist li:before{content:'';position:absolute;left:0;top:.62em;width:5px;height:5px;background:var(--shu)}
+.keylist b{color:var(--ink);font-weight:600}
+.book-list{display:grid}
+
+/* ---------- 設定 ---------- */
+.sgroup{margin-top:26px}
+.sgroup>.t{font-family:var(--serif);font-size:.94rem;letter-spacing:.14em;border-bottom:1px solid var(--ink);padding-bottom:7px;margin-bottom:2px}
+.srow{display:grid;grid-template-columns:1fr;gap:4px;padding:12px 0;border-bottom:1px solid rgba(213,207,192,.7)}
+@media(min-width:620px){.srow{grid-template-columns:206px minmax(0,1fr);gap:16px;align-items:center}}
+.srow .lab{font-size:.82rem;color:var(--ink2);letter-spacing:.06em}
+.srow .lab .hint{display:block;margin-top:2px}
+.inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.inline .num-in{width:84px}
+textarea{width:100%;min-height:132px;padding:10px;border:1px solid var(--line);background:#FBFAF4;border-radius:2px;font-size:14px;line-height:1.7;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.links{display:grid;gap:0;border-top:1px solid var(--line);margin-top:6px}
+.links a{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:10px 0;border-bottom:1px solid rgba(213,207,192,.7);font-size:.84rem}
+.links a span{color:var(--ink3);font-size:.72rem;white-space:nowrap}
+.custom-list{margin-top:10px}
+.cl-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid rgba(213,207,192,.7);font-size:.8rem}
+.cl-row .x{font-size:.74rem;color:var(--shu);padding:0 6px}
+.empty{padding:22px 4px;color:var(--ink3);font-size:.84rem;line-height:1.9;border-top:1px solid var(--line)}
+.foot{margin-top:44px;padding-top:14px;border-top:1px solid var(--line);font-size:.72rem;color:var(--ink3);line-height:1.9}
+
+/* ---------- 全文訳 ---------- */
+.trbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.trbtn{border:1px solid var(--line);background:transparent;color:var(--ink2);font-size:.74rem;letter-spacing:.06em;padding:7px 12px;min-height:36px;border-radius:2px;transition:border-color .14s,color .14s}
+.trbtn:hover{border-color:var(--ink);color:var(--ink)}
+.trblock{margin:12px 0 4px;padding:11px 14px;background:rgba(76,108,95,.06);border-left:2px solid var(--celadon)}
+.trblock p{font-size:.84rem;line-height:1.85;color:var(--ink2);margin:0 0 .4em}
+.trblock p:last-child{margin-bottom:0}
+.trblock .tr-q{color:var(--ink);font-weight:600}
+.tr-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:.68rem;letter-spacing:.14em;color:var(--celadon);margin-bottom:6px}
+.tr-h em{font-style:normal;color:var(--ink3);letter-spacing:.04em}
+
+/* ---------- ルビ・注釈・ツールチップ ---------- */
+.a{cursor:help;border-bottom:1px dotted rgba(27,26,22,.42);text-underline-offset:3px;padding-bottom:1px}
+.a:hover{background:rgba(174,58,43,.09)}
+.hov{cursor:help}
+.hov:hover{background:rgba(174,58,43,.09)}
+.a.tg{border-bottom:1.5px solid var(--shu);background:linear-gradient(transparent 64%,rgba(174,58,43,.13) 0)}
+.a.tg:hover{background:linear-gradient(transparent 64%,rgba(174,58,43,.22) 0)}
+ruby.a{display:inline-block;line-height:1.5;vertical-align:baseline;padding:.35em 0 0}
+ruby.a rt{font-size:.5em;color:var(--ink3);letter-spacing:.02em;font-family:var(--sans)}
+ruby.a.tg rt{color:var(--shu)}
+.tip{position:fixed;z-index:80;max-width:266px;background:#FCFAF2;border:1px solid var(--ink);padding:8px 11px;box-shadow:3px 3px 0 rgba(27,26,22,.12);font-size:.8rem;line-height:1.6;pointer-events:none}
+.tip[hidden]{display:none}
+.tip-r{font-family:var(--serif);font-size:1.12rem;color:var(--shu);letter-spacing:.05em;line-height:1.4}
+.tip-m{color:var(--ink);margin-top:2px}
+.tip-n{color:var(--ink3);font-size:.68rem;margin-top:5px;letter-spacing:.02em}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:90;background:var(--ink);color:var(--paper);padding:9px 16px;font-size:.82rem;border-radius:2px;max-width:86vw}
+.toast[hidden]{display:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+
+.est{border:1px solid var(--ink);background:#FCFAF2;padding:14px 16px;margin-bottom:14px}
+.est-lv{font-family:var(--serif);font-size:1.24rem;letter-spacing:.06em;line-height:1.5}
+.est-note{font-size:.83rem;color:var(--ink3);line-height:1.7;margin-top:6px}
+.est-next{font-size:.82rem;margin-top:9px;padding-top:9px;border-top:1px dashed rgba(27,26,22,.22)}
+.lvbars{margin-top:2px}
+.lvbar{display:grid;grid-template-columns:44px 1fr 96px;gap:10px;align-items:center;padding:6px 0;font-size:.8rem}
+.lvbar .t{font-family:var(--serif);letter-spacing:.08em}
+.lvbar .bar{height:6px;background:rgba(27,26,22,.1);display:block}
+.lvbar .bar i{display:block;height:6px;background:var(--celadon)}
+.lvbar .bar i.mid{background:#C79A54}
+.lvbar .bar i.low{background:var(--shu)}
+.lvbar .n{text-align:right;color:var(--ink3);font-variant-numeric:tabular-nums}
+.lvbias{font-size:.78rem;color:var(--ink3);margin-top:10px;line-height:1.8}
+.rec-wrap{max-height:430px;overflow:auto;border:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="rail">
+    <div class="brand">
+      <span class="seal-mini" aria-hidden="true">二</span>
+      <b>N2 受験室</b>
+      <em>日本語能力試験</em>
+    </div>
+    <nav class="nav" id="nav" aria-label="主な画面"></nav>
+    <div class="rail-foot" id="railFoot"></div>
+  </aside>
+  <main class="main">
+    <div class="wrap" id="view"></div>
+  </main>
+</div>
+<div class="tip" id="tip" hidden></div>
+<div class="toast" id="toast" hidden></div>
+<script>
+/* ============================================================
+   問題データ（すべて本アプリ用に書き起こしたオリジナル問題）
+   項目：id / lv / cat / tags / q（設問）/ b（文）or p（本文配列）
+        opts（選択肢）/ ans（正解の添字）/ exp（解説）
+        notes（注釈：t=語, r=読み, m=意味, u=1 で下線）
+        rd（注音専用の語表：語彙メモには出さず、本文・選択肢・解説・用例にルビを付ける）
+        ex（用例：l=ラベル, j=日本語, t=中文訳）/ us（用法の説明・中文）
+        g（文法点）/ gm（文法点の意味）
+   ============================================================ */
+const BANK=[
+{"id":"N4K01","lv":"N4","cat":"漢字読み","tags":["漢字読み","訓読み"],"q":"「歩きます」の読み方として最もよいものを選んでください。","b":"毎朝、駅まで歩きます。","opts":["はしります","あるきます","とおります","はやくきます"],"ans":1,"exp":"正解は「あるきます」。歩く（あるく）は徒歩で移動する意味です。「走る（はしる）」「通る（とおる）」と混同しやすいので、動詞ごと声に出して覚えます。","notes":[{"t":"歩きます","r":"あるきます","m":"走、步行（歩く）","u":1},{"t":"毎朝","r":"まいあさ","m":"每天早上"},{"t":"駅","r":"えき","m":"车站"}],"tr":"每天早上走到车站。","rd":[{"t":"走る","r":"はしる","m":"跑"},{"t":"通る","r":"とおる","m":"经过、通过"},{"t":"足","r":"あし","m":"脚"},{"t":"歩いて","r":"あるいて","m":"走着（て形）"},{"t":"行きます","r":"いきます","m":"去"},{"t":"毎日","r":"まいにち","m":"每天"},{"t":"一万歩","r":"いちまんぽ","m":"一万步"},{"t":"目標","r":"もくひょう","m":"目标"}],"ex":[{"l":"同じ動詞","j":"駅まで歩いて行きます。","t":"走着去车站。"},{"l":"別の形","j":"毎日一万歩を目標にしています。","t":"以每天一万步为目标。"}]},
+{"id":"N4K02","lv":"N4","cat":"漢字読み","tags":["漢字読み","形容詞"],"q":"「安くて」の読み方として最もよいものを選んでください。","b":"この店は安くておいしいです。","opts":["たかくて","やすくて","ちいさくて","おもくて"],"ans":1,"exp":"正解は「やすくて」。安い（やすい）のて形です。高い（たかくて）・小さい（ちいさくて）・重い（おもくて）は形が似ていますが、店の評価には合いません。","notes":[{"t":"安くて","r":"やすくて","m":"便宜（安い・て形）","u":1},{"t":"店","r":"みせ","m":"店铺"},{"t":"おいしい","r":"おいしい","m":"好吃"}],"tr":"这家店又便宜又好吃。","rd":[{"t":"値段","r":"ねだん","m":"价格"},{"t":"低い","r":"ひくい","m":"低"},{"t":"高い","r":"たかい","m":"贵、高"},{"t":"野菜","r":"やさい","m":"蔬菜"},{"t":"安い","r":"やすい","m":"便宜"}],"ex":[{"l":"同じ形容詞","j":"この店の野菜は安いです。","t":"这家店的蔬菜很便宜。"},{"l":"反対語","j":"あの店は高いけど、おいしいです。","t":"那家店贵，但好吃。"}]},
+{"id":"N4K03","lv":"N4","cat":"漢字読み","tags":["漢字読み","名詞"],"q":"「約束」の読み方として最もよいものを選んでください。","b":"友だちと約束しました。","opts":["やくそく","やくぞく","やっそく","やくそぐ"],"ans":0,"exp":"正解は「やくそく」。濁らないのがポイントです。約束する＝约定。","notes":[{"t":"約束","r":"やくそく","m":"约定","u":1},{"t":"友だち","r":"ともだち","m":"朋友"}],"tr":"和朋友约好了。","rd":[{"t":"前もって","r":"まえもって","m":"事先"},{"t":"決める","r":"きめる","m":"决定"},{"t":"明日","r":"あした","m":"明天"},{"t":"会う","r":"あう","m":"见面"},{"t":"時間","r":"じかん","m":"时间"},{"t":"遅れ","r":"おくれ","m":"迟到"}],"ex":[{"l":"動詞で使う","j":"明日会う約束をしました。","t":"约好了明天见面。"},{"l":"名詞で使う","j":"約束の時間に遅れました。","t":"约定的时间迟到了。"}]},
+{"id":"N4K04","lv":"N4","cat":"漢字読み","tags":["漢字読み","時間"],"q":"「先週」の読み方として最もよいものを選んでください。","b":"先週、京都へ行きました。","opts":["らいしゅう","こんしゅう","せんしゅう","まいしゅう"],"ans":2,"exp":"正解は「せんしゅう」。来週（らいしゅう）・今週（こんしゅう）・毎週（まいしゅう）と並べて覚えると混乱しません。","notes":[{"t":"先週","r":"せんしゅう","m":"上周","u":1},{"t":"京都","r":"きょうと","m":"京都"}],"tr":"上周去了京都。","rd":[{"t":"先月","r":"せんげつ","m":"上个月"},{"t":"来週","r":"らいしゅう","m":"下周"},{"t":"土曜日","r":"どようび","m":"星期六"},{"t":"映画","r":"えいが","m":"电影"},{"t":"見ました","r":"みました","m":"看了"},{"t":"忙しく","r":"いそがしく","m":"忙"}],"ex":[{"l":"同じ組み立て","j":"先週の土曜日に映画を見ました。","t":"上周六看了电影。"},{"l":"対になる語","j":"来週は忙しくなります。","t":"下周会变忙。"}]},
+{"id":"N4K05","lv":"N4","cat":"漢字読み","tags":["漢字読み","名詞"],"q":"「新聞」の読み方として最もよいものを選んでください。","b":"電車の中で新聞を読みます。","opts":["しんぷん","しんぶん","しんぼん","しんもん"],"ans":1,"exp":"正解は「しんぶん」。ん＋ぶ の組み合わせです。「しんぷん」は「新聞」ではなく別の語に聞こえます。","notes":[{"t":"新聞","r":"しんぶん","m":"报纸","u":1},{"t":"電車","r":"でんしゃ","m":"电车"},{"t":"読みます","r":"よみます","m":"读"}],"tr":"在电车里读报纸。","rd":[{"t":"記事","r":"きじ","m":"报道、文章"},{"t":"切った","r":"きった","m":"剪下"},{"t":"取って","r":"とって","m":"订阅、拿"},{"t":"毎朝","r":"まいあさ","m":"每天早上"},{"t":"切りました","r":"きりました","m":"切（剪）"}],"ex":[{"l":"複合語","j":"新聞の記事を切りました。","t":"剪下了报纸上的报道。"},{"l":"動詞との組み","j":"毎朝、新聞を取っています。","t":"每天早上都订报纸。"}]},
+{"id":"N4K06","lv":"N4","cat":"漢字読み","tags":["漢字読み","動詞"],"q":"「引っ越します」の読み方として最もよいものを選んでください。","b":"来月、引っ越します。","opts":["ひっこします","ひきこします","ひっごします","ひこします"],"ans":0,"exp":"正解は「ひっこします」。引っ越す（ひっこす）は促音「っ」を保ったまま活用します。","notes":[{"t":"引っ越します","r":"ひっこします","m":"搬家（引っ越す）","u":1},{"t":"来月","r":"らいげつ","m":"下个月"}],"tr":"下个月搬家。","rd":[{"t":"引っ越し","r":"ひっこし","m":"搬家（名词）"},{"t":"準備","r":"じゅんび","m":"准备"},{"t":"忙しい","r":"いそがしい","m":"忙"},{"t":"隣","r":"となり","m":"隔壁"},{"t":"部屋","r":"へや","m":"房间"},{"t":"新しい","r":"あたらしい","m":"新的"},{"t":"人","r":"ひと","m":"人"}],"ex":[{"l":"名詞形","j":"引っ越しの準備で忙しいです。","t":"因为搬家的准备很忙。"},{"l":"使う場面","j":"隣の部屋に新しい人が引っ越してきました。","t":"隔壁房间搬来了新的住户。"}]},
+{"id":"N4V01","lv":"N4","cat":"語彙","tags":["語彙","体の状態"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"とても＿＿ので、水をたくさん飲みました。","opts":["のどがかわいた","おなかがすいた","ねむかった","さむかった"],"ans":0,"exp":"正解は「のどがかわいた」。のどがかわく＝口渴，与后面「水を飲む」呼应。腹がすく＝饿；眠い＝困；寒い＝冷。","notes":[{"t":"のどがかわいた","r":"のどがかわいた","m":"口渴","u":1},{"t":"水","r":"みず","m":"水"},{"t":"飲みました","r":"のみました","m":"喝了"}],"tr":"因为非常＿＿，所以喝了很多水。","rd":[{"t":"おなかがすいた","r":"おなかがすいた","m":"饿了"},{"t":"眠い","r":"ねむい","m":"困"},{"t":"寒い","r":"さむい","m":"冷"},{"t":"水","r":"みず","m":"水"},{"t":"飲みました","r":"のみました","m":"喝了"},{"t":"走りました","r":"はしりました","m":"跑了"},{"t":"飲む","r":"のむ","m":"喝"}],"ex":[{"l":"基本の形","j":"のどがかわいて、水を飲みました。","t":"口渴了，喝了水。"},{"l":"程度を強める","j":"のどがかわくほど走りました。","t":"跑得口干舌燥。"}],"us":"「のどがかわく」＝口渴，和「水を飲む」成套使用；「おなかがすく」＝饿。"},
+{"id":"N4V02","lv":"N4","cat":"語彙","tags":["語彙","形容詞"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"部屋が＿＿ですから、窓を開けましょう。","opts":["あつい","つめたい","くらい","せまい"],"ans":0,"exp":"正解は「あつい」。房间热才需要开窗。「つめたい」多用于物体温度低，「くらい」要靠开灯或拉开窗帘，「せまい」与开窗无关。","notes":[{"t":"部屋","r":"へや","m":"房间"},{"t":"窓","r":"まど","m":"窗户"},{"t":"開けましょう","r":"あけましょう","m":"打开吧"},{"t":"あつい","r":"あつい","m":"热"}],"tr":"房间很＿＿，所以把窗户打开吧。","rd":[{"t":"暑い","r":"あつい","m":"热（天气）"},{"t":"熱い","r":"あつい","m":"热（物体）"},{"t":"窓","r":"まど","m":"窗户"},{"t":"開けましょう","r":"あけましょう","m":"打开吧"},{"t":"部屋","r":"へや","m":"房间"},{"t":"今日","r":"きょう","m":"今天"},{"t":"お茶","r":"おちゃ","m":"茶"},{"t":"気","r":"き","m":"注意、心思"}],"ex":[{"l":"天気に使う","j":"今日はとても暑いです。","t":"今天非常热。"},{"l":"物の温度に使う","j":"お茶が熱いので、気をつけて。","t":"茶很烫，小心点。"}],"us":"「あつい」は天気なら「暑い」、物の温度なら「熱い」と漢字を書き分けます。"},
+{"id":"N4V03","lv":"N4","cat":"語彙","tags":["語彙","コロケーション"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"この漢字の意味がわかりません。辞書を＿＿ください。","opts":["ひいて","かいて","よんで","きいて"],"ans":0,"exp":"正解は「ひいて」。辞書を引く＝查词典，是固定搭配。「辞書を読む」虽也说得通，但「引く」才是查词条的说法。","notes":[{"t":"漢字","r":"かんじ","m":"汉字"},{"t":"意味","r":"いみ","m":"意思"},{"t":"辞書","r":"じしょ","m":"词典"},{"t":"ひいて","r":"ひいて","m":"查（词典）"}],"tr":"我不明白这个汉字的意思。请＿＿词典。","rd":[{"t":"辞書","r":"じしょ","m":"词典"},{"t":"引いて","r":"ひいて","m":"拉、查"},{"t":"開けます","r":"あけます","m":"打开"},{"t":"風邪","r":"かぜ","m":"感冒"},{"t":"引きました","r":"ひきました","m":"得了（感冒）"},{"t":"漢字","r":"かんじ","m":"汉字"},{"t":"意味","r":"いみ","m":"意思"},{"t":"読む","r":"よむ","m":"读"},{"t":"引く","r":"ひく","m":"查（字典）、拉"}],"ex":[{"l":"他の用法①","j":"ドアを引いて開けます。","t":"把门拉开。"},{"l":"他の用法②","j":"風邪を引きました。","t":"感冒了。"}],"us":"「辞書を引く」是固定搭配＝查词典。「引く」还有拉、吸引、感冒（風邪を引く）等用法。"},
+{"id":"N4V04","lv":"N4","cat":"語彙","tags":["語彙","形容詞"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"この道は車が多くて＿＿です。","opts":["あぶない","うつくしい","にぎやか","べんり"],"ans":0,"exp":"正解は「あぶない」。車が多い＝危险。「にぎやか」偏中性热闹，「べんり」与车多无关。","notes":[{"t":"道","r":"みち","m":"道路"},{"t":"車","r":"くるま","m":"车"},{"t":"多くて","r":"おおくて","m":"多（多い・て形）"},{"t":"あぶない","r":"あぶない","m":"危险"}],"tr":"这条路车很多，很＿＿。","rd":[{"t":"車","r":"くるま","m":"车"},{"t":"道","r":"みち","m":"道路"},{"t":"橋","r":"はし","m":"桥"},{"t":"古くて","r":"ふるくて","m":"旧（て形）"},{"t":"触らない","r":"さわらない","m":"不要碰"},{"t":"危ない","r":"あぶない","m":"危险"}],"ex":[{"l":"物に使う","j":"この橋は古くて危ないです。","t":"这座桥很旧，很危险。"},{"l":"注意を促す","j":"危ないから、触らないでください。","t":"很危险，请不要碰。"}],"us":"「あぶない」は人・物・状況すべてに使える。注意を促す「危ない！」もよく使います。"},
+{"id":"N4V05","lv":"N4","cat":"語彙","tags":["語彙","コロケーション"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"パーティーで友だちと写真を＿＿。","opts":["とりました","かきました","うたいました","のみました"],"ans":0,"exp":"正解は「とりました」。写真を撮る＝拍照。「書く」用于文字，「歌う」用于歌。","notes":[{"t":"写真","r":"しゃしん","m":"照片"},{"t":"撮る","r":"とる","m":"拍（照片）","u":1},{"t":"とりました","r":"とりました","m":"拍了"}],"tr":"在聚会上和朋友＿＿了照片。","rd":[{"t":"写真","r":"しゃしん","m":"照片"},{"t":"撮りました","r":"とりました","m":"拍了"},{"t":"友だち","r":"ともだち","m":"朋友"},{"t":"撮影","r":"さつえい","m":"拍摄"},{"t":"禁止","r":"きんし","m":"禁止"},{"t":"書く","r":"かく","m":"写"},{"t":"歌う","r":"うたう","m":"唱"}],"ex":[{"l":"他の用法","j":"カメラで友だちを撮りました。","t":"用相机给朋友拍了照。"},{"l":"名詞形","j":"ここでの撮影は禁止です。","t":"这里禁止拍摄。"}],"us":"「写真を撮る」是固定搭配＝拍照。名词形是「撮影」。"},
+{"id":"N4V06","lv":"N4","cat":"語彙","tags":["語彙","形式"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"毎日、日本語のニュースを＿＿ようにしています。","opts":["聞く","聞き","聞いて","聞いた"],"ans":0,"exp":"正解は「聞く」。「〜ようにしている」前面接动词辞书形，表示养成某种习惯。","notes":[{"t":"毎日","r":"まいにち","m":"每天"},{"t":"ニュース","r":"にゅーす","m":"新闻节目"},{"t":"聞く","r":"きく","m":"听"}],"g":"〜ようにしている","gm":"前接辞书形，表示有意识地养成习惯","tr":"我让自己每天都＿＿日语新闻。","rd":[{"t":"毎日","r":"まいにち","m":"每天"},{"t":"習慣","r":"しゅうかん","m":"习惯"},{"t":"毎朝","r":"まいあさ","m":"每天早上"},{"t":"運動","r":"うんどう","m":"运动"},{"t":"夜","r":"よる","m":"晚上"},{"t":"遅く","r":"おそく","m":"晚"},{"t":"食べ","r":"たべ","m":"吃"},{"t":"聞き","r":"きき","m":"听"},{"t":"聞いて","r":"きいて","m":"听"},{"t":"聞いた","r":"きいた","m":"听了"}],"ex":[{"l":"肯定形","j":"毎朝、運動するようにしています。","t":"我坚持每天早上运动。"},{"l":"否定形","j":"夜遅く食べないようにしています。","t":"我尽量不在深夜吃东西。"}],"us":"「〜ようにしている」＝有意识地保持某种习惯，前接辞书形或否定形。"},
+{"id":"N4G01","lv":"N4","cat":"文法","tags":["文法","逆接"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"雨が降っている＿＿、出かけます。","opts":["が","から","ので","ても"],"ans":0,"exp":"正解は「が」。前件「下雨」与后件「出门」是转折关系。「から／ので」表原因，「ても」需要接て形（降っていても）。","notes":[{"t":"雨","r":"あめ","m":"雨"},{"t":"降っている","r":"ふっている","m":"正在下"},{"t":"出かけます","r":"でかけます","m":"出门"},{"t":"が","r":"が","m":"但是（逆接）"}],"g":"〜が（逆接）","gm":"接在句末，表示“虽然…却…”","tr":"正在下雨＿＿，我还是出门。","rd":[{"t":"雨","r":"あめ","m":"雨"},{"t":"降って","r":"ふって","m":"下（雨）"},{"t":"出かけます","r":"でかけます","m":"出门"},{"t":"高い","r":"たかい","m":"贵"},{"t":"買います","r":"かいます","m":"买"},{"t":"失礼","r":"しつれい","m":"失礼"},{"t":"名前","r":"なまえ","m":"名字"}],"ex":[{"l":"基本の逆接","j":"高いですが、買います。","t":"虽然贵，还是要买。"},{"l":"会話での前置き","j":"失礼ですが、お名前は？","t":"不好意思，请问您贵姓？"}],"us":"「が」接在句末表示逆接：虽然…但是…。书面也用「けれども」。"},
+{"id":"N4G02","lv":"N4","cat":"文法","tags":["文法","格助詞"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"会議は９時＿＿始まります。","opts":["から","まで","ごろ","しか"],"ans":0,"exp":"正解は「から」。表示起点：从9点开始。「まで」是终点，「ごろ」是大约（９時ごろ，不加助词），「しか」须与否定呼应。","notes":[{"t":"会議","r":"かいぎ","m":"会议"},{"t":"始まります","r":"はじまります","m":"开始"},{"t":"から","r":"から","m":"从…起"}],"g":"〜から（起点）","gm":"表示时间或空间的起点","tr":"会议在 9 点＿＿开始。","rd":[{"t":"会議","r":"かいぎ","m":"会议"},{"t":"始まります","r":"はじまります","m":"开始"},{"t":"五時","r":"ごじ","m":"五点"},{"t":"駅","r":"えき","m":"车站"},{"t":"十分","r":"じゅうふん","m":"十分钟"},{"t":"歩いて","r":"あるいて","m":"走着"}],"ex":[{"l":"まで と対で","j":"会議は五時までです。","t":"会议到五点为止。"},{"l":"場所の起点","j":"駅から歩いて十分です。","t":"从车站走十分钟。"}],"us":"「から」＝起点，「まで」＝终点，常成对出现：「九時から五時まで」。"},
+{"id":"N4G03","lv":"N4","cat":"文法","tags":["文法","比較"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"この本はあの本＿＿おもしろいです。","opts":["より","ほど","だけ","でも"],"ans":0,"exp":"正解は「より」。「A は B より〜」＝A 比 B 更…。「ほど」用于「A は B ほど〜ない」的否定比较。","notes":[{"t":"本","r":"ほん","m":"书"},{"t":"おもしろい","r":"おもしろい","m":"有趣"},{"t":"より","r":"より","m":"比…（比较基准）"}],"g":"AはBより〜","gm":"比较句：A 比 B 更…","tr":"这本书＿＿那本书有趣。","rd":[{"t":"本","r":"ほん","m":"书"},{"t":"おもしろい","r":"おもしろい","m":"有趣"},{"t":"今日","r":"きょう","m":"今天"},{"t":"昨日","r":"きのう","m":"昨天"},{"t":"寒い","r":"さむい","m":"冷"},{"t":"電車","r":"でんしゃ","m":"电车"},{"t":"速い","r":"はやい","m":"快"}],"ex":[{"l":"時・状態の比較","j":"今日は昨日より寒いです。","t":"今天比昨天冷。"},{"l":"物の比較","j":"電車はバスより速いです。","t":"电车比公交车快。"}],"us":"「AはBより〜」＝A 比 B 更…。否定比较用「AはBほど〜ない」。"},
+{"id":"N4G04","lv":"N4","cat":"文法","tags":["文法","てから"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"大学を卒業して＿＿、ずっと東京に住んでいます。","opts":["から","まで","ので","のに"],"ans":0,"exp":"正解は「から」。「〜てから」表示某一动作之后，后项是持续状态。「まで」是终点，「ので」表原因，「のに」表转折。","notes":[{"t":"大学","r":"だいがく","m":"大学"},{"t":"卒業","r":"そつぎょう","m":"毕业"},{"t":"住んでいます","r":"すんでいます","m":"居住"},{"t":"から","r":"から","m":"…之后"}],"g":"〜てから","gm":"动作的先后：…之后（一直）","tr":"大学毕业＿＿，一直住在东京。","rd":[{"t":"大学","r":"だいがく","m":"大学"},{"t":"卒業","r":"そつぎょう","m":"毕业"},{"t":"住んで","r":"すんで","m":"居住"},{"t":"食事","r":"しょくじ","m":"吃饭"},{"t":"出かけます","r":"でかけます","m":"出门"},{"t":"三年","r":"さんねん","m":"三年"},{"t":"日本","r":"にほん","m":"日本"},{"t":"来て","r":"きて","m":"来"}],"ex":[{"l":"動作の順","j":"食事をしてから、出かけます。","t":"吃完饭再出门。"},{"l":"以来の継続","j":"日本へ来てから、三年になります。","t":"来日本已经三年了。"}],"us":"「〜てから」＝做完某事之后，后项多为持续状态或紧接着的动作。"},
+{"id":"N4G05","lv":"N4","cat":"文法","tags":["文法","疑問詞"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"この漢字はどう＿＿か。","opts":["書きます","書く","書いて","書いた"],"ans":0,"exp":"正解は「書きます」。どう＋动词构成疑问句，句末用「か」，动词保持敬体现在形。","notes":[{"t":"漢字","r":"かんじ","m":"汉字"},{"t":"書きます","r":"かきます","m":"写"}],"g":"どう〜か","gm":"询问方式：“怎么…呢”","tr":"这个汉字要怎么＿＿呢？","rd":[{"t":"漢字","r":"かんじ","m":"汉字"},{"t":"言葉","r":"ことば","m":"词语"},{"t":"読みます","r":"よみます","m":"读"},{"t":"名前","r":"なまえ","m":"名字"},{"t":"書く","r":"かく","m":"写"},{"t":"書いて","r":"かいて","m":"写"},{"t":"書いた","r":"かいた","m":"写了"}],"ex":[{"l":"読みを聞く","j":"この言葉はどう読みますか。","t":"这个词怎么读？"},{"l":"書き方を聞く","j":"名前はどう書きますか。","t":"名字怎么写？"}],"us":"「どう＋動詞＋か」＝询问方式：「怎么…呢」。回答用「〜ます」。"},
+{"id":"N4G06","lv":"N4","cat":"文法","tags":["文法","概数"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"そのかばんは３，０００円＿＿です。","opts":["ぐらい","ごろ","だけ","ほど"],"ans":0,"exp":"正解は「ぐらい」。表示大概的数量。「ごろ」只用于时间点（３時ごろ），不能用于金额。","notes":[{"t":"かばん","r":"かばん","m":"包"},{"t":"ぐらい","r":"ぐらい","m":"大约（数量）"}],"g":"〜ぐらい（概数）","gm":"表示大约的数量","tr":"那个包大约 3,000 日元＿＿。","rd":[{"t":"かばん","r":"かばん","m":"包"},{"t":"千円","r":"せんえん","m":"一千日元"},{"t":"買え","r":"かえ","m":"买得起"},{"t":"三時","r":"さんじ","m":"三点"},{"t":"来て","r":"きて","m":"来"}],"ex":[{"l":"金額の概数","j":"千円ぐらいで買えます。","t":"一千日元左右就能买到。"},{"l":"時刻はごろ","j":"三時ごろに来てください。","t":"请三点左右来。"}],"us":"「ぐらい」＝大约的数量（金额、时间长度、数量）；「ごろ」只接时间点。"},
+{"id":"N4R01a","lv":"N4","cat":"読解","tags":["読解","生活"],"p":["わたしは毎朝７時に起きます。シャワーを浴びて、８時に会社へ行きます。","会社ではずっとパソコンを使います。夜は10時に寝ます。"],"q":"この人は何時に会社へ行きますか。","opts":["７時","８時","９時","10時"],"ans":1,"exp":"正解は「８時」。第1文に「８時に会社へ行きます」とあります。７時は起床、10時は就寝の時刻です。","notes":[{"t":"毎朝","r":"まいあさ","m":"每天早上"},{"t":"起きます","r":"おきます","m":"起床"},{"t":"浴びて","r":"あびて","m":"淋（浴）"},{"t":"会社","r":"かいしゃ","m":"公司"},{"t":"寝ます","r":"ねます","m":"睡觉"},{"t":"８時","r":"はちじ","m":"八点"}],"qt":"这个人几点去公司？","pt":["我每天早上 7 点起床。洗个澡，8 点去公司。","在公司一直用电脑。晚上 10 点睡觉。"],"rd":[{"t":"毎朝","r":"まいあさ","m":"每天早上"},{"t":"起きます","r":"おきます","m":"起床"},{"t":"浴びて","r":"あびて","m":"淋浴"},{"t":"会社","r":"かいしゃ","m":"公司"},{"t":"寝ます","r":"ねます","m":"睡觉"},{"t":"八時","r":"はちじ","m":"八点"},{"t":"七時","r":"しちじ","m":"七点"},{"t":"十時","r":"じゅうじ","m":"十点"},{"t":"夜","r":"よる","m":"晚上"},{"t":"会議","r":"かいぎ","m":"会议"},{"t":"九時半","r":"くじはん","m":"九点半"},{"t":"始まります","r":"はじまります","m":"开始"},{"t":"行きます","r":"いきます","m":"去"},{"t":"時","r":"じ","m":"点（钟）"}],"ex":[{"l":"時刻の表現","j":"会議は九時半に始まります。","t":"会议九点半开始。"}]},
+{"id":"N4R01b","lv":"N4","cat":"読解","tags":["読解","生活"],"p":["わたしは毎朝７時に起きます。シャワーを浴びて、８時に会社へ行きます。","会社ではずっとパソコンを使います。夜は10時に寝ます。"],"q":"この人は会社で何を使いますか。","opts":["パソコン","電話","車","辞書"],"ans":0,"exp":"正解は「パソコン」。第2文に「会社ではずっとパソコンを使います」とあります。","notes":[{"t":"使います","r":"つかいます","m":"使用"},{"t":"夜","r":"よる","m":"晚上"},{"t":"会社","r":"かいしゃ","m":"公司"},{"t":"パソコン","r":"パソコン","m":"电脑"}],"qt":"这个人在公司用什么？","pt":["我每天早上 7 点起床。洗个澡，8 点去公司。","在公司一直用电脑。晚上 10 点睡觉。"],"rd":[{"t":"使います","r":"つかいます","m":"使用"},{"t":"会社","r":"かいしゃ","m":"公司"},{"t":"電話","r":"でんわ","m":"电话"},{"t":"夜","r":"よる","m":"晚上"},{"t":"車","r":"くるま","m":"车"},{"t":"辞書","r":"じしょ","m":"词典"}],"ex":[{"l":"道具の言い方","j":"会社でパソコンと電話を使います。","t":"在公司使用电脑和电话。"}]},
+{"id":"N4R02a","lv":"N4","cat":"読解","tags":["読解","手紙"],"p":["田中さんへ","わたしは日曜日に大阪へ行きます。大阪の友だちに会って、いっしょに食事をします。","月曜日の朝、東京に帰ります。　山田"],"q":"いつ大阪へ行きますか。","opts":["日曜日","月曜日","金曜日","土曜日"],"ans":0,"exp":"正解は「日曜日」。手紙の本文に「日曜日に大阪へ行きます」とあります。月曜日は東京へ帰る日です。","notes":[{"t":"日曜日","r":"にちようび","m":"星期天"},{"t":"大阪","r":"おおさか","m":"大阪"},{"t":"会って","r":"あって","m":"见面"},{"t":"食事","r":"しょくじ","m":"吃饭"},{"t":"帰ります","r":"かえります","m":"回去"},{"t":"友だち","r":"ともだち","m":"朋友"}],"qt":"什么时候去大阪？","pt":["致田中先生（收件人）","我星期天去大阪。会见大阪的朋友，一起吃饭。","星期一早上回东京。　山田（寄件人）"],"rd":[{"t":"日曜日","r":"にちようび","m":"星期天"},{"t":"大阪","r":"おおさか","m":"大阪"},{"t":"会って","r":"あって","m":"见面"},{"t":"食事","r":"しょくじ","m":"吃饭"},{"t":"月曜日","r":"げつようび","m":"星期一"},{"t":"朝","r":"あさ","m":"早上"},{"t":"帰ります","r":"かえります","m":"回去"},{"t":"新幹線","r":"しんかんせん","m":"新干线"},{"t":"二時間","r":"にじかん","m":"两小时"},{"t":"行きます","r":"いきます","m":"去"},{"t":"金曜日","r":"きんようび","m":"星期五"},{"t":"土曜日","r":"どようび","m":"星期六"}],"ex":[{"l":"行き先の表現","j":"大阪まで新幹線で二時間です。","t":"到大阪坐新干线两小时。"}]},
+{"id":"N4R02b","lv":"N4","cat":"読解","tags":["読解","手紙"],"p":["田中さんへ","わたしは日曜日に大阪へ行きます。大阪の友だちに会って、いっしょに食事をします。","月曜日の朝、東京に帰ります。　山田"],"q":"だれに会いますか。","opts":["田中さん","大阪の友だち","山田さん","家族"],"ans":1,"exp":"正解は「大阪の友だち」。会う相手は「大阪の友だち」です。田中さんは宛名、山田さんは差出人。","notes":[{"t":"友だち","r":"ともだち","m":"朋友"},{"t":"月曜日","r":"げつようび","m":"星期一"},{"t":"朝","r":"あさ","m":"早上"},{"t":"大阪","r":"おおさか","m":"大阪"}],"qt":"会见谁？","pt":["致田中先生（收件人）","我星期天去大阪。会见大阪的朋友，一起吃饭。","星期一早上回东京。　山田（寄件人）"],"rd":[{"t":"会う","r":"あう","m":"见面"},{"t":"早く","r":"はやく","m":"早早地"},{"t":"家","r":"いえ","m":"家"},{"t":"出ました","r":"でました","m":"出门了"},{"t":"月曜日","r":"げつようび","m":"星期一"},{"t":"家族","r":"かぞく","m":"家人"},{"t":"田中","r":"たなか","m":"田中"},{"t":"山田","r":"やまだ","m":"山田"}],"ex":[{"l":"目的の言い方","j":"友だちに会うために、早く家を出ました。","t":"为了见朋友，早早出了门。"}]},
+{"id":"N3K01","lv":"N3","cat":"漢字読み","tags":["漢字読み","音読み"],"q":"「品質」の読み方として最もよいものを選んでください。","b":"この商品は品質がいい。","opts":["ひんしつ","ひんしち","しなしつ","ひんじつ"],"ans":0,"exp":"正解は「ひんしつ」。品は「ひん」、質は「しつ」。促音も濁音もありません。","notes":[{"t":"品質","r":"ひんしつ","m":"品质","u":1},{"t":"商品","r":"しょうひん","m":"商品"}],"tr":"这件商品品质很好。","rd":[{"t":"商品","r":"しょうひん","m":"商品"},{"t":"保つ","r":"たもつ","m":"保持"},{"t":"温度","r":"おんど","m":"温度"},{"t":"管理","r":"かんり","m":"管理"},{"t":"検査","r":"けんさ","m":"检查"}],"ex":[{"l":"同じ名詞","j":"品質を保つために、温度を管理しています。","t":"为了保持品质，正在管理温度。"}]},
+{"id":"N3K02","lv":"N3","cat":"漢字読み","tags":["漢字読み","音読み"],"q":"「経験」の読み方として最もよいものを選んでください。","b":"経験を積むことが大切だ。","opts":["けいけん","けんけい","けいげん","きょうけん"],"ans":0,"exp":"正解は「けいけん」。経は「けい」、験は「けん」。経験を積む＝积累经验。","notes":[{"t":"経験","r":"けいけん","m":"经验","u":1},{"t":"積む","r":"つむ","m":"积累"},{"t":"大切","r":"たいせつ","m":"重要"}],"tr":"积累经验很重要。","rd":[{"t":"積む","r":"つむ","m":"积累"},{"t":"大切","r":"たいせつ","m":"重要"},{"t":"仕事","r":"しごと","m":"工作"},{"t":"生かして","r":"いかして","m":"发挥、活用"},{"t":"働きたい","r":"はたらきたい","m":"想工作"}],"ex":[{"l":"他の組み合わせ","j":"経験を生かして働きたいです。","t":"想发挥经验去工作。"}]},
+{"id":"N3K03","lv":"N3","cat":"漢字読み","tags":["漢字読み","音読み"],"q":"「調査」の読み方として最もよいものを選んでください。","b":"調査の結果を報告します。","opts":["ちょうさ","ちゅうさ","ちょうざ","とうさ"],"ans":0,"exp":"正解は「ちょうさ」。調は長音「ちょう」，さは清音です。","notes":[{"t":"調査","r":"ちょうさ","m":"调查","u":1},{"t":"結果","r":"けっか","m":"结果"},{"t":"報告","r":"ほうこく","m":"汇报"}],"tr":"汇报调查结果。","rd":[{"t":"結果","r":"けっか","m":"结果"},{"t":"報告","r":"ほうこく","m":"汇报"},{"t":"実施","r":"じっし","m":"实施"},{"t":"問題","r":"もんだい","m":"问题"},{"t":"見","r":"み","m":"看、发现"},{"t":"先月","r":"せんげつ","m":"上个月"}],"ex":[{"l":"動詞で使う","j":"先月、調査を実施しました。","t":"上个月实施了调查。"}]},
+{"id":"N3K04","lv":"N3","cat":"漢字読み","tags":["漢字読み","形容動詞"],"q":"「慎重」の読み方として最もよいものを選んでください。","b":"彼は慎重な人です。","opts":["しんちょう","しんじゅう","じんちょう","しんちゅう"],"ans":0,"exp":"正解は「しんちょう」。重は「ちょう」と読む（重要・体重と同じ）。慎重＝谨慎。","notes":[{"t":"慎重","r":"しんちょう","m":"谨慎","u":1}],"tr":"他是个谨慎的人。","rd":[{"t":"彼","r":"かれ","m":"他"},{"t":"判断","r":"はんだん","m":"判断"},{"t":"選ぶ","r":"えらぶ","m":"选择"},{"t":"人","r":"ひと","m":"人"}],"ex":[{"l":"副詞的に","j":"慎重に判断してください。","t":"请慎重判断。"}]},
+{"id":"N3K05","lv":"N3","cat":"漢字読み","tags":["漢字読み","音読み"],"q":"「複雑」の読み方として最もよいものを選んでください。","b":"複雑な問題を解決した。","opts":["ふくざつ","ふくさつ","ふうざつ","ふくぞう"],"ans":0,"exp":"正解は「ふくざつ」。雑は「ざつ」で濁ります。","notes":[{"t":"複雑","r":"ふくざつ","m":"复杂","u":1},{"t":"解決","r":"かいけつ","m":"解决"}],"tr":"解决了复杂的问题。","rd":[{"t":"解決","r":"かいけつ","m":"解决"},{"t":"機械","r":"きかい","m":"机器"},{"t":"構造","r":"こうぞう","m":"构造"},{"t":"手続き","r":"てつづき","m":"手续"},{"t":"必要","r":"ひつよう","m":"必要"}],"ex":[{"l":"物に使う","j":"この機械の構造は複雑です。","t":"这台机器的构造很复杂。"}]},
+{"id":"N3K06","lv":"N3","cat":"漢字読み","tags":["漢字読み","名詞"],"q":"「給料」の読み方として最もよいものを選んでください。","b":"来月から給料が上がります。","opts":["きゅうりょう","きゅうろう","ぎゅうりょう","けいりょう"],"ans":0,"exp":"正解は「きゅうりょう」。給は「きゅう」，料は「りょう」。","notes":[{"t":"給料","r":"きゅうりょう","m":"工资","u":1},{"t":"上がります","r":"あがります","m":"上涨"}],"tr":"下个月起工资会上涨。","rd":[{"t":"上がります","r":"あがります","m":"上涨"},{"t":"毎月","r":"まいつき","m":"每月"},{"t":"支払われ","r":"しはらわれ","m":"被支付"},{"t":"物価","r":"ぶっか","m":"物价"},{"t":"足りません","r":"たりません","m":"不够"},{"t":"二十五日","r":"にじゅうごにち","m":"二十五号"}],"ex":[{"l":"支払いの場面","j":"給料は毎月二十五日に支払われます。","t":"工资每月二十五号发放。"}]},
+{"id":"N3V01","lv":"N3","cat":"語彙","tags":["語彙","漢語"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"この機械の使い方は＿＿です。","opts":["複雑","複数","複合","複写"],"ans":0,"exp":"正解は「複雑」。複数＝两个以上；複合＝复合；複写＝复印。都与「使い方」不搭。","notes":[{"t":"機械","r":"きかい","m":"机器"},{"t":"使い方","r":"つかいかた","m":"用法"},{"t":"複雑","r":"ふくざつ","m":"复杂"}],"tr":"这台机器的用法很＿＿。","rd":[{"t":"機械","r":"きかい","m":"机器"},{"t":"使い方","r":"つかいかた","m":"用法"},{"t":"複数","r":"ふくすう","m":"多个"},{"t":"複合","r":"ふくごう","m":"复合"},{"t":"複写","r":"ふくしゃ","m":"复印"},{"t":"人間関係","r":"にんげんかんけい","m":"人际关系"},{"t":"疲れます","r":"つかれます","m":"累"},{"t":"手順","r":"てじゅん","m":"步骤"},{"t":"簡単","r":"かんたん","m":"简单"},{"t":"注意","r":"ちゅうい","m":"注意"},{"t":"必要","r":"ひつよう","m":"必要"}],"ex":[{"l":"他の用法①","j":"人間関係が複雑で疲れます。","t":"人际关系复杂，让人很累。"},{"l":"反対語と対で","j":"手順は簡単ですが、注意が必要です。","t":"步骤很简单，但需要小心。"}],"us":"「複雑」＝关系或结构交错难懂，反义是「簡単」。近音的「複数・複合・複写」意思完全不同。"},
+{"id":"N3V02","lv":"N3","cat":"語彙","tags":["語彙","漢語"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"来週の出張の＿＿が決まりました。","opts":["日程","日記","日夜","日課"],"ans":0,"exp":"正解は「日程」。日程＝日程安排。日記＝日记；日夜＝日夜；日課＝每日功课。","notes":[{"t":"出張","r":"しゅっちょう","m":"出差"},{"t":"決まりました","r":"きまりました","m":"定下来了"},{"t":"日程","r":"にってい","m":"日程"}],"tr":"下周出差的＿＿定下来了。","rd":[{"t":"出張","r":"しゅっちょう","m":"出差"},{"t":"決まりました","r":"きまりました","m":"定下来了"},{"t":"予定","r":"よてい","m":"预定、计划"},{"t":"変更","r":"へんこう","m":"变更"},{"t":"日記","r":"にっき","m":"日记"},{"t":"日課","r":"にっか","m":"每日功课"},{"t":"毎朝","r":"まいあさ","m":"每天早上"},{"t":"走る","r":"はしる","m":"跑"},{"t":"日夜","r":"にちや","m":"日夜"}],"ex":[{"l":"近い意味","j":"予定を変更したいです。","t":"我想更改计划。"},{"l":"間違えやすい語","j":"日課は毎朝走ることです。","t":"每日功课是早上跑步。"}],"us":"「日程」＝时间上的安排。近音的「日記（日记）・日夜（日夜）・日課（每日功课）」都不能用于出差安排。"},
+{"id":"N3V03","lv":"N3","cat":"語彙","tags":["語彙","動詞"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"部長に企画書を＿＿。明日までに直してくださいと言われた。","opts":["提出した","提出された","出張した","出席した"],"ans":0,"exp":"正解は「提出した」。企画書を提出する＝提交企划书。提出された是被动，主语应是「企画書」。","notes":[{"t":"部長","r":"ぶちょう","m":"部长"},{"t":"企画書","r":"きかくしょ","m":"企划书"},{"t":"直して","r":"なおして","m":"修改"},{"t":"提出した","r":"ていしゅつした","m":"提交了"}],"tr":"把企划书＿＿给了部长。他让我在明天之前改好。","rd":[{"t":"部長","r":"ぶちょう","m":"部长"},{"t":"企画書","r":"きかくしょ","m":"企划书"},{"t":"直して","r":"なおして","m":"修改"},{"t":"期限","r":"きげん","m":"期限"},{"t":"資料","r":"しりょう","m":"资料"},{"t":"提案","r":"ていあん","m":"提案"},{"t":"提出","r":"ていしゅつ","m":"提交"},{"t":"新しい","r":"あたらしい","m":"新的"},{"t":"出張した","r":"しゅっちょうした","m":"出差了"},{"t":"出席した","r":"しゅっせきした","m":"出席了"}],"ex":[{"l":"他の目的語","j":"期限までに資料を提出してください。","t":"请在期限之前提交资料。"},{"l":"名詞＋提出","j":"新しい提案を部長に提出しました。","t":"向部长提交了新提案。"}],"us":"「提出する」＝把文件交给对方（人为动作）。「提出された」是被动，主语是文件。"},
+{"id":"N3V04","lv":"N3","cat":"語彙","tags":["語彙","漢語"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"この件については、まだ＿＿していません。","opts":["検討","検査","検索","点検"],"ans":0,"exp":"正解は「検討」。検討＝研究讨论（尚未决定）。検査＝检查（身体、产品）；検索＝检索；点検＝逐项点检设备。","notes":[{"t":"件","r":"けん","m":"事项、案件"},{"t":"検討","r":"けんとう","m":"研究讨论"}],"tr":"关于这件事，还没有＿＿。","rd":[{"t":"件","r":"けん","m":"事项、案件"},{"t":"検査","r":"けんさ","m":"检查"},{"t":"検索","r":"けんさく","m":"检索"},{"t":"点検","r":"てんけん","m":"点检"},{"t":"結論","r":"けつろん","m":"结论"},{"t":"案","r":"あん","m":"方案"},{"t":"体","r":"からだ","m":"身体"},{"t":"受けました","r":"うけました","m":"接受了"},{"t":"新しい","r":"あたらしい","m":"新的"},{"t":"昨日","r":"きのう","m":"昨天"}],"ex":[{"l":"他の用法①","j":"新しい案を検討しています。","t":"正在研究新方案。"},{"l":"他の用法②","j":"昨日、体の検査を受けました。","t":"昨天做了身体检查。"}],"us":"「検討」＝研究讨论（结论未定）；「検査」＝检查身体或产品；「検索」＝检索；「点検」＝逐项点检设备。"},
+{"id":"N3V05","lv":"N3","cat":"語彙","tags":["語彙","動詞"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"薬を飲んだら、痛みが＿＿。","opts":["おさまりました","かたまりました","まとまりました","よごれました"],"ans":0,"exp":"正解は「おさまりました」。痛みが治まる／収まる＝疼痛平息。固まる＝凝固；まとまる＝归纳；汚れる＝变脏。","notes":[{"t":"薬","r":"くすり","m":"药"},{"t":"痛み","r":"いたみ","m":"疼痛"},{"t":"おさまりました","r":"おさまりました","m":"平息了"}],"tr":"吃了药之后，疼痛＿＿了。","rd":[{"t":"薬","r":"くすり","m":"药"},{"t":"痛み","r":"いたみ","m":"疼痛"},{"t":"熱","r":"ねつ","m":"发烧"},{"t":"下がりました","r":"さがりました","m":"降下来了"},{"t":"治まって","r":"おさまって","m":"平息"},{"t":"眠れました","r":"ねむれました","m":"能睡着了"},{"t":"飲んだら","r":"のんだら","m":"吃了（药）之后"}],"ex":[{"l":"体の変化","j":"薬を飲んだら、熱が下がりました。","t":"吃了药之后，烧退了。"},{"l":"て形で続ける","j":"痛みが治まって、よく眠れました。","t":"疼痛平息了，睡得很好。"}],"us":"「痛みが治まる／収まる」＝疼痛平息。近音的「固まる（凝固）・まとまる（归纳）・汚れる（变脏）」都不接「痛み」。"},
+{"id":"N3V06","lv":"N3","cat":"語彙","tags":["語彙","形容動詞"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"説明が＿＿で、よくわからなかった。","opts":["あいまい","あんしん","あいさつ","あんまり"],"ans":0,"exp":"正解は「あいまい（曖昧）」。含糊不清→听不懂。安心＝放心；あいさつ＝寒暄；あんまり＝不太（副词）。","notes":[{"t":"説明","r":"せつめい","m":"说明"},{"t":"あいまい","r":"あいまい","m":"含糊"}],"tr":"说明很＿＿，没怎么听懂。","rd":[{"t":"説明","r":"せつめい","m":"说明"},{"t":"曖昧","r":"あいまい","m":"含糊"},{"t":"安心","r":"あんしん","m":"放心"},{"t":"挨拶","r":"あいさつ","m":"寒暄"},{"t":"返事","r":"へんじ","m":"回答"},{"t":"一度","r":"いちど","m":"一次"},{"t":"願い","r":"ねがい","m":"请求"}],"ex":[{"l":"他の用法①","j":"曖昧な返事をしないでください。","t":"请不要含糊地答复。"},{"l":"ナ形容詞の形","j":"説明をもう一度お願いします。","t":"请再说明一次。"}],"us":"「曖昧（あいまい）」＝边界不清、含糊。近音的「安心（放心）・挨拶（寒暄）・あんまり（不太）」都不是形容动词。"},
+{"id":"N3G01","lv":"N3","cat":"文法","tags":["文法","逆接","のに"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"彼は日本に10年住んでいる＿＿、日本語が下手だ。","opts":["のに","ので","から","ため"],"ans":0,"exp":"正解は「のに」。住十年却说不好，属于预期落空，用逆接「のに」。「ので／から」表原因，「ため」表目的或原因。","notes":[{"t":"住んでいる","r":"すんでいる","m":"居住（状态）"},{"t":"下手","r":"へた","m":"不擅长"}],"g":"〜のに","gm":"逆接，含意外、不满的语气","tr":"他在日本住了 10 年＿＿，日语还是很差。","rd":[{"t":"住んで","r":"すんで","m":"居住"},{"t":"下手","r":"へた","m":"不擅长"},{"t":"十年","r":"じゅうねん","m":"十年"},{"t":"一生懸命","r":"いっしょうけんめい","m":"拼命地"},{"t":"勉強","r":"べんきょう","m":"学习"},{"t":"合格","r":"ごうかく","m":"合格"},{"t":"日曜日","r":"にちようび","m":"星期天"},{"t":"仕事","r":"しごと","m":"工作"}],"ex":[{"l":"残念な気持ち","j":"一生懸命勉強したのに、合格できませんでした。","t":"明明拼命学了，却没考过。"},{"l":"意外な事実","j":"日曜日なのに、仕事をしています。","t":"明明是星期天，却在工作。"}],"us":"「のに」表逆接，含意外或不满：明明…却…。与「ので／から」（原因）方向相反。"},
+{"id":"N3G02","lv":"N3","cat":"文法","tags":["文法","時間","前に"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"日本へ来る＿＿、日本語を少し勉強しました。","opts":["前に","後で","うちに","たびに"],"ans":0,"exp":"正解は「前に」。来日本之前已经学过一点，动作先后清晰。「後で」方向相反，「うちに」强调期间内的变化。","notes":[{"t":"勉強","r":"べんきょう","m":"学习"},{"t":"前に","r":"まえに","m":"…之前"}],"g":"〜前に","gm":"前接辞书形，表示“在…之前”","tr":"来日本＿＿，学过一点日语。","rd":[{"t":"日本","r":"にほん","m":"日本"},{"t":"勉強","r":"べんきょう","m":"学习"},{"t":"出かける","r":"でかける","m":"出门"},{"t":"電話","r":"でんわ","m":"电话"},{"t":"食事","r":"しょくじ","m":"吃饭"},{"t":"後で","r":"あとで","m":"之后"},{"t":"薬","r":"くすり","m":"药"},{"t":"飲み","r":"のみ","m":"喝、吃（药）"}],"ex":[{"l":"動作の前","j":"出かける前に、電話します。","t":"出门之前打个电话。"},{"l":"対になる後で","j":"食事の後で、薬を飲みます。","t":"吃完饭之后吃药。"}],"us":"「〜前に」前接辞书形，表示在某个动作之前；「後で」方向相反。"},
+{"id":"N3G03","lv":"N3","cat":"文法","tags":["文法","うちに"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"気がつかない＿＿、外は暗くなっていた。","opts":["うちに","たびに","ように","ために"],"ans":0,"exp":"正解は「うちに」。不知不觉之间发生了变化，正是「〜うちに」的典型用法。「たびに」＝每次，「ように」表目的或样态。","notes":[{"t":"気がつかない","r":"きがつかない","m":"没注意到"},{"t":"暗く","r":"くらく","m":"变暗"}],"g":"〜うちに","gm":"在…期间不知不觉地发生变化","tr":"没注意到＿＿，外面已经黑了。","rd":[{"t":"気","r":"き","m":"注意"},{"t":"暗く","r":"くらく","m":"变暗"},{"t":"外","r":"そと","m":"外面"},{"t":"若い","r":"わかい","m":"年轻"},{"t":"外国","r":"がいこく","m":"外国"},{"t":"暮らし","r":"くらし","m":"生活"},{"t":"歩いて","r":"あるいて","m":"走着"},{"t":"雨","r":"あめ","m":"雨"}],"ex":[{"l":"期間の活用","j":"若いうちに、外国で暮らしたいです。","t":"想趁年轻在国外生活。"},{"l":"変化の例","j":"歩いているうちに、雨がやみました。","t":"走着走着，雨停了。"}],"us":"「〜うちに」＝在某个期间内，不知不觉发生了变化；「たびに」＝每次。"},
+{"id":"N3G04","lv":"N3","cat":"文法","tags":["文法","たびに"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"毎年、桜が咲く＿＿、京都を思い出す。","opts":["たびに","うちに","ために","そうに"],"ans":0,"exp":"正解は「たびに」。每当樱花开放就会想起京都，反复出现。「うちに」只用于一次性的变化过程。","notes":[{"t":"桜","r":"さくら","m":"樱花"},{"t":"咲く","r":"さく","m":"开花"},{"t":"思い出す","r":"おもいだす","m":"想起"}],"g":"〜たびに","gm":"每当…就…","tr":"每年樱花开的＿＿，我就会想起京都。","rd":[{"t":"桜","r":"さくら","m":"樱花"},{"t":"咲く","r":"さく","m":"开花"},{"t":"京都","r":"きょうと","m":"京都"},{"t":"思い出します","r":"おもいだします","m":"想起"},{"t":"写真","r":"しゃしん","m":"照片"},{"t":"家族","r":"かぞく","m":"家人"},{"t":"会う","r":"あう","m":"见面"},{"t":"元気","r":"げんき","m":"精神、元气"},{"t":"見る","r":"みる","m":"看"}],"ex":[{"l":"物＋たびに","j":"この写真を見るたびに、家族を思い出します。","t":"每次看到这张照片，就会想起家人。"},{"l":"人＋たびに","j":"会うたびに、元気になります。","t":"每次见面都变得有精神。"}],"us":"「〜たびに」＝每当…就…，后项随前项反复出现。"},
+{"id":"N3G05","lv":"N3","cat":"文法","tags":["文法","比喩","ように"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"彼女はまるでモデルの＿＿きれいだ。","opts":["ように","ために","そうに","らしく"],"ans":0,"exp":"正解は「ように」。「まるで〜のように」是比喻的固定搭配。「らしく」需要名词直接相接（モデルらしく）。","notes":[{"t":"彼女","r":"かのじょ","m":"她"},{"t":"きれい","r":"きれい","m":"漂亮"}],"g":"まるで〜のように","gm":"比喻：“简直像…一样”","tr":"她简直像模特＿＿漂亮。","rd":[{"t":"彼女","r":"かのじょ","m":"她"},{"t":"きれい","r":"きれい","m":"漂亮"},{"t":"雪","r":"ゆき","m":"雪"},{"t":"白い","r":"しろい","m":"白的"},{"t":"肌","r":"はだ","m":"皮肤"},{"t":"夢","r":"ゆめ","m":"梦"},{"t":"消え","r":"きえ","m":"消失"}],"ex":[{"l":"色の比喩","j":"雪のように白い肌です。","t":"肌肤白得像雪一样。"},{"l":"状態の比喩","j":"夢のように消えました。","t":"像梦一样消失了。"}],"us":"「まるで〜のように」＝简直像…一样，比喻的固定搭配；「らしい」需直接接名词。"},
+{"id":"N3G06","lv":"N3","cat":"文法","tags":["文法","様態","そう"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"空が暗い。雨が降り＿＿だ。","opts":["そう","らしい","よう","みたい"],"ans":0,"exp":"正解は「そう」。动词ます形的词干＋そう＝凭外观判断“看起来要…”。「らしい／よう／みたい」前面需要完整词形。","notes":[{"t":"空","r":"そら","m":"天空"},{"t":"暗い","r":"くらい","m":"暗"}],"g":"ます形の語幹＋そう","gm":"样态：“看起来要…”","tr":"天很暗。看起来要＿＿雨了。","rd":[{"t":"空","r":"そら","m":"天空"},{"t":"暗い","r":"くらい","m":"暗"},{"t":"雨","r":"あめ","m":"雨"},{"t":"降り","r":"ふり","m":"下（雨）"},{"t":"雲","r":"くも","m":"云"},{"t":"多くて","r":"おおくて","m":"多"}],"ex":[{"l":"天気の判断","j":"雲が多くて、雨が降りそうです。","t":"云很多，看起来要下雨。"},{"l":"味の判断","j":"このケーキはおいしそうです。","t":"这个蛋糕看起来很好吃。"}],"us":"动词ます形的词干＋そう＝凭外观判断「看起来要…」。前接完整词形的「らしい／よう／みたい」用法不同。"},
+{"id":"N3R01a","lv":"N3","cat":"読解","tags":["読解","社会"],"p":["わたしの町には、古い商店街がある。昔は多くの店が並んでいたが、今はシャッターを下ろした店が増えた。","最近、若い人たちが空いた店を借りて、カフェや本屋を開いている。日曜日には市場も開かれ、少しずつ人が戻ってきた。"],"q":"昔と今で、商店街はどう変わりましたか。","opts":["店の数が増えた","シャッターを下ろした店が増えた","市場がなくなった","若い人が減った"],"ans":1,"exp":"正解は「シャッターを下ろした店が増えた」。第1段「今はシャッターを下ろした店が増えた」が根拠。閉店した店が増えた、という意味です。","notes":[{"t":"商店街","r":"しょうてんがい","m":"商店街"},{"t":"並んでいた","r":"ならんでいた","m":"排列着"},{"t":"増えた","r":"ふえた","m":"增加了"},{"t":"借りて","r":"かりて","m":"租下"},{"t":"市場","r":"いちば","m":"集市"},{"t":"戻ってきた","r":"もどってきた","m":"回来了"},{"t":"シャッターを下ろした店が増えた","r":"シャッターをおろしたみせがふえた","m":"拉下卷帘门（停业）的店变多了"}],"qt":"过去和现在，商店街发生了什么变化？","pt":["我的城市里有一条老商店街。过去店铺林立，现在拉下卷帘门（停业）的店变多了。","最近年轻人租下空置的店铺，开起了咖啡馆和书店。星期天还会开集市，人渐渐回来了。"],"rd":[{"t":"商店街","r":"しょうてんがい","m":"商店街"},{"t":"並んで","r":"ならんで","m":"排列着"},{"t":"増え","r":"ふえ","m":"增加"},{"t":"借り","r":"かり","m":"租"},{"t":"市場","r":"いちば","m":"集市"},{"t":"戻って","r":"もどって","m":"回来"},{"t":"若い","r":"わかい","m":"年轻"},{"t":"古い","r":"ふるい","m":"旧的"},{"t":"減って","r":"へって","m":"减少"},{"t":"新しい","r":"あたらしい","m":"新的"},{"t":"今","r":"いま","m":"现在"},{"t":"店","r":"みせ","m":"店"},{"t":"数","r":"かず","m":"数量"},{"t":"人","r":"ひと","m":"人"},{"t":"減った","r":"へった","m":"减少了"},{"t":"町","r":"まち","m":"城镇"},{"t":"多く","r":"おおく","m":"很多"},{"t":"最近","r":"さいきん","m":"最近"},{"t":"少なく","r":"すくなく","m":"变少"}],"ex":[{"l":"変化の言い方","j":"古い店が減って、新しい店が増えました。","t":"老店减少了，新店增加了。"}]},
+{"id":"N3R01b","lv":"N3","cat":"読解","tags":["読解","社会"],"p":["わたしの町には、古い商店街がある。昔は多くの店が並んでいたが、今はシャッターを下ろした店が増えた。","最近、若い人たちが空いた店を借りて、カフェや本屋を開いている。日曜日には市場も開かれ、少しずつ人が戻ってきた。"],"q":"若い人たちは何をしていますか。","opts":["空いた店でカフェや本屋を開いている","商店街を取り壊している","市場を閉じている","古い店を買っている"],"ans":0,"exp":"正解は「空いた店でカフェや本屋を開いている」。第2段の「空いた店を借りて、カフェや本屋を開いている」がそのまま根拠です。","notes":[{"t":"空いた","r":"あいた","m":"空出来的"},{"t":"開いている","r":"ひらいている","m":"开设着"},{"t":"空いた店でカフェや本屋を開いている","r":"あいたみせでカフェやほんやをひらいている","m":"在空出来的店里开咖啡馆和书店"}],"qt":"年轻人在做什么？","pt":["我的城市里有一条老商店街。过去店铺林立，现在拉下卷帘门（停业）的店变多了。","最近年轻人租下空置的店铺，开起了咖啡馆和书店。星期天还会开集市，人渐渐回来了。"],"rd":[{"t":"空いた","r":"あいた","m":"空出来的"},{"t":"店","r":"みせ","m":"店铺"},{"t":"本屋","r":"ほんや","m":"书店"},{"t":"開いて","r":"ひらいて","m":"开设"},{"t":"若い","r":"わかい","m":"年轻"},{"t":"本","r":"ほん","m":"书"},{"t":"買いました","r":"かいました","m":"买了"},{"t":"借りて","r":"かりて","m":"租下来"},{"t":"商店街","r":"しょうてんがい","m":"商店街"},{"t":"取り壊して","r":"とりこわして","m":"拆掉"},{"t":"市場","r":"いちば","m":"集市"},{"t":"閉じて","r":"とじて","m":"关闭"},{"t":"買って","r":"かって","m":"买"},{"t":"古い","r":"ふるい","m":"旧的"},{"t":"戻って","r":"もどって","m":"回来"},{"t":"多く","r":"おおく","m":"很多"},{"t":"並んで","r":"ならんで","m":"排列着"},{"t":"最近","r":"さいきん","m":"最近"},{"t":"少なく","r":"すくなく","m":"变少"}],"ex":[{"l":"複合名詞","j":"本屋で本を買いました。","t":"在书店买了书。"}]},
+{"id":"N3R02a","lv":"N3","cat":"読解","tags":["読解","随筆"],"p":["会社で新しいシステムを使い始めた。最初は操作が難しく、よく間違えた。","しかし、同僚に教えてもらい、毎日少しずつ練習した。２週間後には、もう困らなくなった。","新しいことを覚えるには、毎日続けることが大切だと思う。"],"q":"最初、新しいシステムはどうでしたか。","opts":["使いやすかった","操作が難しく、よく間違えた","すぐに慣れた","使わなかった"],"ans":1,"exp":"正解は「操作が難しく、よく間違えた」。第1段に直接書かれています。「しかし」以降が変化後の話です。","notes":[{"t":"操作","r":"そうさ","m":"操作"},{"t":"同僚","r":"どうりょう","m":"同事"},{"t":"練習","r":"れんしゅう","m":"练习"},{"t":"操作が難しく、よく間違えた","r":"そうさがむずかしく、よくまちがえた","m":"操作很难，经常出错"}],"qt":"起初，新系统怎么样？","pt":["公司开始使用新系统。起初操作很难，经常出错。","但是同事教了我，每天一点点地练习。两周后，已经不再为难了。","我觉得要学会新东西，每天坚持很重要。"],"rd":[{"t":"操作","r":"そうさ","m":"操作"},{"t":"難しい","r":"むずかしい","m":"难"},{"t":"間違え","r":"まちがえ","m":"弄错"},{"t":"同僚","r":"どうりょう","m":"同事"},{"t":"練習","r":"れんしゅう","m":"练习"},{"t":"最初","r":"さいしょ","m":"最初"},{"t":"慣れ","r":"なれ","m":"习惯"},{"t":"機械","r":"きかい","m":"机器"},{"t":"難しく","r":"むずかしく","m":"难"},{"t":"使う","r":"つかう","m":"使用"},{"t":"使い","r":"つかい","m":"使用"},{"t":"使わ","r":"つかわ","m":"使用"},{"t":"会社","r":"かいしゃ","m":"公司"},{"t":"始めた","r":"はじめた","m":"开始了"},{"t":"教えて","r":"おしえて","m":"教"},{"t":"毎日","r":"まいにち","m":"每天"},{"t":"少しずつ","r":"すこしずつ","m":"一点点"},{"t":"週間","r":"しゅうかん","m":"周"},{"t":"後","r":"あと","m":"之后"},{"t":"困ら","r":"こまら","m":"为难"},{"t":"覚える","r":"おぼえる","m":"记住"},{"t":"続ける","r":"つづける","m":"坚持"},{"t":"大切","r":"たいせつ","m":"重要"},{"t":"思う","r":"おもう","m":"认为"}],"ex":[{"l":"同じ語の使い方","j":"この機械の操作は難しくありません。","t":"这台机器的操作并不难。"}]},
+{"id":"N3R02b","lv":"N3","cat":"読解","tags":["読解","随筆"],"p":["会社で新しいシステムを使い始めた。最初は操作が難しく、よく間違えた。","しかし、同僚に教えてもらい、毎日少しずつ練習した。２週間後には、もう困らなくなった。","新しいことを覚えるには、毎日続けることが大切だと思う。"],"q":"筆者が言いたいことは何ですか。","opts":["同僚に教えてもらうべきだ","新しいシステムは不要だ","毎日続けることが大切だ","２週間で全部覚えられる"],"ans":2,"exp":"正解は「毎日続けることが大切だ」。最終段が筆者の主張で、「毎日続ける」がキーワードです。同僚の助けは経過の一部で、主張そのものではありません。","notes":[{"t":"大切","r":"たいせつ","m":"重要"},{"t":"続ける","r":"つづける","m":"坚持"},{"t":"毎日続けることが大切だ","r":"まいにちつづけることがたいせつだ","m":"每天坚持很重要"}],"qt":"作者想说什么？","pt":["公司开始使用新系统。起初操作很难，经常出错。","但是同事教了我，每天一点点地练习。两周后，已经不再为难了。","我觉得要学会新东西，每天坚持很重要。"],"rd":[{"t":"大切","r":"たいせつ","m":"重要"},{"t":"続ける","r":"つづける","m":"坚持"},{"t":"毎日","r":"まいにち","m":"每天"},{"t":"主張","r":"しゅちょう","m":"主张"},{"t":"練習","r":"れんしゅう","m":"练习"},{"t":"同僚","r":"どうりょう","m":"同事"},{"t":"教えて","r":"おしえて","m":"教"},{"t":"新しい","r":"あたらしい","m":"新的"},{"t":"不要","r":"ふよう","m":"不需要"},{"t":"週間","r":"しゅうかん","m":"周"},{"t":"全部","r":"ぜんぶ","m":"全部"},{"t":"覚え","r":"おぼえ","m":"记住"},{"t":"会社","r":"かいしゃ","m":"公司"},{"t":"始めた","r":"はじめた","m":"开始了"},{"t":"最初","r":"さいしょ","m":"最初"},{"t":"操作","r":"そうさ","m":"操作"},{"t":"間違え","r":"まちがえ","m":"弄错"}],"ex":[{"l":"主張の言い方","j":"大切なのは、毎日の練習です。","t":"重要的是每天的练习。"}]},
+{"id":"N2K01","lv":"N2","cat":"漢字読み","tags":["漢字読み","音読み"],"q":"「示唆」の読み方として最もよいものを選んでください。","b":"彼の発言は示唆に富んでいる。","opts":["しさ","しさい","じさ","しゃさ"],"ans":0,"exp":"正解は「しさ」。示唆＝暗示、启发。「示唆に富む」＝富于启发，是常见搭配，注意「唆」不读「さい」。","notes":[{"t":"示唆","r":"しさ","m":"暗示、启发","u":1},{"t":"発言","r":"はつげん","m":"发言"},{"t":"富んでいる","r":"とんでいる","m":"富于…"}],"tr":"他的发言富于启发。","rd":[{"t":"発言","r":"はつげん","m":"发言"},{"t":"富んで","r":"とんで","m":"富于"},{"t":"言葉","r":"ことば","m":"话语"},{"t":"含まれて","r":"ふくまれて","m":"包含"},{"t":"話","r":"はなし","m":"话"},{"t":"彼","r":"かれ","m":"他"},{"t":"富む","r":"とむ","m":"富于"}],"ex":[{"l":"同じ組み合わせ","j":"彼の言葉には示唆が含まれています。","t":"他的话里含有启发。"}]},
+{"id":"N2K02","lv":"N2","cat":"漢字読み","tags":["漢字読み","音読み"],"q":"「注視」の読み方として最もよいものを選んでください。","b":"景気の動向を注視している。","opts":["ちゅうし","ちゅうしょく","そし","ちゅうい"],"ans":0,"exp":"正解は「ちゅうし」。注視＝密切关注。「注」は「ちゅう」，視は「し」。","notes":[{"t":"注視","r":"ちゅうし","m":"密切关注","u":1},{"t":"景気","r":"けいき","m":"经济景气"},{"t":"動向","r":"どうこう","m":"动向"}],"tr":"正在密切关注经济走势。","rd":[{"t":"景気","r":"けいき","m":"经济景气"},{"t":"動向","r":"どうこう","m":"动向"},{"t":"注目","r":"ちゅうもく","m":"关注"},{"t":"市場","r":"しじょう","m":"市场"},{"t":"回復","r":"かいふく","m":"复苏"}],"ex":[{"l":"近い意味","j":"市場の動向を注目しています。","t":"正在关注市场动向。"}]},
+{"id":"N2K03","lv":"N2","cat":"漢字読み","tags":["漢字読み","音読み"],"q":"「膨大」の読み方として最もよいものを選んでください。","b":"膨大な資料を整理する。","opts":["ぼうだい","ぼくだい","ぼうたい","ふくたい"],"ans":0,"exp":"正解は「ぼうだい」。膨大＝庞杂、体量巨大。「膨」は「ぼう」，「大」は「だい」。","notes":[{"t":"膨大","r":"ぼうだい","m":"庞大","u":1},{"t":"資料","r":"しりょう","m":"资料"},{"t":"整理","r":"せいり","m":"整理"}],"tr":"整理庞大的资料。","rd":[{"t":"資料","r":"しりょう","m":"资料"},{"t":"整理","r":"せいり","m":"整理"},{"t":"量","r":"りょう","m":"量"},{"t":"分析","r":"ぶんせき","m":"分析"},{"t":"時間","r":"じかん","m":"时间"}],"ex":[{"l":"数量と一緒に","j":"データの量が膨大で、分析に時間がかかります。","t":"数据量庞大，分析要花时间。"}]},
+{"id":"N2K04","lv":"N2","cat":"漢字読み","tags":["漢字読み","音読み"],"q":"「需要」の読み方として最もよいものを選んでください。","b":"需要と供給のバランスが崩れた。","opts":["じゅよう","じゅうよう","しゅよう","じゅぎょう"],"ans":0,"exp":"正解は「じゅよう」。「重要（じゅうよう）」と紛らわしいので、需要／供給をペアで覚えましょう。","notes":[{"t":"需要","r":"じゅよう","m":"需求","u":1},{"t":"供給","r":"きょうきゅう","m":"供给"},{"t":"崩れた","r":"くずれた","m":"崩溃、失衡"}],"tr":"供需平衡被打破了。","rd":[{"t":"供給","r":"きょうきゅう","m":"供给"},{"t":"崩れ","r":"くずれ","m":"失衡"},{"t":"重要","r":"じゅうよう","m":"重要"},{"t":"価格","r":"かかく","m":"价格"},{"t":"上がり","r":"あがり","m":"上涨"},{"t":"足りません","r":"たりません","m":"不够"},{"t":"増えて","r":"ふえて","m":"增加"}],"ex":[{"l":"需要と供給","j":"需要が増えて、価格が上がりました。","t":"需求增加，价格上涨了。"}]},
+{"id":"N2K05","lv":"N2","cat":"漢字読み","tags":["漢字読み","音読み"],"q":"「顕著」の読み方として最もよいものを選んでください。","b":"彼の努力は結果に顕著に表れた。","opts":["けんちょ","けんしょ","けんちゃく","げんちょ"],"ans":0,"exp":"正解は「けんちょ」。顕著＝显著、明显。著は「ちょ」で，「著者（ちょしゃ）」と同じ読みです。","notes":[{"t":"顕著","r":"けんちょ","m":"显著","u":1},{"t":"努力","r":"どりょく","m":"努力"},{"t":"表れた","r":"あらわれた","m":"显现"}],"tr":"他的努力显著地体现在结果上。","rd":[{"t":"努力","r":"どりょく","m":"努力"},{"t":"結果","r":"けっか","m":"结果"},{"t":"表れ","r":"あらわれ","m":"显现"},{"t":"地域","r":"ちいき","m":"地区"},{"t":"差","r":"さ","m":"差距"},{"t":"効果","r":"こうか","m":"效果"},{"t":"二つ","r":"ふたつ","m":"两个"},{"t":"著者","r":"ちょしゃ","m":"作者"}],"ex":[{"l":"比較に使う","j":"二つの地域の差が顕著です。","t":"两个地区的差距很显著。"}]},
+{"id":"N2K06","lv":"N2","cat":"漢字読み","tags":["漢字読み","音読み"],"q":"「緩和」の読み方として最もよいものを選んでください。","b":"規制を緩和する方針だ。","opts":["かんわ","かんか","がんわ","かんあ"],"ans":0,"exp":"正解は「かんわ」。緩和＝放宽、缓和。「緩」は「かん」，「和」は「わ」。","notes":[{"t":"緩和","r":"かんわ","m":"放宽、缓和","u":1},{"t":"規制","r":"きせい","m":"限制、监管"},{"t":"方針","r":"ほうしん","m":"方针"}],"tr":"方针是放宽监管。","rd":[{"t":"規制","r":"きせい","m":"限制、监管"},{"t":"方針","r":"ほうしん","m":"方针"},{"t":"入国","r":"にゅうこく","m":"入境"},{"t":"厳しく","r":"きびしく","m":"严格"},{"t":"必要","r":"ひつよう","m":"必要"}],"ex":[{"l":"政策の場面","j":"入国規制が緩和されました。","t":"入境限制放宽了。"}]},
+{"id":"N2V01","lv":"N2","cat":"語彙","tags":["語彙","動詞","コロケーション"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"制度の変更に＿＿問題が起きた。","opts":["伴う","沿う","応じる","基づく"],"ans":0,"exp":"正解は「伴う」。〜に伴う＝随着…而产生、伴随。「沿う」＝沿着／遵照，「応じる」＝响应，「基づく」＝基于，都不能直接接「問題が起きた」。","notes":[{"t":"制度","r":"せいど","m":"制度"},{"t":"変更","r":"へんこう","m":"变更"},{"t":"伴う","r":"ともなう","m":"伴随"}],"tr":"随着制度的变更，发生了＿＿问题。","rd":[{"t":"制度","r":"せいど","m":"制度"},{"t":"変更","r":"へんこう","m":"变更"},{"t":"沿う","r":"そう","m":"沿着、遵照"},{"t":"応じる","r":"おうじる","m":"响应"},{"t":"基づく","r":"もとづく","m":"基于"},{"t":"工事","r":"こうじ","m":"施工"},{"t":"騒音","r":"そうおん","m":"噪音"},{"t":"問題","r":"もんだい","m":"问题"},{"t":"計画","r":"けいかく","m":"计划"},{"t":"進め","r":"すすめ","m":"推进"},{"t":"沿って","r":"そって","m":"沿着、遵照"},{"t":"起きた","r":"おきた","m":"发生了"}],"ex":[{"l":"他の用法①","j":"工事に伴う騒音が問題になっています。","t":"施工带来的噪音成了问题。"},{"l":"近い語（沿う）","j":"計画に沿って進めます。","t":"按计划推进。"}],"us":"「〜に伴う」＝随着…而同时产生，多接「問題・変化・費用」；「沿う」＝沿着、遵照；「応じる」＝响应；「基づく」＝基于。"},
+{"id":"N2V02","lv":"N2","cat":"語彙","tags":["語彙","漢語"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"新しい法律は来月から＿＿される。","opts":["施行","施工","施術","試行"],"ans":0,"exp":"正解は「施行」。法律の施行＝法律生效实施。施工＝工程施工；施術＝医疗操作；試行＝试行（制度可以试运行，但「施行」才是法定生效）。","notes":[{"t":"法律","r":"ほうりつ","m":"法律"},{"t":"施行","r":"しこう","m":"施行、生效"}],"tr":"新法律将从下个月起＿＿。","rd":[{"t":"法律","r":"ほうりつ","m":"法律"},{"t":"施工","r":"せこう","m":"施工"},{"t":"施術","r":"せじゅつ","m":"施术"},{"t":"試行","r":"しこう","m":"试行"},{"t":"工事","r":"こうじ","m":"工程"},{"t":"制度","r":"せいど","m":"制度"},{"t":"来月","r":"らいげつ","m":"下个月"},{"t":"新しい","r":"あたらしい","m":"新的"}],"ex":[{"l":"他の用法①","j":"工事は来月から施工されます。","t":"工程从下个月开始施工。"},{"l":"他の用法②","j":"新しい制度を試行します。","t":"试行新制度。"}],"us":"「施行」＝法律正式生效；「施工」＝工程施工；「施術」＝医疗操作；「試行」＝试行。"},
+{"id":"N2V03","lv":"N2","cat":"語彙","tags":["語彙","漢語","コロケーション"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"彼は責任を＿＿しようとした。","opts":["回避","避難","退避","開放"],"ans":0,"exp":"正解は「回避」。責任を回避＝逃避责任。避難＝避难（灾害）；退避＝退避（危险）；開放＝开放。","notes":[{"t":"責任","r":"せきにん","m":"责任"},{"t":"回避","r":"かいひ","m":"回避"}],"tr":"他试图＿＿责任。","rd":[{"t":"責任","r":"せきにん","m":"责任"},{"t":"避難","r":"ひなん","m":"避难"},{"t":"退避","r":"たいひ","m":"退避"},{"t":"開放","r":"かいほう","m":"开放"},{"t":"批判","r":"ひはん","m":"批评"},{"t":"台風","r":"たいふう","m":"台风"},{"t":"住民","r":"じゅうみん","m":"居民"},{"t":"避ける","r":"さける","m":"避开"}],"ex":[{"l":"近い漢語（避難）","j":"台風で住民が避難しました。","t":"因为台风，居民避难了。"},{"l":"動詞形","j":"批判を避けることはできません。","t":"无法避开批评。"}],"us":"「責任を回避する」＝逃避责任；「避難」＝避难（灾害）；「退避」＝退避（危险）；「開放」＝开放。"},
+{"id":"N2V04","lv":"N2","cat":"語彙","tags":["語彙","漢語"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"両者の意見が＿＿し、結論が出ない。","opts":["対立","抵抗","反発","比較"],"ans":0,"exp":"正解は「対立」。意見が対立＝意见对立。抵抗／反発的对象通常是人或规则，不能以「意見が」作主语。","notes":[{"t":"両者","r":"りょうしゃ","m":"双方"},{"t":"意見","r":"いけん","m":"意见"},{"t":"結論","r":"けつろん","m":"结论"},{"t":"対立","r":"たいりつ","m":"对立"}],"tr":"双方的意见＿＿，得不出结论。","rd":[{"t":"両者","r":"りょうしゃ","m":"双方"},{"t":"意見","r":"いけん","m":"意见"},{"t":"結論","r":"けつろん","m":"结论"},{"t":"抵抗","r":"ていこう","m":"抵抗"},{"t":"反発","r":"はんぱつ","m":"反弹、反对"},{"t":"深まり","r":"ふかまり","m":"加深"},{"t":"規則","r":"きそく","m":"规则"},{"t":"新しい","r":"あたらしい","m":"新的"},{"t":"比較","r":"ひかく","m":"比较"}],"ex":[{"l":"他の用法①","j":"両者の対立が深まりました。","t":"双方的对立加深了。"},{"l":"他の用法②","j":"新しい規則に反発しています。","t":"对新规则有抵触。"}],"us":"「意見が対立する」＝意见对立；「抵抗／反発」的对象通常是人或规则，不能以「意見が」作主语。"},
+{"id":"N2V05","lv":"N2","cat":"語彙","tags":["語彙","漢語"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"この商品の需要は急速に＿＿している。","opts":["拡大","拡張","膨張","増設"],"ans":0,"exp":"正解は「拡大」。需要が拡大＝需求扩大。拡張＝扩张（面积、功能）；膨張＝膨胀（物理）；増設＝增设（设备）。","notes":[{"t":"商品","r":"しょうひん","m":"商品"},{"t":"急速","r":"きゅうそく","m":"迅速"},{"t":"拡大","r":"かくだい","m":"扩大"}],"tr":"这件商品的需求正在迅速＿＿。","rd":[{"t":"商品","r":"しょうひん","m":"商品"},{"t":"急速","r":"きゅうそく","m":"迅速"},{"t":"拡張","r":"かくちょう","m":"扩张"},{"t":"膨張","r":"ぼうちょう","m":"膨胀"},{"t":"増設","r":"ぞうせつ","m":"增设"},{"t":"事業","r":"じぎょう","m":"业务"},{"t":"海外","r":"かいがい","m":"海外"},{"t":"被害","r":"ひがい","m":"损失、受害"}],"ex":[{"l":"範囲を広げる","j":"事業を海外に拡大します。","t":"把业务扩展到海外。"},{"l":"悪い変化にも","j":"被害が拡大しています。","t":"损失正在扩大。"}],"us":"「需要が拡大する」＝需求扩大；「拡張」＝面积或功能扩张；「膨張」＝物理膨胀；「増設」＝增设设备。"},
+{"id":"N2V06","lv":"N2","cat":"語彙","tags":["語彙","形容動詞"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"データを＿＿に分析する。","opts":["客観的","主観的","具体的","積極的"],"ans":0,"exp":"正解は「客観的」。客観的に分析＝客观地分析。「主観的」与分析的理据相矛盾；「積極的」修饰态度而非分析方式。","notes":[{"t":"分析","r":"ぶんせき","m":"分析"},{"t":"客観的","r":"きゃっかんてき","m":"客观的"}],"tr":"＿＿地分析数据。","rd":[{"t":"分析","r":"ぶんせき","m":"分析"},{"t":"主観的","r":"しゅかんてき","m":"主观的"},{"t":"具体的","r":"ぐたいてき","m":"具体的"},{"t":"積極的","r":"せっきょくてき","m":"积极的"},{"t":"事実","r":"じじつ","m":"事实"},{"t":"説明","r":"せつめい","m":"说明"},{"t":"意見","r":"いけん","m":"意见"},{"t":"出し","r":"だし","m":"提出"}],"ex":[{"l":"反対語と対で","j":"事実にもとづいて客観的に説明してください。","t":"请基于事实客观地说明。"},{"l":"同じ語尾の語","j":"積極的に意見を出してください。","t":"请积极提出意见。"}],"us":"「客観的」＝依据事实；反义是「主観的」。「具体的」＝具体，「積極的」＝积极。"},
+{"id":"N2G01","lv":"N2","cat":"文法","tags":["文法","をめぐって"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"この事件＿＿、さまざまな議論が起きている。","opts":["をめぐって","に応じて","に伴って","に基づいて"],"ans":0,"exp":"正解は「をめぐって」。围绕某一议题产生争论，正是「〜をめぐって」的用法。「に応じて」＝根据，「に伴って」＝随着，都不能带出「議論が起きる」。","notes":[{"t":"事件","r":"じけん","m":"事件"},{"t":"議論","r":"ぎろん","m":"争论"},{"t":"をめぐって","r":"をめぐって","m":"围绕…"}],"g":"〜をめぐって","gm":"围绕（某议题）…","tr":"围绕这一事件＿＿，出现了各种各样的争论。","rd":[{"t":"事件","r":"じけん","m":"事件"},{"t":"議論","r":"ぎろん","m":"争论"},{"t":"応じて","r":"おうじて","m":"根据"},{"t":"伴って","r":"ともなって","m":"随着"},{"t":"基づいて","r":"もとづいて","m":"基于"},{"t":"法案","r":"ほうあん","m":"法案"},{"t":"続いて","r":"つづいて","m":"持续"},{"t":"住民","r":"じゅうみん","m":"居民"},{"t":"意見","r":"いけん","m":"意见"},{"t":"対立","r":"たいりつ","m":"对立"},{"t":"新しい","r":"あたらしい","m":"新的"},{"t":"起きる","r":"おきる","m":"发生"}],"ex":[{"l":"政策をめぐる議論","j":"新しい法案をめぐって、議論が続いています。","t":"围绕新法案，争论还在持续。"},{"l":"人々の対立","j":"住民の意見をめぐって対立しています。","t":"围绕居民的意见产生了对立。"}],"us":"「〜をめぐって」＝围绕某个议题展开争论或对立；「に応じて＝根据」「に伴って＝随着」都不能引出「議論が起きる」。"},
+{"id":"N2G02","lv":"N2","cat":"文法","tags":["文法","に応じて"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"経験年数＿＿、給料が決まる。","opts":["に応じて","に基づいて","をめぐって","に伴って"],"ans":0,"exp":"正解は「に応じて」。根据经验年数决定工资，随对象不同而变化。「に基づいて」偏向“以…为依据”，「に伴って」表伴随变化。","notes":[{"t":"経験年数","r":"けいけんねんすう","m":"经验年限"},{"t":"給料","r":"きゅうりょう","m":"工资"},{"t":"に応じて","r":"におうじて","m":"根据…（相应地）"}],"g":"〜に応じて","gm":"根据…（相应地不同）","tr":"工资＿＿经验年限来决定。","rd":[{"t":"経験","r":"けいけん","m":"经验"},{"t":"年数","r":"ねんすう","m":"年限"},{"t":"給料","r":"きゅうりょう","m":"工资"},{"t":"能力","r":"のうりょく","m":"能力"},{"t":"仕事","r":"しごと","m":"工作"},{"t":"選べ","r":"えらべ","m":"能选择"},{"t":"場面","r":"ばめん","m":"场合"},{"t":"言葉","r":"ことば","m":"话语"},{"t":"変え","r":"かえ","m":"改变"},{"t":"基づいて","r":"もとづいて","m":"基于"},{"t":"伴って","r":"ともなって","m":"随着"}],"ex":[{"l":"対象が変わる","j":"能力に応じて、仕事を選べます。","t":"可以根据能力选择工作。"},{"l":"場面が変わる","j":"場面に応じて、言葉を変えます。","t":"根据场合改变措辞。"}],"us":"「〜に応じて」＝按照对象的不同而相应地变化；「に基づいて」＝以…为依据，不强调变化。"},
+{"id":"N2G03","lv":"N2","cat":"文法","tags":["文法","に基づいて"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"事実＿＿判断するべきだ。","opts":["に基づいて","に応じて","に反して","に伴って"],"ans":0,"exp":"正解は「に基づいて」。以事实为依据作判断。「に反して」＝违背，「に応じて」＝根据…而变，语感不同。","notes":[{"t":"事実","r":"じじつ","m":"事实"},{"t":"判断","r":"はんだん","m":"判断"},{"t":"に基づいて","r":"にもとづいて","m":"基于…"}],"g":"〜に基づいて","gm":"基于、以…为依据","tr":"应该＿＿事实来判断。","rd":[{"t":"事実","r":"じじつ","m":"事实"},{"t":"判断","r":"はんだん","m":"判断"},{"t":"反して","r":"はんして","m":"违背"},{"t":"データ","r":"データ","m":"数据"},{"t":"報告","r":"ほうこく","m":"汇报"},{"t":"予想","r":"よそう","m":"预想"},{"t":"売れ","r":"うれ","m":"卖得好"},{"t":"応じて","r":"おうじて","m":"根据"},{"t":"伴って","r":"ともなって","m":"随着"}],"ex":[{"l":"根拠を示す","j":"データに基づいて、報告します。","t":"基于数据来汇报。"},{"l":"反対方向の語","j":"予想に反して、よく売れました。","t":"出乎预想，卖得很好。"}],"us":"「〜に基づいて」＝以事实、数据、规则为依据；「に反して」＝违背…，方向相反。"},
+{"id":"N2G05","lv":"N2","cat":"文法","tags":["文法","に伴って"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"景気の回復＿＿、物価も上がった。","opts":["に伴って","に応じて","に基づいて","をめぐって"],"ans":0,"exp":"正解は「に伴って」。随着景气恢复，物价也上涨，两件事同步发生。「に応じて」是“按…而定”，不表同步变化。","notes":[{"t":"景気","r":"けいき","m":"景气"},{"t":"回復","r":"かいふく","m":"复苏"},{"t":"物価","r":"ぶっか","m":"物价"},{"t":"に伴って","r":"にともなって","m":"随着…"}],"g":"〜に伴って","gm":"随着…（同时发生）","tr":"随着景气复苏＿＿，物价也上涨了。","rd":[{"t":"景気","r":"けいき","m":"景气"},{"t":"回復","r":"かいふく","m":"复苏"},{"t":"物価","r":"ぶっか","m":"物价"},{"t":"人口","r":"じんこう","m":"人口"},{"t":"増加","r":"ぞうか","m":"增加"},{"t":"住宅","r":"じゅうたく","m":"住宅"},{"t":"足りません","r":"たりません","m":"不够"},{"t":"上昇","r":"じょうしょう","m":"上升"},{"t":"生活","r":"せいかつ","m":"生活"},{"t":"苦しく","r":"くるしく","m":"艰难"},{"t":"応じて","r":"おうじて","m":"根据"},{"t":"基づいて","r":"もとづいて","m":"基于"}],"ex":[{"l":"社会の変化","j":"人口の増加に伴って、住宅が足りません。","t":"随着人口增加，住宅不足。"},{"l":"二つの変化が同時に","j":"物価の上昇に伴って、生活が苦しくなりました。","t":"随着物价上涨，生活变得艰难。"}],"us":"「〜に伴って」＝随着前项的变化，后项同时发生；「に応じて」是按对象而定，不表时间上的同步。"},
+{"id":"N2G06","lv":"N2","cat":"文法","tags":["文法","どころか"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"忙しくて、旅行＿＿、休む時間もない。","opts":["どころか","ばかりか","だけでなく","かわりに"],"ans":0,"exp":"正解は「どころか」。别说旅行了，连休息时间都没有，前项被后项彻底否定。「ばかりか」是“不仅…而且…”，方向相反。","notes":[{"t":"忙しくて","r":"いそがしくて","m":"忙得"},{"t":"旅行","r":"りょこう","m":"旅行"},{"t":"どころか","r":"どころか","m":"岂止…"}],"g":"〜どころか","gm":"岂止…（连…都）","tr":"忙得连旅行＿＿，连休息的时间都没有。","rd":[{"t":"忙しく","r":"いそがしく","m":"忙"},{"t":"旅行","r":"りょこう","m":"旅行"},{"t":"休む","r":"やすむ","m":"休息"},{"t":"給料","r":"きゅうりょう","m":"工资"},{"t":"下がり","r":"さがり","m":"下降"},{"t":"残業","r":"ざんぎょう","m":"加班"},{"t":"増え","r":"ふえ","m":"增加"},{"t":"上がる","r":"あがる","m":"上涨"}],"ex":[{"l":"程度の否定","j":"給料は上がるどころか、下がりました。","t":"工资别说上涨了，反而下降了。"},{"l":"さらに悪い方向","j":"休むどころか、残業が増えました。","t":"别说休息了，加班还变多了。"}],"us":"「〜どころか」＝别说…了，连更基本的都…；前项被后项彻底否定。「ばかりか」＝不仅…而且，方向相反。"},
+{"id":"N2G07","lv":"N2","cat":"文法","tags":["文法","わけにはいかない"],"q":"＿＿に入れるのに最もよいものを選んでください。","b":"大事な会議なので、休む＿＿。","opts":["わけにはいかない","ことはない","はずがない","に違いない"],"ans":0,"exp":"正解は「わけにはいかない」。因为重要会议，从情理上不能请假。「ことはない」＝没必要，「はずがない」＝不可能，「に違いない」＝一定。","notes":[{"t":"大事","r":"だいじ","m":"重要"},{"t":"会議","r":"かいぎ","m":"会议"},{"t":"わけにはいかない","r":"わけにはいかない","m":"不能…（情理上）"}],"g":"〜わけにはいかない","gm":"（情理上）不能…","tr":"因为是重要的会议，所以不能＿＿请假。","rd":[{"t":"大事","r":"だいじ","m":"重要"},{"t":"会議","r":"かいぎ","m":"会议"},{"t":"休む","r":"やすむ","m":"请假"},{"t":"約束","r":"やくそく","m":"约定"},{"t":"行か","r":"いか","m":"去"},{"t":"試験","r":"しけん","m":"考试"},{"t":"寝る","r":"ねる","m":"睡"},{"t":"違い","r":"ちがい","m":"差别"}],"ex":[{"l":"約束が理由","j":"約束したので、行かないわけにはいきません。","t":"已经约好了，不能不去。"},{"l":"事情が理由","j":"大事な試験なので、寝るわけにはいきません。","t":"因为是很重要的考试，不能睡。"}],"us":"「〜わけにはいかない」＝从情理、责任上不能做某事；「ことはない」＝没必要；「はずがない」＝不可能。"},
+{"id":"N2R01a","lv":"N2","cat":"読解","tags":["読解","論説","情報"],"p":["近年、企業の情報発信のあり方が変わりつつある。以前は広報部門が一方的に情報を流していたが、今は社員一人ひとりがＳＮＳで発信する時代だ。","ただし、自由な発信はリスクも伴う。一度拡散した情報は完全に消すことが難しく、企業の信用を大きく損なう恐れがある。","だからこそ、発信の自由を認めつつ、何をどこまで発信してよいかを明確にするルール作りが求められている。"],"q":"以前と今の発信の違いは何ですか。","opts":["広報部門が一方的に流す／社員個人がＳＮＳで発信する","社員は発信しない／広報だけが発信する","紙の媒体からテレビへ移った","外国語だけで発信するようになった"],"ans":0,"exp":"正解は「広報部門が一方的に流す／社員個人がＳＮＳで発信する」。第1段の対比がそのまま答えです。","notes":[{"t":"情報発信","r":"じょうほうはっしん","m":"信息发布"},{"t":"広報","r":"こうほう","m":"公关、宣传部门"},{"t":"一方的","r":"いっぽうてき","m":"单方面地"},{"t":"拡散","r":"かくさん","m":"扩散"},{"t":"信用","r":"しんよう","m":"信用"},{"t":"損なう","r":"そこなう","m":"损害"},{"t":"明確","r":"めいかく","m":"明确"},{"t":"求められている","r":"もとめられている","m":"被要求"},{"t":"広報部門が一方的に流す／社員個人がＳＮＳで発信する","r":"こうほうぶもんがいっぽうてきにながす／しゃいんこじんがＳＮＳではっしんする","m":"公关部门单方面发布／员工个人在社交网络上发声"}],"qt":"以前和现在的信息发布有什么不同？","pt":["近年来，企业的信息发布方式正在变化。以前是公关部门单方面发布信息，现在是每位员工都在社交网络上发声的时代。","不过，自由发声也伴随风险。一旦扩散的信息很难完全删除，可能严重损害企业信用。","正因如此，在认可发声自由的同时，需要制定规则，明确可以发布什么、发布到什么程度。"],"rd":[{"t":"情報発信","r":"じょうほうはっしん","m":"信息发布"},{"t":"広報","r":"こうほう","m":"公关"},{"t":"部門","r":"ぶもん","m":"部门"},{"t":"一方的","r":"いっぽうてき","m":"单方面"},{"t":"社員","r":"しゃいん","m":"员工"},{"t":"個人","r":"こじん","m":"个人"},{"t":"発信","r":"はっしん","m":"发声、发布"},{"t":"情報","r":"じょうほう","m":"信息"},{"t":"紙","r":"かみ","m":"纸"},{"t":"媒体","r":"ばいたい","m":"媒体"},{"t":"移った","r":"うつった","m":"转移了"},{"t":"外国語","r":"がいこくご","m":"外语"}],"ex":[{"l":"本文の言い換え","j":"社員が個人のＳＮＳで情報を発信します。","t":"员工用个人的社交网络发布信息。"}]},
+{"id":"N2R01b","lv":"N2","cat":"読解","tags":["読解","論説","情報"],"p":["近年、企業の情報発信のあり方が変わりつつある。以前は広報部門が一方的に情報を流していたが、今は社員一人ひとりがＳＮＳで発信する時代だ。","ただし、自由な発信はリスクも伴う。一度拡散した情報は完全に消すことが難しく、企業の信用を大きく損なう恐れがある。","だからこそ、発信の自由を認めつつ、何をどこまで発信してよいかを明確にするルール作りが求められている。"],"q":"筆者が求めていることは何ですか。","opts":["発信をすべて禁止すること","発信の範囲を決めるルールを作ること","社員を減らすこと","広報部門をなくすこと"],"ans":1,"exp":"正解は「発信の範囲を決めるルールを作ること」。最終段「何をどこまで発信してよいかを明確にするルール作りが求められている」が根拠。筆者は発信の自由自体は認めています。","notes":[{"t":"認めつつ","r":"みとめつつ","m":"一边认可"},{"t":"範囲","r":"はんい","m":"范围"},{"t":"恐れ","r":"おそれ","m":"风险、担忧"},{"t":"発信の範囲を決めるルールを作ること","r":"はっしんのはんいをきめるルールをつくること","m":"制定决定发布范围的规则"}],"qt":"作者所要求的是什么？","pt":["近年来，企业的信息发布方式正在变化。以前是公关部门单方面发布信息，现在是每位员工都在社交网络上发声的时代。","不过，自由发声也伴随风险。一旦扩散的信息很难完全删除，可能严重损害企业信用。","正因如此，在认可发声自由的同时，需要制定规则，明确可以发布什么、发布到什么程度。"],"rd":[{"t":"範囲","r":"はんい","m":"范围"},{"t":"明確","r":"めいかく","m":"明确"},{"t":"認め","r":"みとめ","m":"认可"},{"t":"求めて","r":"もとめて","m":"要求"},{"t":"拡散","r":"かくさん","m":"扩散"},{"t":"信用","r":"しんよう","m":"信用"},{"t":"損なう","r":"そこなう","m":"损害"},{"t":"発信","r":"はっしん","m":"发布"},{"t":"何を","r":"なにを","m":"什么"},{"t":"ルール作り","r":"ルールづくり","m":"规则制定"},{"t":"求められて","r":"もとめられて","m":"被要求"},{"t":"禁止","r":"きんし","m":"禁止"},{"t":"社員","r":"しゃいん","m":"员工"},{"t":"減らす","r":"へらす","m":"减少"},{"t":"広報部門","r":"こうほうぶもん","m":"公关部门"}],"ex":[{"l":"キーワードの用法","j":"発信の範囲を明確にしました。","t":"把发布的范围明确了。"}]},
+{"id":"N2R02a","lv":"N2","cat":"読解","tags":["読解","論説","抽象"],"p":["「効率」という言葉は、しばしば「速く、多く」を意味すると受け取られる。","しかし、本当の効率とは、無駄を省くことであり、必ずしも速度を上げることではない。","急いで仕上げた資料を何度も作り直すより、最初に時間をかけて丁寧に作ったほうが、結果として短い時間で終わることも多い。"],"q":"この文章で筆者が言う「効率」とは何ですか。","opts":["できるだけ速く終わらせること","無駄を省くこと","多くの仕事を同時に進めること","時間をかけずに作ること"],"ans":1,"exp":"正解は「無駄を省くこと」。第2文で「本当の効率とは、無駄を省くことであり、必ずしも速度を上げることではない」と定義しています。","notes":[{"t":"効率","r":"こうりつ","m":"效率"},{"t":"無駄","r":"むだ","m":"浪费"},{"t":"省く","r":"のぞく","m":"省去"},{"t":"速度","r":"そくど","m":"速度"},{"t":"仕上げた","r":"しあげた","m":"完成的"},{"t":"作り直す","r":"つくりなおす","m":"重做"},{"t":"丁寧","r":"ていねい","m":"细致"},{"t":"無駄を省くこと","r":"むだをはぶくこと","m":"省去浪费"}],"qt":"这篇文章中作者说的「效率」是什么？","pt":["「效率」这个词，常被理解为「快、多」的意思。","然而，真正的效率是省去浪费，并不一定意味着提速。","比起匆忙做完资料再反复重做，一开始花时间细致地做，结果往往用更短的时间就完成。"],"rd":[{"t":"効率","r":"こうりつ","m":"效率"},{"t":"無駄","r":"むだ","m":"浪费"},{"t":"省く","r":"のぞく","m":"省去"},{"t":"速度","r":"そくど","m":"速度"},{"t":"仕上げ","r":"しあげ","m":"完成"},{"t":"作り直す","r":"つくりなおす","m":"重做"},{"t":"丁寧","r":"ていねい","m":"细致"},{"t":"作業","r":"さぎょう","m":"作业"},{"t":"省きました","r":"はぶきました","m":"省去了"},{"t":"本当","r":"ほんとう","m":"真正的"},{"t":"必ずしも","r":"かならずしも","m":"未必"},{"t":"上げる","r":"あげる","m":"提高"},{"t":"速く","r":"はやく","m":"快"},{"t":"終わらせる","r":"おわらせる","m":"完成"},{"t":"多く","r":"おおく","m":"很多"},{"t":"仕事","r":"しごと","m":"工作"},{"t":"同時","r":"どうじ","m":"同时"},{"t":"進める","r":"すすめる","m":"推进"},{"t":"時間","r":"じかん","m":"时间"},{"t":"作る","r":"つくる","m":"做"}],"ex":[{"l":"キーワードの用法","j":"無駄な作業を省きました。","t":"省去了多余的作业。"}]},
+{"id":"N2R02b","lv":"N2","cat":"読解","tags":["読解","論説","抽象"],"p":["「効率」という言葉は、しばしば「速く、多く」を意味すると受け取られる。","しかし、本当の効率とは、無駄を省くことであり、必ずしも速度を上げることではない。","急いで仕上げた資料を何度も作り直すより、最初に時間をかけて丁寧に作ったほうが、結果として短い時間で終わることも多い。"],"q":"筆者の考えに合うものはどれか。","opts":["最初に時間をかけて丁寧に作るほうが、結果的に早く終わる","急いで作り直すほうが速い","効率は速度だけで測るべきだ","資料は作り直さないほうがいい"],"ans":0,"exp":"正解は「最初に時間をかけて丁寧に作るほうが、結果的に早く終わる」。最終文の比較（何度も作り直す＜最初に丁寧に作る）が根拠です。","notes":[{"t":"最初","r":"さいしょ","m":"最初"},{"t":"結果","r":"けっか","m":"结果"},{"t":"測る","r":"はかる","m":"衡量"},{"t":"最初に時間をかけて丁寧に作るほうが、結果的に早く終わる","r":"さいしょにじかんをかけてていねいにつくるほうが、けっかてきにはやくおわる","m":"一开始花时间细致地做，结果更快完成"}],"qt":"哪一项符合作者的想法？","pt":["「效率」这个词，常被理解为「快、多」的意思。","然而，真正的效率是省去浪费，并不一定意味着提速。","比起匆忙做完资料再反复重做，一开始花时间细致地做，结果往往用更短的时间就完成。"],"rd":[{"t":"最初","r":"さいしょ","m":"最初"},{"t":"丁寧","r":"ていねい","m":"细致"},{"t":"結果","r":"けっか","m":"结果"},{"t":"資料","r":"しりょう","m":"资料"},{"t":"測る","r":"はかる","m":"衡量"},{"t":"作り直し","r":"つくりなおし","m":"重做"},{"t":"減り","r":"へり","m":"减少"},{"t":"作る","r":"つくる","m":"制作"},{"t":"急いで","r":"いそいで","m":"急忙"},{"t":"作り直す","r":"つくりなおす","m":"重做"},{"t":"速い","r":"はやい","m":"快"},{"t":"効率","r":"こうりつ","m":"效率"},{"t":"速度","r":"そくど","m":"速度"},{"t":"作り直さ","r":"つくりなおさ","m":"重做"}],"ex":[{"l":"本文の主張を例で","j":"資料を丁寧に作ると、作り直しが減ります。","t":"资料做得细致，返工就会减少。"}]}
+];
+
+/* ============================================================
+   アプリ本体
+   ============================================================ */
+const KEY='n2examroom.v1';
+const DAY=86400000;
+const CATS=['漢字読み','語彙','文法','読解'];
+const LVS=['N4','N3','N2'];
+const WD=['日','月','火','水','木','金','土'];
+const PAGES=[['home','概況'],['practice','練習'],['fav','栞'],['review','復習'],['analysis','分析'],['info','情報'],['settings','設定']];
+const DEF_CONF={wWrong:3.5,wNew:1.4,wCorrect:0.55,dueGain:0.35,intervals:[1,3,7,14,30],
+  repeatWrong:true,rubi:'hover',trMode:'after',dailyGoal:20,target:'2027-07-04',startLevel:'N4',lvBias:'n3'};
+const S={custom:[],prog:{},conf:{},log:[],banks:null,fav:{q:[],w:[],g:[]}};
+let SS=null;
+let setup={lv:'all',cat:'all',count:'10',mode:'auto'};
+let bankMode='replace';
+let page='home';
+
+/* ---------- 小道具 ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const BANK_N2_2026=[{"id":"N2S2607-01","lv":"N2","cat":"漢字読み","tags":["漢字読み","2026-07"],"q":"「濃い」の読み方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"祖父は濃い味のものを好む。","tr":"祖父喜欢味道浓的东西。","opts":["からい","うすい","あまい","こい"],"ans":3,"exp":"正解は「こい」。「濃い」＝味道浓、颜色深。「辛い」は辣、「薄い」は淡、「甘い」は甜，都与「味」的程度方向不同。","notes":[{"t":"祖父","r":"そふ","m":"祖父"},{"t":"濃い","r":"こい","m":"浓的"},{"t":"好む","r":"このむ","m":"喜好"}]},{"id":"N2S2607-02","lv":"N2","cat":"漢字読み","tags":["漢字読み","2026-07"],"q":"「競技」の読み方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"次の競技に出場する人は、あちらに集まってください。","tr":"参加下一个项目的人，请到那边集合。","opts":["きょうぎ","きゅうぎ","きょうじ","きゅうじ"],"ans":0,"exp":"正解は「きょうぎ」。「競技」＝比赛项目。其余三项是没有的词，用「競」的音读「きょう」＋「技」的「ぎ」即可判断。","notes":[{"t":"競技","r":"きょうぎ","m":"比赛项目"},{"t":"出場","r":"しゅつじょう","m":"出场、参赛"},{"t":"集まって","r":"あつまって","m":"集合"}]},{"id":"N2S2607-03","lv":"N2","cat":"漢字読み","tags":["漢字読み","2026-07"],"q":"「消毒」の読み方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"傷口を洗ったら、この薬で消毒してください。","tr":"洗过伤口之后，请用这个药消毒。","opts":["しょうどく","しょうとく","しょどく","しょとく"],"ans":0,"exp":"正解は「しょうどく」。「消毒」＝杀菌。注意「所得（しょとく）」是收入，字形相近但读音不同。","notes":[{"t":"傷口","r":"きずぐち","m":"伤口"},{"t":"消毒","r":"しょうどく","m":"消毒"},{"t":"薬","r":"くすり","m":"药"}]},{"id":"N2S2607-04","lv":"N2","cat":"漢字読み","tags":["漢字読み","2026-07"],"q":"「構わない」の読み方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"彼のことは、もう構わないことにした。","tr":"他的事，我决定不再管了。","opts":["かばわない","かまわない","きらわない","さそわない"],"ans":1,"exp":"正解は「かまわない」。「構う」＝在意、理会；「構わない」＝不介意、不管。「庇う（かばう）」是庇护，「嫌う（きらう）」是讨厌，「誘う（さそう）」是邀请。","notes":[{"t":"構わない","r":"かまわない","m":"不介意、不管"},{"t":"庇う","r":"かばう","m":"庇护"},{"t":"嫌う","r":"きらう","m":"讨厌"}]},{"id":"N2S2607-05","lv":"N2","cat":"漢字読み","tags":["漢字読み","2026-07"],"q":"「知人」の読み方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"鈴木さんは、父の古くからの知人です。","tr":"铃木先生是父亲的老相识。","opts":["ちにん","しじん","ちじん","しにん"],"ans":2,"exp":"正解は「ちじん」。「知人」＝熟人、相识。「詩人（しじん）」是诗人，「死人（しにん）」是死者，读音相近要注意区分。","notes":[{"t":"知人","r":"ちじん","m":"熟人"},{"t":"古くから","r":"ふるくから","m":"从很早以前"},{"t":"詩人","r":"しじん","m":"诗人"}]},{"id":"N2S2607-06","lv":"N2","cat":"語彙","tags":["表記","2026-07"],"q":"「すいみん」を漢字で書くとき、最もよいものを、1・2・3・4から一つ選びなさい。","b":"十分なすいみんを確保する。","tr":"确保充足的睡眠。","opts":["垂眼","垂眠","睡眼","睡眠"],"ans":3,"exp":"正解は「睡眠」。「睡」＝睡，「眠」＝眠。其余三项都是把偏旁拼错的假汉字。","notes":[{"t":"睡眠","r":"すいみん","m":"睡眠"},{"t":"確保","r":"かくほ","m":"确保"},{"t":"十分","r":"じゅうぶん","m":"充足"}]},{"id":"N2S2607-07","lv":"N2","cat":"語彙","tags":["表記","2026-07"],"q":"「しげん」を漢字で書くとき、最もよいものを、1・2・3・4から一つ選びなさい。","b":"未来のために、しげんを大切にしよう。","tr":"为了未来，要珍惜资源。","opts":["資源","自然","資然","自源"],"ans":0,"exp":"正解は「資源」。「資」＝资，「源」＝来源；「自然（しぜん）」是自然，读音也不同。","notes":[{"t":"資源","r":"しげん","m":"资源"},{"t":"未来","r":"みらい","m":"未来"},{"t":"大切","r":"たいせつ","m":"重要"}]},{"id":"N2S2607-08","lv":"N2","cat":"語彙","tags":["表記","2026-07"],"q":"「おぎなう」を漢字で書くとき、最もよいものを、1・2・3・4から一つ選びなさい。","b":"野菜ジュースを飲んで栄養をおぎなう。","tr":"喝蔬菜汁来补充营养。","opts":["哺う","捕う","補う","浦う"],"ans":2,"exp":"正解は「補う」＝补足、弥补。「捕う」「哺う」「浦う」都不成词，只有「補」有补充之意。","notes":[{"t":"補う","r":"おぎなう","m":"补充"},{"t":"栄養","r":"えいよう","m":"营养"},{"t":"野菜","r":"やさい","m":"蔬菜"}]},{"id":"N2S2607-09","lv":"N2","cat":"語彙","tags":["表記","2026-07"],"q":"「せっきょう」を漢字で書くとき、最もよいものを、1・2・3・4から一つ選びなさい。","b":"親戚のおじさんにせっきょうされた。","tr":"被亲戚家的叔叔训了一顿。","opts":["説教","説強","節教","節強"],"ans":0,"exp":"正解は「説教」＝说教、训诫。「説」＝说，「教」＝教导，后三项是把字拼错的假词。","notes":[{"t":"説教","r":"せっきょう","m":"说教、训诫"},{"t":"親戚","r":"しんせき","m":"亲戚"},{"t":"おじさん","r":"おじさん","m":"叔叔"}]},{"id":"N2S2607-10","lv":"N2","cat":"語彙","tags":["表記","2026-07"],"q":"「あざやかな」を漢字で書くとき、最もよいものを、1・2・3・4から一つ選びなさい。","b":"佐藤さんはあざやかな色のシャツを着ていた。","tr":"佐藤穿着一件颜色鲜艳的衬衫。","opts":["明やか","鮮やか","照やか","清やか"],"ans":1,"exp":"正解は「鮮やか」＝鲜艳、鲜明。「鮮」有鲜明之意，其余为错误拼写。","notes":[{"t":"鮮やか","r":"あざやか","m":"鲜艳"},{"t":"色","r":"いろ","m":"颜色"},{"t":"着て","r":"きて","m":"穿着"}]},{"id":"N2S2607-11","lv":"N2","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"（　）グループから代表者1名を選出してください。","tr":"请从每个小组中选出一名代表。","opts":["部","毎","個","各"],"ans":3,"exp":"正解は「各」。「各グループ」＝每个小组，表示逐一。汉语的「每」在日语里不能说「毎グループ」（「毎」只接「毎日・毎回」等固定词）。","notes":[{"t":"各","r":"かく","m":"各个"},{"t":"代表者","r":"だいひょうしゃ","m":"代表"},{"t":"選出","r":"せんしゅつ","m":"选出"}]},{"id":"N2S2607-12","lv":"N2","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"私の国は大統領（　）を採用している。","tr":"我的国家采用总统制。","opts":["法","制","則","律"],"ans":1,"exp":"正解は「制」。「大統領制」＝总统制，指一种制度。「法」是法律，「則」是规则，「律」多用于「律令・法律」的复合词。","notes":[{"t":"大統領","r":"だいとうりょう","m":"总统"},{"t":"制度","r":"せいど","m":"制度"},{"t":"採用","r":"さいよう","m":"采用"}]},{"id":"N2S2607-13","lv":"N2","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"卵（　）のきれいな石を見つけました。","tr":"找到了一块鸡蛋大小、很漂亮的石头。","opts":["感","同","大","近"],"ans":2,"exp":"正解は「大」。「卵大」＝鸡蛋大小，表示尺寸。日语常用「〜大」表示大小（例：拳大、豆大）。","notes":[{"t":"卵","r":"たまご","m":"鸡蛋"},{"t":"卵大","r":"たまごだい","m":"鸡蛋大小"},{"t":"石","r":"いし","m":"石头"}]},{"id":"N2S2607-14","lv":"N2","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"明日の天気によって、イベントを行うかどうか（　）する予定です。","tr":"打算根据明天的天气，判断活动是否举行。","opts":["判断","確信","特定","評価"],"ans":0,"exp":"正解は「判断」。「〜かどうかを判断する」＝判断是否…。「確信」是确信，「特定」是确定身份，「評価」是评价，都不能与「かどうか」搭配。","notes":[{"t":"判断","r":"はんだん","m":"判断"},{"t":"天気","r":"てんき","m":"天气"},{"t":"予定","r":"よてい","m":"预定、打算"}]},{"id":"N2S2607-15","lv":"N2","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"山本氏は、今は作家として有名だが、（　）は俳優をしていたのだそうだ。","tr":"山本现在作为作家很有名，但听说原本是当演员的。","opts":["もともと","生まれつき","先ほど","あらかじめ"],"ans":0,"exp":"正解は「もともと」＝原本、本来。「生まれつき」是天生，「先ほど」是刚才，「あらかじめ」是预先，都与「以前做过演员」的语义不合。","notes":[{"t":"作家","r":"さっか","m":"作家"},{"t":"俳優","r":"はいゆう","m":"演员"},{"t":"もともと","r":"もともと","m":"原本"}]},{"id":"N2S2607-16","lv":"N2","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"会議に参加するメンバーの都合を聞いて、日程の（　）を行った。","tr":"问了参会成员的方便时间后，对日程做了调整。","opts":["改定","整備","改正","調整"],"ans":3,"exp":"正解は「調整」。「日程の調整」＝调整日程。「改定・改正」用于规则、条款、价格；「整備」用于设备、环境。","notes":[{"t":"都合","r":"つごう","m":"方便、情况"},{"t":"日程","r":"にってい","m":"日程"},{"t":"調整","r":"ちょうせい","m":"调整"}]},{"id":"N2S2607-17","lv":"N2","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"お金をかけて開発した商品が売れず、A社は今年、大きな（　）を出した。","tr":"花大钱开发的商品卖不出去，A公司今年出现了巨额赤字。","opts":["不良","赤字","消失","欠点"],"ans":1,"exp":"正解は「赤字」。「赤字を出す」＝出现赤字，是固定搭配。「不良」指次品，「消失」是消失，「欠点」是缺点，都不能与「出す」搭配。","notes":[{"t":"赤字","r":"あかじ","m":"赤字"},{"t":"開発","r":"かいはつ","m":"开发"},{"t":"商品","r":"しょうひん","m":"商品"}]},{"id":"N2S2607-18","lv":"N2","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"中村さんは（　）性格だから、そういう細かいことは気にしないだろう。","tr":"中村性格大大咧咧，这种细节他大概不会在意。","opts":["なまいきな","おおざっぱな","わがままな","いじわるな"],"ans":1,"exp":"正解は「おおざっぱな」＝粗枝大叶，与后文「細かいことを気にしない」呼应。「なまいき」是傲慢，「わがまま」是任性，「いじわる」是坏心眼。","notes":[{"t":"性格","r":"せいかく","m":"性格"},{"t":"おおざっぱ","r":"おおざっぱ","m":"粗枝大叶"},{"t":"細かい","r":"こまかい","m":"细小的"}]},{"id":"N2S2607-19","lv":"N2","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"彼は今までどんな苦労にも負けずに、一人で（　）生きてきた。","tr":"他至今不向任何辛苦低头，一个人坚强地活了过来。","opts":["いちじるしく","痛ましく","たくましく","恐ろしく"],"ans":2,"exp":"正解は「たくましく」＝坚强、健壮。「いちじるしく」是显著地，「痛ましく」是令人心痛地，「恐ろしく」是可怕地，都不修饰「生きてきた」。","notes":[{"t":"苦労","r":"くろう","m":"辛苦"},{"t":"負けず","r":"まけず","m":"不输、不屈服"},{"t":"たくましい","r":"たくましい","m":"坚强的"}]},{"id":"N2S2607-20","lv":"N2","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"仕事の話をしていたのに、いつのまにか話が（　）、家族の話をしていた。","tr":"本来在谈工作，不知不觉话题跑偏，聊起了家里的事。","opts":["反して","狂って","それて","偏って"],"ans":2,"exp":"正解は「それて」。「話がそれる」＝话题跑偏，是固定表达。「反して」是相反，「狂って」是发狂，「偏って」是偏颇。","notes":[{"t":"いつのまにか","r":"いつのまにか","m":"不知不觉"},{"t":"それる","r":"それる","m":"偏离"},{"t":"家族","r":"かぞく","m":"家人"}]},{"id":"N2S2607-21","lv":"N2","cat":"語彙","tags":["類義","2026-07"],"q":"「問い合わせた」に意味が最も近いものを、1・2・3・4から一つ選びなさい。","b":"質問があったので、メーカーに問い合わせた。","tr":"因为有问题，所以向厂商咨询了。","opts":["製品を輸入した会社","製品を売った店","製品を修理した店","製品を作った会社"],"ans":3,"exp":"正解は「製品を作った会社」。「メーカー」＝制造商，就是生产产品的公司。其余是进口商、销售店、修理店。","notes":[{"t":"問い合わせる","r":"といあわせる","m":"咨询"},{"t":"メーカー","r":"めーかー","m":"制造商"},{"t":"製品","r":"せいひん","m":"产品"}]},{"id":"N2S2607-22","lv":"N2","cat":"語彙","tags":["類義","2026-07"],"q":"「はやっている」に意味が最も近いものを、1・2・3・4から一つ選びなさい。","b":"今あなたの国で、はやっているものは何ですか。","tr":"现在在你们国家流行的是什么？","opts":["制限して","増加して","流行して","発展して"],"ans":2,"exp":"正解は「流行して」。「はやる」＝流行する。「制限」是限制，「増加」是增加，「発展」是发展。","notes":[{"t":"はやる","r":"はやる","m":"流行"},{"t":"流行","r":"りゅうこう","m":"流行"},{"t":"増加","r":"ぞうか","m":"增加"}]},{"id":"N2S2607-23","lv":"N2","cat":"語彙","tags":["類義","2026-07"],"q":"「一括して」に意味が最も近いものを、1・2・3・4から一つ選びなさい。","b":"ここでは、商品を一括して管理している。","tr":"这里把商品统一管理。","opts":["細かく分けて","箱に入れて","しばらくの間","全部いっしょに"],"ans":3,"exp":"正解は「全部いっしょに」。「一括」＝一并、一次性全部处理。「細かく分けて」正好相反。","notes":[{"t":"一括","r":"いっかつ","m":"一并、统一"},{"t":"管理","r":"かんり","m":"管理"},{"t":"商品","r":"しょうひん","m":"商品"}]},{"id":"N2S2607-24","lv":"N2","cat":"語彙","tags":["類義","2026-07"],"q":"「思いがけない」に意味が最も近いものを、1・2・3・4から一つ選びなさい。","b":"先週、思いがけない出来事があった。","tr":"上周发生了一件意想不到的事。","opts":["信じられない","予想していなかった","忘れられない","経験したことがない"],"ans":1,"exp":"正解は「予想していなかった」。「思いがけない」＝意想不到、没料到。「忘れられない」是难忘，语义不同。","notes":[{"t":"思いがけない","r":"おもいがけない","m":"意想不到"},{"t":"出来事","r":"できごと","m":"事件"},{"t":"予想","r":"よそう","m":"预想"}]},{"id":"N2S2607-25","lv":"N2","cat":"語彙","tags":["類義","2026-07"],"q":"「いっそう」に意味が最も近いものを、1・2・3・4から一つ選びなさい。","b":"次の目標に向かって、これからいっそう努力しようと思います。","tr":"为了下一个目标，今后要更加努力。","opts":["もっと","できるだけ","しっかり","いつも"],"ans":0,"exp":"正解は「もっと」。「いっそう」＝更加、进一步，表示程度加深。「できるだけ」是尽可能，「しっかり」是好好地，「いつも」是总是。","notes":[{"t":"いっそう","r":"いっそう","m":"更加"},{"t":"目標","r":"もくひょう","m":"目标"},{"t":"努力","r":"どりょく","m":"努力"}]},{"id":"N2S2607-26","lv":"N2","cat":"語彙","tags":["用法","2026-07"],"q":"「要点」の使い方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"（次の文のうち、「要点」を正しく使っているものを選ぶ）","tr":"选出「要点」用得最正确的一句。","opts":["彼は今、成功するかどうかの要点にいる。","人間にとっての要点は、心臓と脳である。","あまり時間がなかったので、計画の要点だけを説明した。","卒業式の日に先生にいただいた言葉は私の要点です。"],"ans":2,"exp":"正解は3。「要点」＝重点、核心内容，只能用于说明内容、论述的要点。1应说「瀬戸際」（关键时刻）；2应说「要」；4应说「宝物／支え」。","notes":[{"t":"要点","r":"ようてん","m":"要点"},{"t":"説明","r":"せつめい","m":"说明"},{"t":"瀬戸際","r":"せとぎわ","m":"关键时刻"}]},{"id":"N2S2607-27","lv":"N2","cat":"語彙","tags":["用法","2026-07"],"q":"「裂ける」の使い方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"（次の文のうち、「裂ける」を正しく使っているものを選ぶ）","tr":"选出「裂ける」用得最正确的一句。","opts":["壁から飛び出していたくぎに引っかかって、スカートが裂けてしまった。","ズボンのポケットに携帯電話を入れていたら、画面が裂けてしまった。","硬い肉を切ろうとして力を入れたら、箸が裂けてしまった。","冷蔵庫を開けたときに卵が落ちて裂けてしまった。"],"ans":0,"exp":"正解は1。「裂ける」用于布、纸、皮等被撕开。屏幕破碎用「割れる」，筷子断用「折れる」，鸡蛋破用「割れる」。","notes":[{"t":"裂ける","r":"さける","m":"撕裂"},{"t":"くぎ","r":"くぎ","m":"钉子"},{"t":"割れる","r":"われる","m":"破碎"}]},{"id":"N2S2607-28","lv":"N2","cat":"語彙","tags":["用法","2026-07"],"q":"「経過」の使い方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"（次の文のうち、「経過」を正しく使っているものを選ぶ）","tr":"选出「経過」用得最正确的一句。","opts":["うっかりして、降りる駅を経過してしまった。","忙しすぎて、季節が経過するのに気づけなかった。","たくさんの失敗を経過して、立派な大人になった。","就職して1年が経過し、新しい生活にも慣れてきた。"],"ans":3,"exp":"正解は4。「経過」＝（时间）经过、流逝，主语是时间。「駅を経過」应说「通過」，「失敗を経過」应说「経験」。","notes":[{"t":"経過","r":"けいか","m":"经过、流逝"},{"t":"就職","r":"しゅうしょく","m":"就业"},{"t":"慣れて","r":"なれて","m":"习惯"}]},{"id":"N2S2607-29","lv":"N2","cat":"語彙","tags":["用法","2026-07"],"q":"「打ち消す」の使い方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"（次の文のうち、「打ち消す」を正しく使っているものを選ぶ）","tr":"选出「打ち消す」用得最正确的一句。","opts":["用事ができて旅行に行けなくなったので、ホテルの予約を打ち消した。","その選手は記者会見で引退のうわさを打ち消した。","答えを書く場所を間違えたので、全部打ち消して書き直した。","仕事内容を見直し、残業を先月より50パーセント打ち消した。"],"ans":1,"exp":"正解は2。「打ち消す」＝否认、消除（传言、说法）。取消预订说「取り消す」，划掉说「消す」，减少说「減らす」。","notes":[{"t":"打ち消す","r":"うちけす","m":"否认、打消"},{"t":"うわさ","r":"うわさ","m":"传闻"},{"t":"取り消す","r":"とりけす","m":"取消"}]},{"id":"N2S2607-30","lv":"N2","cat":"語彙","tags":["用法","2026-07"],"q":"「さっと」の使い方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"（次の文のうち、「さっと」を正しく使っているものを選ぶ）","tr":"选出「さっと」用得最正确的一句。","opts":["東京は電車の数が多いので、乗り遅れても次の電車がさっと来ます。","朝は涼しかったが、昼になるとさっと暑くなって気温が30度を超えた。","刑事がうそを指摘すると、犯人の顔色がさっと変わった。","山口さんに、戻ったらさっと電話をしてほしいと伝えてください。"],"ans":2,"exp":"正解は3。「さっと」＝动作、变化一下子迅速发生，常与「変わる・動く・走る」搭配。表示「马上」用「すぐ」，表示「突然」用「急に」。","notes":[{"t":"刑事","r":"けいじ","m":"刑警"},{"t":"指摘","r":"してき","m":"指出"},{"t":"顔色","r":"かおいろ","m":"脸色"}]},{"id":"N2S2607-31","lv":"N2","cat":"文法","tags":["文法","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"年賀状（　）、新年を祝う言葉を書いて送るはがきや手紙のことだ。","tr":"所谓贺年卡，就是写上新年祝福语寄出的明信片或信件。","opts":["には","とは","としては","によっては"],"ans":1,"exp":"正解は「とは」。「〜とは…のことだ」用于给词语下定义，相当于「所谓…就是…」。「には」表存在场所或对象，「としては」表立场，「によっては」表”取决于…”。","g":"〜とは","gm":"所谓…（下定义、说明词义）","notes":[{"t":"年賀状","r":"ねんがじょう","m":"贺年卡"},{"t":"祝う","r":"いわう","m":"庆祝"},{"t":"はがき","r":"はがき","m":"明信片"}]},{"id":"N2S2607-32","lv":"N2","cat":"文法","tags":["文法","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"父の若いころのアルバムを見た。写真に写る父が（　）私に似ていて、自分の写真かと思ってしまった。","tr":"看了父亲年轻时的相册。照片里的父亲实在太像我了，我还以为是自己的照片。","opts":["つい","ちっとも","それほど","あまりにも"],"ans":3,"exp":"正解は「あまりにも」＝实在太…，强调程度超出常识，后接「似ていて…と思ってしまった」这样的结果。「つい」＝不由得，「ちっとも」须接否定，「それほど」＝那么（程度）。","g":"あまりにも〜","gm":"实在太…（程度过甚）","notes":[{"t":"若いころ","r":"わかいころ","m":"年轻时"},{"t":"写る","r":"うつる","m":"（照片里）映出"},{"t":"似て","r":"にて","m":"像"}]},{"id":"N2S2607-33","lv":"N2","cat":"文法","tags":["文法","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"昨日、きゅうりを炒めて食べてみた。今まできゅうりは生（　）食べたことがなかったが、炒めてもおいしかった。","tr":"昨天试着炒黄瓜吃。以前黄瓜我只生吃过，炒着吃也很好吃。","opts":["でしか","にしか","でばかり","にばかり"],"ans":0,"exp":"正解は「でしか…ない」。「生で」是形容动词「生だ」的で形，接「しか」时表示”只限于生吃”。「にしか」只接名词，「ばかり」不接否定。","g":"〜でしか…ない","gm":"只…（限定＋否定）","notes":[{"t":"きゅうり","r":"きゅうり","m":"黄瓜"},{"t":"炒めて","r":"いためて","m":"炒"},{"t":"生","r":"なま","m":"生的"}]},{"id":"N2S2607-34","lv":"N2","cat":"文法","tags":["文法","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"熱を出してつらそうにしている息子を見て、代われる（　）代わってやりたいと思った。","tr":"看到发烧难受的儿子，如果能代替他，我真想替他受这份罪。","opts":["までは","だけで","ものなら","からには"],"ans":2,"exp":"正解は「ものなら」。「〜ものなら」＝如果能…（假定，多用于难以实现的事，后接意愿）。「からには」表”既然…就…”，「だけで」表”仅仅”。","g":"〜ものなら","gm":"如果能…（假定，多含”若真能…”的语气）","notes":[{"t":"代われる","r":"かわれる","m":"能代替"},{"t":"代わって","r":"かわって","m":"代替"},{"t":"熱を出す","r":"ねつをだす","m":"发烧"}]},{"id":"N2S2607-35","lv":"N2","cat":"文法","tags":["文法","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"（教室で）教師「この授業では、各自が自分で選んだテーマ（　）資料を集めてレポートにまとめます。」","tr":"（教室里）教师：这节课，每个人按照自己选定的主题收集资料，整理成报告。","opts":["に比べて","に際して","に伴って","に沿って"],"ans":3,"exp":"正解は「に沿って」＝按照、沿着（方针、主题、期待）。「に比べて」＝与…相比，「に際して」＝在…之际，「に伴って」＝随着…，都不能表示”依照主题”。","g":"〜に沿って","gm":"按照…、沿着…（方针、主题、期待）","notes":[{"t":"各自","r":"かくじ","m":"各自"},{"t":"資料","r":"しりょう","m":"资料"},{"t":"まとめます","r":"まとめます","m":"整理、归纳"}]},{"id":"N2S2607-36","lv":"N2","cat":"文法","tags":["文法","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"先生に、次の授業までに教科書の30ページまで（　）言われた。","tr":"老师让我在下节课之前把教科书读到第30页。","opts":["読んでくるか","読んでこい","読んでおくように","読んでおきなさい"],"ans":2,"exp":"正解は「読んでおくように」。「〜ように言われた」是间接引用请求、指示的固定形式，要用「ように」。直接命令形「読んでこい」「読んでおきなさい」不能接「言われた」。","g":"〜ように言われた","gm":"被（人）要求…（间接引用指示）","notes":[{"t":"教科書","r":"きょうかしょ","m":"教科书"},{"t":"授業","r":"じゅぎょう","m":"课"},{"t":"言われた","r":"いわれた","m":"被说、被要求"}]},{"id":"N2S2607-37","lv":"N2","cat":"文法","tags":["文法","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"娘は1年前から水泳を習っている。水泳を始めてから体が丈夫に（　）、精神的にも強くなったと思う。","tr":"女儿从1年前开始学游泳。开始游泳后，身体不仅变结实了，精神上也变强了。","opts":["なっただけだとすると","なっただけでなく","しただけだとすると","しただけでなく"],"ans":1,"exp":"正解は「なっただけでなく」。「丈夫だ」是形容动词，要用「丈夫になる」；「〜だけでなく…も」表示”不仅…而且”。","g":"〜だけでなく","gm":"不仅…而且…（递进）","notes":[{"t":"水泳","r":"すいえい","m":"游泳"},{"t":"丈夫","r":"じょうぶ","m":"结实"},{"t":"精神的","r":"せいしんてき","m":"精神上"}]},{"id":"N2S2607-38","lv":"N2","cat":"文法","tags":["文法","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"ボクシングには、背中を攻撃（　）というルールがある。","tr":"拳击有一条规定，不可以攻击背部。","opts":["しきれない","しかねない","しようがない","してはならない"],"ans":3,"exp":"正解は「してはならない」＝不可以…（禁止）。「しきれない」＝做不完，「しかねない」＝有可能…（多含负面），「しようがない」＝没办法","g":"〜てはならない","gm":"不可以…（规则、禁止）","notes":[{"t":"ボクシング","r":"ぼくしんぐ","m":"拳击"},{"t":"背中","r":"せなか","m":"背部"},{"t":"攻撃","r":"こうげき","m":"攻击"}]},{"id":"N2S2607-39","lv":"N2","cat":"文法","tags":["文法","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"（電話で）A「お電話ありがとうございます。さくらホテルでございます。」B「すみません、再来年の予約をしたいんですけど、今できますか。」A「はい、（　）。」","tr":"（电话中）A：感谢来电，这里是樱花酒店。B：不好意思，我想预订后年的房间，现在可以吗？A：好的，可以受理。","opts":["なさいます","差し上げます","承ります","お越しになります"],"ans":2,"exp":"正解は「承ります」。这是谦让语，用于自己一方”接受、承办”对方的请求。「なさいます」「お越しになります」是尊敬语，主语是对方；「差し上げます」是”给（人）”，语境不合。","g":"承る（うけたまわる）","gm":"谦让语：接受、承办、听候","notes":[{"t":"予約","r":"よやく","m":"预约"},{"t":"再来年","r":"さらいねん","m":"后年"},{"t":"承ります","r":"うけたまわります","m":"受理（谦让语）"}]},{"id":"N2S2607-40","lv":"N2","cat":"文法","tags":["文法","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"イメージに合うテーブルがどこにも売っていなくてあきらめかけていたが、あるとき、「ないんだったら自分で（　）んじゃないか」と気づいて、作ることにした。","tr":"一直找不到符合构想的桌子，本来快放弃了，但某天想到”既然没有，那自己做出来不就行了”，就决定动手做。","opts":["作っていてもいい","作ってしまえばいい","作ってあるといい","作ってみるならいい"],"ans":1,"exp":"正解は「作ってしまえばいい」。「〜てしまえばいい」＝干脆…不就行了，用于提出简单明快的解决办法。「〜ていてもいい」表许可，「〜てある」表状态存续。","g":"〜てしまえばいい","gm":"干脆…就好了（提出解决办法）","notes":[{"t":"あきらめる","r":"あきらめる","m":"放弃"},{"t":"気づいて","r":"きづいて","m":"意识到"},{"t":"テーブル","r":"てーぶる","m":"桌子"}]},{"id":"N2S2607-41","lv":"N2","cat":"文法","tags":["文法","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"私は、本を読んでいて気になることがあると（　）。だから、1冊読み終わるのにどうしても時間がかかる。","tr":"我读书时一有在意的地方，就忍不住去查。所以读完一本总要花很多时间。","opts":["調べずにはいられない","調べないに違いない","調べそうにない","調べても始まらない"],"ans":0,"exp":"正解は「調べずにはいられない」＝忍不住要查。「〜ずにはいられない」表示情感、冲动无法抑制。「に違いない」是推测，「そうにない」是”看样子不会”。","g":"〜ずにはいられない","gm":"忍不住…、不能不…","notes":[{"t":"気になる","r":"きになる","m":"在意"},{"t":"調べる","r":"しらべる","m":"查"},{"t":"1冊","r":"いっさつ","m":"一本"}]},{"id":"N2S2607-42","lv":"N2","cat":"文法","tags":["文法","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"A「キャッシュカードの暗証番号を忘れちゃったんだけど、銀行に電話して聞けばわかるよね。」B「え、そんな大事な情報、忘れちゃったの？電話で聞いても絶対（　）よ。」","tr":"A：我忘了银行卡密码，打电话问银行就能知道吧？B：哎，这么重要的信息你忘了？就算打电话，银行也绝不可能告诉你。","opts":["教えてくれるはずがない","教えてもらうはずがない","教えてくれたことがない","教えてもらったことがない"],"ans":0,"exp":"正解は「教えてくれるはずがない」。「〜はずがない」＝不可能…。这里主语是银行，用「教えてくれる」（（对方）告诉我）最自然；「〜たことがない」是经验，与”绝不可能”的推断不符。","g":"〜はずがない","gm":"不可能…（强烈否定推测）","notes":[{"t":"暗証番号","r":"あんしょうばんごう","m":"密码"},{"t":"情報","r":"じょうほう","m":"信息"},{"t":"絶対","r":"ぜったい","m":"绝对"}]},{"id":"N2S2607-48","lv":"N2","cat":"文法","tags":["文章の文法","2026-07"],"q":"48に入る最もよいものを、1・2・3・4から一つ選びなさい。","p":["「ビジネス書」と聞くと、難しい言葉が並んだ分厚い本を思い浮かべる人は多いのではないだろうか。しかし、最近は漫画で書かれたビジネス書も増えている。（48）研究によると、文章だけの本より漫画の本のほうが、内容を覚えている割合が高いそうだ。","漫画には、登場人物の会話や動きが描かれている。文章を読むだけでは想像しにくい場面も、漫画なら一目で理解できる。そのため、内容が頭に残りやすいのだと考えられている。（49）、漢字は、覚えようと意識して何度も書くほうが、読むだけより覚えやすい。手を動かすことで記憶が強くなるからだ（50）、漫画で内容を覚えやすいのと同じ理由だ。つまり、体を動かしたり、絵を見たりして覚えることは、記憶に残りやすいということだ。","以上の点から、漫画のビジネス書は、ビジネスの知識を初めて学ぶ人にとって、効果的な学習方法だと言える。入門者にとって、わかりやすさは魅力だ。漫画形式のビジネス書をまだ読んだことがない人、難しそうでなかなか勉強が始められない分野があるという人は、一度読んでみてはいかがだろうか。新しい学びの体験と（51）。"],"tr":"一听到”商业书”，很多人脑海中浮现的应该是堆满难懂词汇的厚书吧。但最近用漫画写的商业书也在增加。据某项研究，漫画书比纯文字书记住内容的比率更高。漫画里画出了人物的对话和动作，只读文字难以想象的场面，看漫画一眼就能理解，因此内容更容易留在脑中。另一方面，汉字则是意识到要记、反复书写比只读更容易记住。亲手写能让记忆变强，这与漫画容易记住内容是同一个道理。也就是说，动手、看图来记的东西更容易留在记忆里。\n从以上几点可以说，漫画商业书对初次学习商业知识的人是有效的学习方法。对入门者来说，易懂就是魅力。还没读过漫画形式商业书的人、有某个领域看起来很难迟迟无法开始学的人，不妨读一次看看。它应该会成为一次新的学习体验。","qt":"下列四个选项中，哪个最适合填入空缺处？","opts":["この","その","ある","以下の"],"ans":2,"exp":"正解は「ある」。「ある研究によると」＝据某项研究，是引出不特定来源的固定说法。「この」指前文刚提的内容（此处研究尚未出现），「その」也需前文已有指代对象，「以下の」用于列举后文内容。","notes":[{"t":"分厚い","r":"ぶあつい","m":"厚的"},{"t":"割合","r":"わりあい","m":"比例"},{"t":"登場人物","r":"とうじょうじんぶつ","m":"登场人物"}]},{"id":"N2S2607-49","lv":"N2","cat":"文法","tags":["文章の文法","2026-07"],"q":"49に入る最もよいものを、1・2・3・4から一つ選びなさい。","p":["「ビジネス書」と聞くと、難しい言葉が並んだ分厚い本を思い浮かべる人は多いのではないだろうか。しかし、最近は漫画で書かれたビジネス書も増えている。（48）研究によると、文章だけの本より漫画の本のほうが、内容を覚えている割合が高いそうだ。","漫画には、登場人物の会話や動きが描かれている。文章を読むだけでは想像しにくい場面も、漫画なら一目で理解できる。そのため、内容が頭に残りやすいのだと考えられている。（49）、漢字は、覚えようと意識して何度も書くほうが、読むだけより覚えやすい。手を動かすことで記憶が強くなるからだ（50）、漫画で内容を覚えやすいのと同じ理由だ。つまり、体を動かしたり、絵を見たりして覚えることは、記憶に残りやすいということだ。","以上の点から、漫画のビジネス書は、ビジネスの知識を初めて学ぶ人にとって、効果的な学習方法だと言える。入門者にとって、わかりやすさは魅力だ。漫画形式のビジネス書をまだ読んだことがない人、難しそうでなかなか勉強が始められない分野があるという人は、一度読んでみてはいかがだろうか。新しい学びの体験と（51）。"],"tr":"（同前一篇：漫画商业书与”动手记忆”的关系）","qt":"下列四个选项中，哪个最适合填入空缺处？","opts":["一方","あるいは","要するに","ただし"],"ans":1,"exp":"正解は「一方」＝另一方面，用于并列对照前一段”漫画易记”与后文”汉字靠手写更易记”。「要するに」是总结，「ただし」是补充限制条件，都与此处的对照关系不符。","notes":[{"t":"一方","r":"いっぽう","m":"另一方面"},{"t":"要するに","r":"ようするに","m":"总之"},{"t":"ただし","r":"ただし","m":"不过"}]},{"id":"N2S2607-50","lv":"N2","cat":"文法","tags":["文章の文法","2026-07"],"q":"50に入る最もよいものを、1・2・3・4から一つ選びなさい。","p":["「ビジネス書」と聞くと、難しい言葉が並んだ分厚い本を思い浮かべる人は多いのではないだろうか。しかし、最近は漫画で書かれたビジネス書も増えている。（48）研究によると、文章だけの本より漫画の本のほうが、内容を覚えている割合が高いそうだ。","漫画には、登場人物の会話や動きが描かれている。文章を読むだけでは想像しにくい場面も、漫画なら一目で理解できる。そのため、内容が頭に残りやすいのだと考えられている。（49）、漢字は、覚えようと意識して何度も書くほうが、読むだけより覚えやすい。手を動かすことで記憶が強くなるからだ（50）、漫画で内容を覚えやすいのと同じ理由だ。つまり、体を動かしたり、絵を見たりして覚えることは、記憶に残りやすいということだ。","以上の点から、漫画のビジネス書は、ビジネスの知識を初めて学ぶ人にとって、効果的な学習方法だと言える。入門者にとって、わかりやすさは魅力だ。漫画形式のビジネス書をまだ読んだことがない人、難しそうでなかなか勉強が始められない分野があるという人は、一度読んでみてはいかがだろうか。新しい学びの体験と（51）。"],"tr":"（同前一篇）","qt":"下列四个选项中，哪个最适合填入空缺处？","opts":["としたら","としても","というなら","というのは"],"ans":3,"exp":"正解は「というのは」。「〜というのは、…と同じ理由だ」＝所谓…，与…是同一个道理，用于把前句内容提出来加以说明。「としたら」「としても」表假定，「というなら」表”如果你说…”。","notes":[{"t":"意識して","r":"いしきして","m":"有意识地"},{"t":"記憶","r":"きおく","m":"记忆"},{"t":"理由","r":"りゆう","m":"理由"}]},{"id":"N2S2607-51","lv":"N2","cat":"文法","tags":["文章の文法","2026-07"],"q":"51に入る最もよいものを、1・2・3・4から一つ選びなさい。","p":["「ビジネス書」と聞くと、難しい言葉が並んだ分厚い本を思い浮かべる人は多いのではないだろうか。しかし、最近は漫画で書かれたビジネス書も増えている。（48）研究によると、文章だけの本より漫画の本のほうが、内容を覚えている割合が高いそうだ。","漫画には、登場人物の会話や動きが描かれている。文章を読むだけでは想像しにくい場面も、漫画なら一目で理解できる。そのため、内容が頭に残りやすいのだと考えられている。（49）、漢字は、覚えようと意識して何度も書くほうが、読むだけより覚えやすい。手を動かすことで記憶が強くなるからだ（50）、漫画で内容を覚えやすいのと同じ理由だ。つまり、体を動かしたり、絵を見たりして覚えることは、記憶に残りやすいということだ。","以上の点から、漫画のビジネス書は、ビジネスの知識を初めて学ぶ人にとって、効果的な学習方法だと言える。入門者にとって、わかりやすさは魅力だ。漫画形式のビジネス書をまだ読んだことがない人、難しそうでなかなか勉強が始められない分野があるという人は、一度読んでみてはいかがだろうか。新しい学びの体験と（51）。"],"tr":"（同前一篇）","qt":"下列四个选项中，哪个最适合填入空缺处？","opts":["なるわけだ","なるはずだ","なるほどだ","なるようだ"],"ans":1,"exp":"正解は「なるはずだ」。「〜となるはずだ」＝理应会成为…，表示有根据的推断，用于收尾、给读者一个合理的预期。「わけだ」是”自然会…”（说明缘由），「なるほどだ」不成词，「ようだ」是”似乎”。","notes":[{"t":"入門者","r":"にゅうもんしゃ","m":"入门者"},{"t":"魅力","r":"みりょく","m":"魅力"},{"t":"体験","r":"たいけん","m":"体验"}]}]
+const BANK_N3_2026=[{"id":"N3S2607-01","lv":"N3","cat":"漢字読み","tags":["漢字読み","2026-07"],"q":"「計算」の読み方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"コンピューターで計算します。","tr":"用电脑计算。","opts":["けいざん","けいさん","けんさん","けんざん"],"ans":1,"exp":"正解は「けいさん」。「計算」＝计算，常用「計算する」。注意「けんさん（見さん）」不是词。","notes":[{"t":"計算","r":"けいさん","m":"计算"},{"t":"電車","r":"でんしゃ","m":"电车"},{"t":"機械","r":"きかい","m":"机器"}]},{"id":"N3S2607-02","lv":"N3","cat":"漢字読み","tags":["漢字読み","2026-07"],"q":"「浅い」の読み方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"浅いほうの容器をください。","tr":"请给我浅一点的那个容器。","opts":["まるい","ふかい","かるい","あさい"],"ans":3,"exp":"正解は「あさい」。「浅い」＝浅的，反义词是「深い（ふかい）」。「丸い」是圆，「軽い」是轻。","notes":[{"t":"浅い","r":"あさい","m":"浅的"},{"t":"容器","r":"ようき","m":"容器"},{"t":"深い","r":"ふかい","m":"深的"}]},{"id":"N3S2607-03","lv":"N3","cat":"漢字読み","tags":["漢字読み","2026-07"],"q":"「広告」の読み方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"兄は車の広告を作る仕事をしている。","tr":"哥哥做的是制作汽车广告的工作。","opts":["こうこく","ごうこく","こうごく","ごうごく"],"ans":0,"exp":"正解は「こうこく」。「広告」＝广告，「広」音读「こう」，「告」音读「こく」。","notes":[{"t":"広告","r":"こうこく","m":"广告"},{"t":"兄","r":"あに","m":"哥哥"},{"t":"仕事","r":"しごと","m":"工作"}]},{"id":"N3S2607-04","lv":"N3","cat":"漢字読み","tags":["漢字読み","2026-07"],"q":"「種類」の読み方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"この店のチーズは種類が多い。","tr":"这家店的奶酪种类很多。","opts":["しゅるい","しゅれい","しゅうるい","しゅうれい"],"ans":0,"exp":"正解は「しゅるい」。「種」音读「しゅ」，「類」音读「るい」，长音位置不要弄错。","notes":[{"t":"種類","r":"しゅるい","m":"种类"},{"t":"店","r":"みせ","m":"店"},{"t":"多い","r":"おおい","m":"多"}]},{"id":"N3S2607-05","lv":"N3","cat":"漢字読み","tags":["漢字読み","2026-07"],"q":"「勝った」の読み方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"今日は本田さんが勝ったそうです。","tr":"听说今天本田赢了。","opts":["たたかった","かった","はらった","くばった"],"ans":1,"exp":"正解は「かった」。「勝つ」＝获胜，过去式为「勝った」。「戦った（たたかった）」是战斗，「払った（はらった）」是支付，「配った（くばった）」是分发。","notes":[{"t":"勝った","r":"かった","m":"赢了"},{"t":"戦う","r":"たたかう","m":"战斗"},{"t":"配る","r":"くばる","m":"分发"}]},{"id":"N3S2607-06","lv":"N3","cat":"漢字読み","tags":["漢字読み","2026-07"],"q":"「悲しい」の読み方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"悲しいときは、いつもここに来て海を見ていました。","tr":"难过的时候，我总是来这里看海。","opts":["くやしい","くるしい","かなしい","さびしい"],"ans":2,"exp":"正解は「かなしい」。「悔しい」是懊悔，「苦しい」是痛苦，「寂しい」是寂寞，四个词意思相近，要注意区分。","notes":[{"t":"悲しい","r":"かなしい","m":"悲伤"},{"t":"悔しい","r":"くやしい","m":"懊悔"},{"t":"寂しい","r":"さびしい","m":"寂寞"}]},{"id":"N3S2607-07","lv":"N3","cat":"漢字読み","tags":["漢字読み","2026-07"],"q":"「整理」の読み方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"きちんと整理したほうがいいですよ。","tr":"还是好好整理一下比较好。","opts":["しゅり","しゅうり","せり","せいり"],"ans":3,"exp":"正解は「せいり」。「整理」＝整理、收拾。「修理（しゅうり）」是修理，字形相近易混。","notes":[{"t":"整理","r":"せいり","m":"整理"},{"t":"修理","r":"しゅうり","m":"修理"},{"t":"きちんと","r":"きちんと","m":"好好地"}]},{"id":"N3S2607-08","lv":"N3","cat":"漢字読み","tags":["漢字読み","2026-07"],"q":"「平均」の読み方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"3歳の子どもの身長の平均はどのくらいですか。","tr":"3岁孩子的平均身高大约是多少？","opts":["へきん","へいやく","へいきん","へやく"],"ans":2,"exp":"正解は「へいきん」。「平均」＝平均，「均」音读「きん」，「均等（きんとう）」。","notes":[{"t":"平均","r":"へいきん","m":"平均"},{"t":"身長","r":"しんちょう","m":"身高"},{"t":"歳","r":"さい","m":"岁"}]},{"id":"N3S2607-09","lv":"N3","cat":"語彙","tags":["表記","2026-07"],"q":"「あぶら」を漢字で書くとき、最もよいものを、1・2・3・4から一つ選びなさい。","b":"鍋にあぶらを入れてください。","tr":"请往锅里放油。","opts":["貝","塩","油","豆"],"ans":2,"exp":"正解は「油」＝油。「塩（しお）」是盐，「豆（まめ）」是豆，「貝（かい）」是贝，都与”油”无关。","notes":[{"t":"油","r":"あぶら","m":"油"},{"t":"鍋","r":"なべ","m":"锅"},{"t":"塩","r":"しお","m":"盐"}]},{"id":"N3S2607-10","lv":"N3","cat":"語彙","tags":["表記","2026-07"],"q":"「ながした」を漢字で書くとき、最もよいものを、1・2・3・4から一つ選びなさい。","b":"その話を聞いて、みんな涙をながした。","tr":"听了那番话，大家都流下了眼泪。","opts":["落した","流した","泣した","汚した"],"ans":1,"exp":"正解は「流した」。「涙を流す」＝流泪，是固定搭配。「落とす」是掉落，「泣く」是哭（但不能说「泣した」），「汚す」是弄脏。","notes":[{"t":"涙","r":"なみだ","m":"眼泪"},{"t":"流す","r":"ながす","m":"流"},{"t":"汚す","r":"よごす","m":"弄脏"}]},{"id":"N3S2607-11","lv":"N3","cat":"語彙","tags":["表記","2026-07"],"q":"「くべつ」を漢字で書くとき、最もよいものを、1・2・3・4から一つ選びなさい。","b":"この二つはよく似ているので、くべつしにくい。","tr":"这两个很像，很难区分。","opts":["区別","区制","図別","図制"],"ans":0,"exp":"正解は「区別」＝区分、区别。「区」＝区分，「別」＝区别。后三项为假词。","notes":[{"t":"区別","r":"くべつ","m":"区分"},{"t":"似ている","r":"にている","m":"相似"},{"t":"制度","r":"せいど","m":"制度"}]},{"id":"N3S2607-12","lv":"N3","cat":"語彙","tags":["表記","2026-07"],"q":"「つつんで」を漢字で書くとき、最もよいものを、1・2・3・4から一つ選びなさい。","b":"早くつつんでください。","tr":"请快点包起来。","opts":["運んで","結んで","包んで","選んで"],"ans":2,"exp":"正解は「包んで」。「包む」＝包、包裹。「運ぶ」是搬运，「結ぶ」是系、连结，「選ぶ」是选择，读音相近易混。","notes":[{"t":"包む","r":"つつむ","m":"包裹"},{"t":"運ぶ","r":"はこぶ","m":"搬运"},{"t":"結ぶ","r":"むすぶ","m":"系、结"}]},{"id":"N3S2607-13","lv":"N3","cat":"語彙","tags":["表記","2026-07"],"q":"「めいれい」を漢字で書くとき、最もよいものを、1・2・3・4から一つ選びなさい。","b":"これは社長のめいれいです。","tr":"这是社长的命令。","opts":["名例","命例","名令","命令"],"ans":3,"exp":"正解は「命令」＝命令。「命」＝命令，「令」＝令，其余组合都是假词。","notes":[{"t":"命令","r":"めいれい","m":"命令"},{"t":"社長","r":"しゃちょう","m":"社长"},{"t":"例","r":"れい","m":"例子"}]},{"id":"N3S2607-14","lv":"N3","cat":"語彙","tags":["表記","2026-07"],"q":"「うせつ」を漢字で書くとき、最もよいものを、1・2・3・4から一つ選びなさい。","b":"その交差点をうせつしてください。","tr":"请在那个十字路口右转。","opts":["左折","右折","右切","左切"],"ans":1,"exp":"正解は「右折」＝右转。「折」＝转弯（折れる），「右折・左折」是固定说法。用「切」的组合不成词。","notes":[{"t":"交差点","r":"こうさてん","m":"十字路口"},{"t":"右折","r":"うせつ","m":"右转"},{"t":"左折","r":"させつ","m":"左转"}]},{"id":"N3S2607-15","lv":"N3","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"手を洗った後は、そのコップを使って（　）をしてください。","tr":"洗完手之后，请用那个杯子漱口。","opts":["あくび","いびき","うがい","しゃっくり"],"ans":2,"exp":"正解は「うがい」＝漱口。「あくび」是打哈欠，「いびき」是打呼噜，「しゃっくり」是打嗝，只有”用杯子”能搭配漱口。","notes":[{"t":"うがい","r":"うがい","m":"漱口"},{"t":"あくび","r":"あくび","m":"哈欠"},{"t":"コップ","r":"こっぷ","m":"杯子"}]},{"id":"N3S2607-16","lv":"N3","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"昨日友達と行った映画館はとてもすいていて、（　）が多かった。","tr":"昨天和朋友去的电影院很空，空座位很多。","opts":["不要","欠席","不足","空席"],"ans":3,"exp":"正解は「空席」＝空座。「すいている」＝（场所）空、不拥挤，所以座位是”空席”。「欠席」是缺席（指人），「不足」是数量不足。","notes":[{"t":"空席","r":"くうせき","m":"空座"},{"t":"映画館","r":"えいがかん","m":"电影院"},{"t":"欠席","r":"けっせき","m":"缺席"}]},{"id":"N3S2607-17","lv":"N3","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"最近洗濯機の（　）がよくないので、新しいのを買うつもりです。","tr":"最近洗衣机的状况不太好，打算买台新的。","opts":["環境","調子","事情","都合"],"ans":1,"exp":"正解は「調子」。「調子がいい／悪い」＝（机器、身体）状态好／不好，是固定搭配。「都合」用于时间、情况。","notes":[{"t":"洗濯機","r":"せんたくき","m":"洗衣机"},{"t":"調子","r":"ちょうし","m":"状态"},{"t":"都合","r":"つごう","m":"方便、情况"}]},{"id":"N3S2607-18","lv":"N3","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"その映画は、内容はよく覚えているが（　）が思い出せない。","tr":"那部电影的内容我记得很清楚，但想不起片名。","opts":["フォルム","タイトル","チケット","イメージ"],"ans":1,"exp":"正解は「タイトル」＝标题、片名。「フォルム」是形态，「チケット」是票，「イメージ」是印象，与”内容记得、名字想不起”的对比不合。","notes":[{"t":"内容","r":"ないよう","m":"内容"},{"t":"思い出せない","r":"おもいだせない","m":"想不起来"},{"t":"映画","r":"えいが","m":"电影"}]},{"id":"N3S2607-19","lv":"N3","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"明日のスピーチでメモを見ないで話すために、文章を全部（　）した。","tr":"为了明天演讲时不看稿，我把文章全部背了下来。","opts":["納得","学習","暗記","観察"],"ans":2,"exp":"正解は「暗記」＝背诵。「暗記する」指把内容记在脑子里。「納得」是理解、信服，「学習」是学习，「観察」是观察。","notes":[{"t":"暗記","r":"あんき","m":"背诵"},{"t":"スピーチ","r":"すぴーち","m":"演讲"},{"t":"納得","r":"なっとく","m":"理解、信服"}]},{"id":"N3S2607-20","lv":"N3","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"暗い所から急に明るい所に出たので、（　）目を閉じてしまった。","tr":"从暗处突然走到亮处，光太刺眼，不由得闭上了眼睛。","opts":["まぶしくて","きびしくて","めずらしくて","あたたかくて"],"ans":0,"exp":"正解は「まぶしくて」＝刺眼。「厳しい」是严厉，「珍しい」是稀奇，「暖かい」是温暖，都与光线强无关。","notes":[{"t":"まぶしい","r":"まぶしい","m":"刺眼"},{"t":"目を閉じる","r":"めをとじる","m":"闭眼"},{"t":"珍しい","r":"めずらしい","m":"稀奇"}]},{"id":"N3S2607-21","lv":"N3","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"危ないですから、自転車のハンドルを（　）握ってください。","tr":"很危险，请牢牢握住自行车把手。","opts":["ぴったり","しっかり","はっきり","うっかり"],"ans":1,"exp":"正解は「しっかり」＝牢牢地、好好地。「ぴったり」是恰好、紧贴，「はっきり」是清楚，「うっかり」是不小心（副词，多修饰失误）。","notes":[{"t":"ハンドル","r":"はんどる","m":"把手"},{"t":"握る","r":"にぎる","m":"握"},{"t":"しっかり","r":"しっかり","m":"牢牢地"}]},{"id":"N3S2607-22","lv":"N3","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"祖父は長い間、村のために働いてきたので、村の人たちからとても（　）されている。","tr":"祖父长年为村子做事，所以深受村民尊敬。","opts":["尊敬","賛成","愛用","遠慮"],"ans":0,"exp":"正解は「尊敬」＝尊敬。「尊敬される」＝受到尊敬。「賛成」是赞成（对意见），「愛用」是爱用（对物品），「遠慮」是客气。","notes":[{"t":"尊敬","r":"そんけい","m":"尊敬"},{"t":"祖父","r":"そふ","m":"祖父"},{"t":"遠慮","r":"えんりょ","m":"客气"}]},{"id":"N3S2607-23","lv":"N3","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"風邪で熱があるので、ベッドから起きて歩くと、体が（　）します。","tr":"因为感冒发烧，从床上起来走路，身体就摇摇晃晃的。","opts":["はらはら","きょろきょろ","ふらふら","うろうろ"],"ans":2,"exp":"正解は「ふらふら」＝（身体）摇晃、站不稳。「きょろきょろ」是东张西望，「うろうろ」是徘徊，「はらはら」是（心）紧张、（花）飘落。","notes":[{"t":"ふらふら","r":"ふらふら","m":"摇摇晃晃"},{"t":"風邪","r":"かぜ","m":"感冒"},{"t":"熱","r":"ねつ","m":"发烧"}]},{"id":"N3S2607-24","lv":"N3","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"この薬は、歯の痛みを（　）ことができるそうです。","tr":"听说这种药可以抑制牙痛。","opts":["隠す","壊す","下ろす","抑える"],"ans":3,"exp":"正解は「抑える」＝抑制、压住（疼痛、感情、上涨）。「隠す」是隐藏，「壊す」是弄坏，「下ろす」是放下、卸下。","notes":[{"t":"抑える","r":"おさえる","m":"抑制"},{"t":"痛み","r":"いたみ","m":"疼痛"},{"t":"薬","r":"くすり","m":"药"}]},{"id":"N3S2607-25","lv":"N3","cat":"語彙","tags":["文脈規定","2026-07"],"q":"（　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。","b":"雪のない時期でも、最近の技術では（　）雪を降らせることができる。","tr":"即使在没雪的季节，以最近的技术也能人工降雪。","opts":["消極的に","人工的に","抽象的に","代表的に"],"ans":1,"exp":"正解は「人工的に」＝人工地。「人工雪」是固定说法。「消極的」是消极的，「抽象的」是抽象的，「代表的」是代表性的。","notes":[{"t":"人工","r":"じんこう","m":"人工"},{"t":"技術","r":"ぎじゅつ","m":"技术"},{"t":"降らせる","r":"ふらせる","m":"使降下"}]},{"id":"N3S2607-26","lv":"N3","cat":"語彙","tags":["類義","2026-07"],"q":"「らくな」に意味が最も近いものを、1・2・3・4から一つ選びなさい。","b":"思っていたよりらくなアルバイトだった。","tr":"这份兼职比想象的轻松。","opts":["自由な","簡単な","面白い","難しい"],"ans":1,"exp":"正解は「簡単な」。「楽だ」＝轻松、不费劲，与「簡単だ」意思接近。「自由」是自由，「面白い」是有趣，「難しい」是困难（相反）。","notes":[{"t":"楽","r":"らく","m":"轻松"},{"t":"アルバイト","r":"あるばいと","m":"兼职"},{"t":"簡単","r":"かんたん","m":"简单"}]},{"id":"N3S2607-27","lv":"N3","cat":"語彙","tags":["類義","2026-07"],"q":"「しゃべっている」に意味が最も近いものを、1・2・3・4から一つ選びなさい。","b":"彼は何かしゃべっているようです。","tr":"他好像在说些什么。","opts":["話して","考えて","見て","探して"],"ans":0,"exp":"正解は「話して」。「しゃべる」＝说、讲（口语），与「話す」最近。「考える」是想，「探す」是找。","notes":[{"t":"しゃべる","r":"しゃべる","m":"说、讲"},{"t":"話す","r":"はなす","m":"说"},{"t":"探す","r":"さがす","m":"寻找"}]},{"id":"N3S2607-28","lv":"N3","cat":"語彙","tags":["類義","2026-07"],"q":"「サイズ」に意味が最も近いものを、1・2・3・4から一つ選びなさい。","b":"この写真では実際のサイズが分かりません。","tr":"从这张照片看不出实际大小。","opts":["色","重さ","大きさ","形"],"ans":2,"exp":"正解は「大きさ」。「サイズ」＝尺寸、大小。「重さ」是重量，「形」是形状，「色」是颜色。","notes":[{"t":"サイズ","r":"さいず","m":"尺寸"},{"t":"実際","r":"じっさい","m":"实际"},{"t":"重さ","r":"おもさ","m":"重量"}]},{"id":"N3S2607-29","lv":"N3","cat":"語彙","tags":["類義","2026-07"],"q":"「多忙しく」に意味が最も近いものを、1・2・3・4から一つ選びなさい。","b":"来月から多忙しくなりそうです。","tr":"下个月开始好像会非常忙。","opts":["ちょっと","とても","いろいろ","もっと"],"ans":1,"exp":"正解は「とても」。「多忙」＝非常忙，「多」表示程度很高，相当于「とても」。「いろいろ」是各种各样。","notes":[{"t":"多忙","r":"たぼう","m":"繁忙"},{"t":"来月","r":"らいげつ","m":"下个月"},{"t":"忙しい","r":"いそがしい","m":"忙"}]},{"id":"N3S2607-30","lv":"N3","cat":"語彙","tags":["類義","2026-07"],"q":"「交換して」に意味が最も近いものを、1・2・3・4から一つ選びなさい。","b":"山下さんが部品を交換してくれました。","tr":"山下帮我换了零件。","opts":["持ってきて","組み立てて","片づけて","取りかえて"],"ans":3,"exp":"正解は「取りかえて」。「取り替える」＝更换，与「交換する」最近。「組み立てる」是组装，「片づける」是收拾。","notes":[{"t":"交換","r":"こうかん","m":"交换、更换"},{"t":"部品","r":"ぶひん","m":"零件"},{"t":"取り替える","r":"とりかえる","m":"更换"}]},{"id":"N3S2607-31","lv":"N3","cat":"語彙","tags":["用法","2026-07"],"q":"「看板」の使い方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"（次の文のうち、「看板」を正しく使っているものを選ぶ）","tr":"选出「看板」用得最正确的一句。","opts":["私の学校では、先生も生徒も胸に看板をつけています。","似ている物が多いので、スーツケースに自分の看板をつけた。","昨日もらった鈴木さんの看板には、課長と書かれていた。","薬局は、あの赤い大きな看板があるお店です。"],"ans":3,"exp":"正解は4。「看板」＝店鋪、公司门口的大招牌。1、2、3 说的其实是「名札（なふだ）」（名牌、姓名牌）。","notes":[{"t":"看板","r":"かんばん","m":"招牌"},{"t":"名札","r":"なふだ","m":"名牌"},{"t":"薬局","r":"やっきょく","m":"药房"}]},{"id":"N3S2607-32","lv":"N3","cat":"語彙","tags":["用法","2026-07"],"q":"「募集」の使い方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"（次の文のうち、「募集」を正しく使っているものを選ぶ）","tr":"选出「募集」用得最正确的一句。","opts":["父は趣味で古い切手を募集している。","新しくできたスーパーでアルバイトを募集している。","この歌手は今、世界中の若者の人気を募集している。","社員を会議室に募集して、会議を開いた。"],"ans":1,"exp":"正解は2。「募集」＝招募（人、作品、意见等），对象多为”人”。收集邮票用「集める」，聚集人员用「集める」，人气用「集める」。","notes":[{"t":"募集","r":"ぼしゅう","m":"招募"},{"t":"切手","r":"きって","m":"邮票"},{"t":"集める","r":"あつめる","m":"收集"}]},{"id":"N3S2607-33","lv":"N3","cat":"語彙","tags":["用法","2026-07"],"q":"「消費」の使い方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"（次の文のうち、「消費」を正しく使っているものを選ぶ）","tr":"选出「消費」用得最正确的一句。","opts":["明日までに残りの宿題を全部消費しなければならない。","固い食べ物は胃で消費するのに時間がかかる。","私たちは毎日、電気やガスなどのエネルギーを消費している。","この靴は3年前から履いているので、底が消費している。"],"ans":2,"exp":"正解は3。「消費」＝消耗、消费（能源、金钱、时间）。作业用完说「済ませる／終わらせる」，食物消化说「消化する」，鞋底磨损说「減る／すり減る」。","notes":[{"t":"消費","r":"しょうひ","m":"消耗、消费"},{"t":"エネルギー","r":"えねるぎー","m":"能源"},{"t":"消化","r":"しょうか","m":"消化"}]},{"id":"N3S2607-34","lv":"N3","cat":"語彙","tags":["用法","2026-07"],"q":"「知り合う」の使い方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"（次の文のうち、「知り合う」を正しく使っているものを選ぶ）","tr":"选出「知り合う」用得最正确的一句。","opts":["帰りの電車で兄と知り合ったので、一緒に帰宅しました。","このレストランは、雑誌を見て知り合いました。","今回の実験で知り合った結果をレポートに書こうと思います。","中村さんとは、2年前に友達の結婚式で知り合いました。"],"ans":3,"exp":"正解は4。「知り合う」＝（与人）相识，主语和对象都是人，且是原本不认识的人。1的”哥哥”本来认识，2、3的对象不是人。","notes":[{"t":"知り合う","r":"しりあう","m":"相识"},{"t":"結婚式","r":"けっこんしき","m":"婚礼"},{"t":"帰宅","r":"きたく","m":"回家"}]},{"id":"N3S2607-35","lv":"N3","cat":"語彙","tags":["用法","2026-07"],"q":"「内側」の使い方として最もよいものを、1・2・3・4から一つ選びなさい。","b":"（次の文のうち、「内側」を正しく使っているものを選ぶ）","tr":"选出「内側」用得最正确的一句。","opts":["部屋の内側から鍵がかかっているので、中に入れません。","相談の内側は誰にも話しませんから、安心してください。","このスープの内側にはいろいろな野菜が入っていますね。","今は外国へ行くよりも、日本の内側を旅行したいです。"],"ans":0,"exp":"正解は1。「内側」＝（物理上的）内侧、里面。2应是「内容」，3应是「中」，4应是「国内」。","notes":[{"t":"内側","r":"うちがわ","m":"内侧"},{"t":"鍵","r":"かぎ","m":"锁"},{"t":"内容","r":"ないよう","m":"内容"}]}]
+const BUILTIN_BOOKS=[{id:'builtin-n2-2026-07',name:'N2 2026年7月 真题・言語知識（46問）',level:'N2',file:'n2-2026-07.json',qs:BANK_N2_2026},{id:'builtin-n3-2026-07',name:'N3 2026年7月 真题・文字語彙（35問）',level:'N3',file:'n3-2026-07.json',qs:BANK_N3_2026},{id:'builtin',name:'内蔵模擬題庫（N4／N3／N2 各 22 問）',level:'',file:'builtin.json',qs:BANK}];
+const baseBooks=()=>(S.banks&&S.banks.length)?S.banks:BUILTIN_BOOKS;
+const allQ=()=>baseBooks().reduce((a,b)=>a.concat(b.qs),[]).concat(S.custom);
+const qOf=id=>allQ().find(q=>q.id===id);
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+
+let toastT=0;
+function toast(msg){
+  const t=$('#toast');
+  t.textContent=msg; t.hidden=false;
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>{t.hidden=true;},2400);
+}
+
+/* ---------- 保存 ---------- */
+function load(){
+  let d=null;
+  try{ const raw=localStorage.getItem(KEY); if(raw) d=JSON.parse(raw); }catch(e){ d=null; }
+  S.custom=(d&&Array.isArray(d.custom))?d.custom:[];
+  S.prog=(d&&d.prog&&typeof d.prog==='object')?d.prog:{};
+  S.conf=Object.assign({},DEF_CONF,(d&&d.conf)||{});
+  if(!Array.isArray(S.conf.intervals)||S.conf.intervals.length<3) S.conf.intervals=DEF_CONF.intervals.slice();
+  S.log=(d&&Array.isArray(d.log))?d.log:[];
+  S.banks=(d&&Array.isArray(d.banks)&&d.banks.length)
+    ? d.banks.filter(b=>b&&Array.isArray(b.qs)).map(b=>({id:String(b.id||'bank'),name:String(b.name||'題庫'),level:String(b.level||''),file:String(b.file||''),qs:b.qs}))
+    : ((d&&Array.isArray(d.bank)&&d.bank.length)?[{id:'legacy',name:'読み込み題庫',level:'',qs:d.bank}]:null);
+  const f=(d&&d.fav&&typeof d.fav==='object')?d.fav:{};
+  S.fav={q:Array.isArray(f.q)?f.q.filter(x=>typeof x==='string'):[],
+         w:Array.isArray(f.w)?f.w.filter(x=>x&&x.t):[],
+         g:Array.isArray(f.g)?f.g.filter(x=>x&&x.g):[]};
+}
+let saveT=0;
+function save(){
+  clearTimeout(saveT);
+  saveT=setTimeout(()=>{
+    try{ localStorage.setItem(KEY,JSON.stringify({v:2,custom:S.custom,prog:S.prog,conf:S.conf,log:S.log.slice(-4000),fav:S.fav,banks:S.banks||undefined})); }
+    catch(e){ /* file:// で保存できない環境では、その場の記録だけ残る */ }
+  },150);
+}
+
+/* ---------- 日付 ---------- */
+function targetParts(){
+  const s=(S.conf.target||'2027-07-04').split('-').map(Number);
+  return {y:s[0]||2027,m:s[1]||7,d:s[2]||4};
+}
+function targetDate(){
+  const p=targetParts();
+  return new Date(p.y,p.m-1,p.d,13,30,0);
+}
+function daysLeft(){
+  return Math.max(0,Math.ceil((targetDate().getTime()-Date.now())/DAY));
+}
+function jpDate(d){
+  return d.getFullYear()+'.'+(d.getMonth()+1)+'.'+d.getDate()+'（'+WD[d.getDay()]+'）';
+}
+function shortDate(s){
+  const p=s.split('-');
+  return p[0].slice(2)+'.'+Number(p[1])+'.'+Number(p[2]);
+}
+
+/* ---------- 注釈（ルビ／ホバー） ---------- */
+function wrapNote(n){
+  const cls='a'+(n.u?' tg':'');
+  const w=esc(n.t);
+  const r=esc(n.r||'');
+  const m=esc(n.m||'');
+  const aria=esc(n.t+(n.r?'（'+n.r+'）':'')+(n.m?'：'+n.m:''));
+  if(S.conf.rubi==='always'&&n.r){
+    return '<ruby class="'+cls+'" data-w="'+w+'" data-r="'+r+'" data-m="'+m+'" aria-label="'+aria+'">'+w+'<rt>'+esc(n.r)+'</rt></ruby>';
+  }
+  return '<span class="'+cls+'" data-w="'+w+'" data-r="'+r+'" data-m="'+m+'" aria-label="'+aria+'">'+w+'</span>';
+}
+function annotate(text,notes){
+  if(!text) return '';
+  const map=new Map();
+  (notes||[]).forEach(n=>{ if(n&&n.t&&!map.has(n.t)) map.set(n.t,n); });
+  if(!map.size) return esc(text);
+  const keys=[...map.keys()].sort((a,b)=>b.length-a.length);
+  const re=new RegExp('('+keys.map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')','g');
+  let out='',last=0,m;
+  while((m=re.exec(text))){
+    out+=esc(text.slice(last,m.index))+wrapNote(map.get(m[0]));
+    last=m.index+m[0].length;
+  }
+  out+=esc(text.slice(last));
+  return out;
+}
+
+/* 語彙メモ（表示用）＋解説・用例用の読みをまとめた注音表 */
+function qn(q){
+  const m=new Map();
+  (q.notes||[]).forEach(n=>{ if(n&&n.t&&!m.has(n.t)) m.set(n.t,n); });
+  (q.rd||[]).forEach(n=>{ if(n&&n.t&&!m.has(n.t)) m.set(n.t,n); });
+  return [...m.values()];
+}
+function anqt(q,text){ return annotate(text,qn(q)); }
+function usHtml(q){
+  return q.us?('<p class="usln">'+esc(q.us)+'</p>'):'';
+}
+function exHtml(q){
+  if(!q.ex||!q.ex.length) return '';
+  const rows=q.ex.map(x=>'<div class="ex-row">'+
+    '<span class="ex-l">'+esc(x.l||'用例')+'</span>'+
+    '<span class="ex-j">'+anqt(q,x.j||'')+'</span>'+
+    (x.t?'<span class="ex-t">'+esc(x.t)+'</span>':'')+'</div>').join('');
+  return '<div class="exbox"><div class="ex-h">用例</div>'+rows+'</div>';
+}
+
+/* ---------- 栞（お気に入り） ---------- */
+function favq(id){ return S.fav.q.indexOf(id)>=0; }
+function favwIdx(t,qid){ return S.fav.w.findIndex(x=>x.qid===qid&&x.t===t); }
+function favgIdx(g,qid){ return S.fav.g.findIndex(x=>x.qid===qid&&x.g===g); }
+function starBtn(act,on,data,title){
+  return '<button class="fav'+(on?' on':'')+'" data-act="'+act+'"'+data+' aria-pressed="'+(on?'true':'false')+'" title="'+esc(title)+'">'+
+    '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M17 3H7v18l5-3.6L17 21V3z"/></svg></button>';
+}
+function qFavBtn(q){
+  const on=favq(q.id);
+  return starBtn('favq',on,' data-id="'+esc(q.id)+'"',on?'栞から外す':'この問題を栞に挟む');
+}
+function wFavBtn(q,n){
+  const on=favwIdx(n.t,q.id)>=0;
+  return starBtn('favw',on,' data-id="'+esc(q.id)+'" data-t="'+esc(n.t)+'" data-r="'+esc(n.r||'')+'" data-m="'+esc(n.m||'')+'"',on?'栞から外す':'この語彙を栞に挟む');
+}
+function gFavBtn(q){
+  if(!q.g) return '';
+  const on=favgIdx(q.g,q.id)>=0;
+  return starBtn('favg',on,' data-id="'+esc(q.id)+'" data-g="'+esc(q.g)+'" data-gm="'+esc(q.gm||'')+'"',on?'栞から外す':'この文法を栞に挟む');
+}
+function notesHtml(q){
+  if(!q.notes||!q.notes.length) return '';
+  return '<div class="notes">'+q.notes.map(n=>'<div><b>'+esc(n.t)+'</b><span>'+esc(n.r||'')+'</span><em>'+esc(n.m||'')+'</em>'+wFavBtn(q,n)+'</div>').join('')+'</div>';
+}
+function toggleFavQ(id){
+  const i=S.fav.q.indexOf(id);
+  if(i>=0) S.fav.q.splice(i,1); else S.fav.q.unshift(id);
+  save(); render(); toast(i>=0?'栞から外しました':'栞に挟みました');
+}
+function toggleFavW(t,id,r,m){
+  if(!t) return;
+  const i=favwIdx(t,id);
+  if(i>=0) S.fav.w.splice(i,1);
+  else S.fav.w.unshift({t, r:r||'', m:m||'', qid:id});
+  save(); render(); toast(i>=0?'語彙を栞から外しました':'語彙を栞に挟みました');
+}
+function toggleFavG(g,id,gm){
+  if(!g) return;
+  const i=favgIdx(g,id);
+  if(i>=0) S.fav.g.splice(i,1);
+  else S.fav.g.unshift({g, gm:gm||'', qid:id});
+  save(); render(); toast(i>=0?'文法を栞から外しました':'文法を栞に挟みました');
+}
+
+/* ---------- 選択肢の並び（問題ごとに固定） ---------- */
+function orderOf(id,n){
+  let h=2166136261;
+  for(let i=0;i<id.length;i++){ h^=id.charCodeAt(i); h=Math.imul(h,16777619); }
+  let s=(h>>>0)||987654321;
+  const rnd=()=>{ s^=s<<13; s>>>=0; s^=s>>17; s^=s<<5; s>>>=0; return s/4294967296; };
+  const arr=[]; for(let i=0;i<n;i++) arr.push(i);
+  for(let i=n-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); const t=arr[i]; arr[i]=arr[j]; arr[j]=t; }
+  return arr;
+}
+
+/* ---------- 集計 ---------- */
+function dayKey(ms){
+  const d=new Date(ms);
+  return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+}
+function agg(){
+  const now=Date.now();
+  const out={total:0,ok:0,ng:0,acc:0,seen:0,master:0,fresh:0,due:0,bank:allQ().length,today:0,log7:[],streak:0,cat:{},lv:{},tag:{}};
+  CATS.forEach(c=>out.cat[c]={n:0,ok:0,ng:0});
+  LVS.forEach(l=>out.lv[l]={n:0,ok:0,ng:0,seen:0,master:0,total:0});
+  allQ().forEach(q=>{
+    let L=out.lv[q.lv];
+    if(!L){ L=out.lv[q.lv]={n:0,ok:0,ng:0,seen:0,master:0,total:0}; }
+    L.total++;
+    const p=S.prog[q.id];
+    if(!p||!p.n){ out.fresh++; return; }
+    out.seen++; out.total+=p.n; out.ok+=p.ok||0; out.ng+=p.ng||0;
+    if(!out.cat[q.cat]) out.cat[q.cat]={n:0,ok:0,ng:0};
+    out.cat[q.cat].n+=p.n; out.cat[q.cat].ok+=p.ok||0; out.cat[q.cat].ng+=p.ng||0;
+    L.n+=p.n; L.ok+=p.ok||0; L.ng+=p.ng||0; L.seen++;
+    if((p.box||0)>=3){ out.master++; L.master++; }
+    if(p.due&&p.due<=now) out.due++;
+    (q.tags||[]).forEach(t=>{
+      const g=out.tag[t]||(out.tag[t]={n:0,ok:0,ng:0,items:0});
+      g.n+=p.n; g.ok+=p.ok||0; g.ng+=p.ng||0; g.items++;
+    });
+  });
+  out.acc=out.total?out.ok/out.total:0;
+  const todayK=dayKey(now);
+  const days=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(now-i*DAY);
+    days.push({k:dayKey(d.getTime()),w:WD[d.getDay()],n:0,ok:0});
+  }
+  const map=new Map(days.map(d=>[d.k,d]));
+  S.log.forEach(e=>{
+    const k=dayKey(e.t);
+    const d=map.get(k);
+    if(d){ d.n++; if(e.ok) d.ok++; }
+    if(k===todayK) out.today++;
+  });
+  out.log7=days;
+  const set=new Set(S.log.map(e=>dayKey(e.t)));
+  let i=set.has(todayK)?0:1, st=0;
+  for(;i<400;i++){
+    const k=dayKey(now-i*DAY);
+    if(set.has(k)) st++; else break;
+  }
+  out.streak=st;
+  return out;
+}
+const rateOf=L=>(L&&L.n)?L.ok/L.n:0;
+function estimateLevel(a){
+  const g=l=>a.lv[l]||{n:0,ok:0,seen:0};
+  const rate=L=>L.n?L.ok/L.n:-1;
+  if(!a||!a.total) return {band:0,label:'未測定',note:'まだ一問も解いていません。まず 10 問で基準線をつくります。',next:'N4 範囲で 10 問',trust:0};
+  const n4=g('N4'),n3=g('N3'),n2=g('N2');
+  const r4=rate(n4),r3=rate(n3),r2=rate(n2);
+  const ok=(L,m)=>L.n>=m;
+  if(ok(n2,10)&&r2>=0.7) return {band:7,label:'N2 合格圏の入口',note:'N2 範囲で 7 割。残るのは読解の時間制限と聴解。',next:'N2 読解を時間制で 1 日 1 本',trust:1};
+  if(ok(n2,8)&&r2>=0.5) return {band:6,label:'N2 入口',note:'N2 範囲で 5 割前後。文法・語彙の穴を埋める段階。',next:'N2 文法を 1 周、N3 の誤答タグを潰す',trust:0.9};
+  if(ok(n3,10)&&r3>=0.75) return {band:5,label:'N3 完成',note:'N3 範囲で 7 割 5 分。N2 に移行してよい水準。',next:'N2 の文字・語彙を 1 周（N3 も 3 割残す）',trust:0.9};
+  if(ok(n3,8)&&r3>=0.6) return {band:4,label:'N3 中盤',note:'N3 で 6 割。並べ替え・文章の文法が崩れやすい段階。',next:'N3 文法を周回、N2 は 2 割だけ触れる',trust:0.85};
+  if(ok(n3,8)&&r3>=0.45) return {band:3,label:'N3 入口',note:'N3 で 4〜5 割。N4 の取りこぼしが残っている可能性が高い。',next:'N3 を主力に、N4 で取りこぼしを回収',trust:0.8};
+  if(ok(n4,8)&&r4>=0.8) return {band:2,label:'N4 完成',note:'N4 で 8 割。N3 の入口に立っている。',next:'N3 の文法と語彙を主力に（N2 は触り程度）',trust:0.8};
+  if(ok(n4,8)&&r4>=0.6) return {band:1,label:'N4 中盤',note:'N4 で 6〜8 割。基礎は動いているが穴が残る。',next:'N4 の誤答タグを潰し、N3 を 3 割混ぜる',trust:0.7};
+  return {band:0,label:'N4 基礎',note:'サンプルがまだ少ない（各レベル 8 問以上で判定）。',next:'N4 の文法と語彙を一巡（毎日 15 問）',trust:0.4};
+}
+function verdict(a){ return '推定：'+estimateLevel(a).label; }
+function lvBars(a){
+  const b=S.conf.lvBias||'n3';
+  const bl={n3:'N3 優先（N2 は 1 セットの 2 割まで）',auto:'現在地に合わせる',even:'均等',n2:'N2 優先'}[b]||'N3 優先';
+  const rows=LVS.map(l=>{
+    const L=a.lv[l]||{n:0,ok:0,seen:0};
+    const r=L.n?L.ok/L.n:0; const pct=Math.round(r*100);
+    return '<div class="lvbar"><span class="t">'+l+'</span>'+
+      '<span class="bar"><i class="'+(r>=0.75?'':(r>=0.6?'mid':'low'))+'" style="width:'+(L.n?Math.max(4,pct):0)+'%"></i></span>'+
+      '<span class="n">'+(L.n?(pct+'% ・ '+L.n+' 回'):'未着手')+'</span></div>';
+  }).join('');
+  return '<div class="lvbars">'+rows+'</div>'+
+    '<div class="lvbias">いまの出題配分：<b>'+bl+'</b>　／　推定の硬さは各レベル 8 問以上のサンプルで決まります</div>';
+}
+
+/* ---------- 学習路線 ---------- */
+function PHASES(){
+  const P=[
+    ['2026-11-19','2027-01-31','N4 → N3 基礎固め','N4／N3 の文法を一周。語彙は 1,500 語。毎日 15〜20 問。'],
+    ['2027-02-01','2027-04-15','N3 完成 ＋ N2 の第一巡','N2 の文字・語彙・文法を体系化。音読みを語単位で整理。毎日 25 問。'],
+    ['2027-04-16','2027-06-10','N2 各分野の強化 ＋ 読解速度','長文 1 日 1 本、読解 3 本／週。時間を計って解く。毎日 30 問。'],
+    ['2027-06-11','2027-07-04','模試・誤答の詰め','模試 4 回。誤答を全通し。13:30 開始に体を合わせる。']
+  ];
+  const now=Date.now();
+  return P.map(([a,b,t,d]=[])=>({
+    a,b,t,d,
+    now: now>=new Date(a+'T00:00:00').getTime() && now<=new Date(b+'T23:59:59').getTime()
+  }));
+}
+
+/* ---------- 抽選 ---------- */
+let __estCache=null,__estAt=0;
+function estNow(){
+  const t=Date.now();
+  if(!__estCache||t-__estAt>30000){ __estCache=estimateLevel(agg()); __estAt=t; }
+  return __estCache;
+}
+function lvWeight(lv){
+  const b=S.conf.lvBias||'n3';
+  if(b==='even') return 1;
+  if(b==='n2') return lv==='N2'?1.5:(lv==='N3'?1:0.6);
+  if(b==='auto'){
+    const band=estNow().band;
+    if(band<=2) return lv==='N4'?1.3:(lv==='N3'?1.2:0.35);
+    if(band<=4) return lv==='N4'?0.6:(lv==='N3'?1.5:0.5);
+    return lv==='N4'?0.35:(lv==='N3'?1:1.4);
+  }
+  return lv==='N3'?1.5:(lv==='N4'?0.9:0.5);
+}
+function weightOf(q){
+  const p=S.prog[q.id];
+  const now=Date.now();
+  let base = (!p||!p.n) ? S.conf.wNew : (p.lastOk===false ? S.conf.wWrong : S.conf.wCorrect);
+  const overdue = (p&&p.due) ? Math.max(0,(now-p.due)/DAY) : 0;
+  return Math.max(0.05, base*(1+overdue*(S.conf.dueGain||0))*lvWeight(q.lv));
+}
+function buildQueue(cfg){
+  const filter=q=>(cfg.lv==='all'||q.lv===cfg.lv)&&(cfg.cat==='all'||q.cat===cfg.cat);
+  let pool=allQ().filter(filter);
+  if(cfg.mode==='fav') pool=pool.filter(q=>favq(q.id));
+  if(!pool.length) return [];
+  if(cfg.mode==='order') return pool.slice(0,cfg.count).map(q=>q.id);
+  if(cfg.mode==='new'){
+    const n=pool.filter(q=>!S.prog[q.id]||!S.prog[q.id].n);
+    if(n.length) pool=n;
+  }
+  if(cfg.mode==='review'){
+    const r=pool.filter(q=>S.prog[q.id]&&S.prog[q.id].n);
+    if(r.length) pool=r;
+  }
+  const n=Math.min(cfg.count,pool.length);
+  const scored=pool.map(q=>({id:q.id,k:Math.pow(Math.random(),1/weightOf(q))}));
+  scored.sort((a,b)=>b.k-a.k);
+  const byId=new Map(pool.map(q=>[q.id,q]));
+  const lvOf=id=>(byId.get(id)||{}).lv;
+  let ids=scored.slice(0,n).map(x=>x.id);
+  const bias=S.conf.lvBias||'n3';
+  if(cfg.lv==='all'&&bias!=='n2'&&bias!=='even'){
+    const cap=Math.max(1,Math.round(n*(bias==='n3'?0.2:0.3)));
+    let over=ids.filter(id=>lvOf(id)==='N2').length-cap;
+    if(over>0){
+      const spare=scored.slice(n).map(x=>x.id).filter(id=>lvOf(id)!=='N2');
+      ids=ids.map(id=>{ if(over>0&&lvOf(id)==='N2'&&spare.length){ over--; return spare.shift(); } return id; });
+    }
+  }
+  return ids;
+}
+
+/* ---------- セッション ---------- */
+function startSession(cfg){
+  cfg=Object.assign({},cfg||{});
+  let ids;
+  if(cfg.ids&&cfg.ids.length){
+    ids=cfg.ids.slice();
+  }else{
+    cfg.count=Number(cfg.count)||10;
+    ids=buildQueue(cfg);
+    if(!ids.length){ toast('この条件に合う問題がありません。レベルか分野を広げてください。'); return; }
+  }
+  SS={ids, i:0, res:[], start:Date.now(), repeat:{}, cur:null, done:false, showTr:false,
+      cfg: cfg.ids?{ids:ids.slice()}:cfg};
+  if(page!=='practice') location.hash='#/practice'; else render();
+  window.scrollTo(0,0);
+}
+function answer(d){
+  if(!SS||!SS.cur||SS.cur.chosen!==null) return;
+  const cur=SS.cur; const q=qOf(cur.id); if(!q) return;
+  cur.chosen=d; cur.ok=(d===cur.ans);
+  const p=S.prog[cur.id]||{n:0,ok:0,ng:0,box:0,due:0,last:0};
+  p.n=(p.n||0)+1; p.last=Date.now(); p.lastOk=cur.ok;
+  if(cur.ok){
+    p.ok=(p.ok||0)+1;
+    p.box=Math.min((p.box||0)+1,S.conf.intervals.length);
+    p.due=Date.now()+S.conf.intervals[Math.max(0,p.box-1)]*DAY;
+  }else{
+    p.ng=(p.ng||0)+1; p.box=0; p.due=Date.now()+10*60000;
+  }
+  S.prog[cur.id]=p;
+  S.log.push({t:Date.now(),id:cur.id,ok:cur.ok,cat:q.cat,lv:q.lv});
+  SS.res.push({id:cur.id,ok:cur.ok});
+  if(!cur.ok&&S.conf.repeatWrong&&!SS.repeat[cur.id]){
+    SS.repeat[cur.id]=1;
+    SS.ids.splice(Math.min(SS.i+3,SS.ids.length),0,cur.id);
+  }
+  save(); render();
+}
+function nextQ(){
+  if(!SS) return;
+  SS.cur=null; SS.i++;
+  if(SS.i>=SS.ids.length) SS.done=true;
+  render();
+  window.scrollTo(0,0);
+}
+
+/* ---------- 描画 ---------- */
+function render(){
+  page=(location.hash||'#/home').replace(/^#\//,'').split('?')[0]||'home';
+  if(!PAGES.some(p=>p[0]===page)) page='home';
+  $('#nav').innerHTML=PAGES.map(([k,l])=>'<a href="#/'+k+'" class="'+(page===k?'on':'')+'">'+l+'</a>').join('');
+  updateRail();
+  const view=$('#view');
+  if(page==='home') view.innerHTML=homeHtml();
+  else if(page==='practice') view.innerHTML=practiceHtml();
+  else if(page==='fav') view.innerHTML=favHtml();
+  else if(page==='review') view.innerHTML=reviewHtml();
+  else if(page==='analysis') view.innerHTML=analysisHtml();
+  else if(page==='info') view.innerHTML=infoHtml();
+  else view.innerHTML=settingsHtml();
+}
+function updateRail(){
+  $('#railFoot').innerHTML='<b>試験日 '+jpDate(targetDate())+'</b>残り '+daysLeft()+' 日<br>'+
+    esc(S.conf.target)+' 13:30 開始（推定）<br>記録はこの端末に自動保存';
+}
+
+/* ---------- 概況 ---------- */
+function sealSvg(d){
+  return '<svg class="seal" viewBox="0 0 200 200" role="img" aria-label="試験まで残り '+d+' 日">'+
+  '<defs><filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="4" seed="7" result="n"/>'+
+  '<feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/></filter></defs>'+
+  '<g filter="url(#rough)" fill="none" stroke="#AE3A2B"><circle cx="100" cy="100" r="86" stroke-width="8"/>'+
+  '<circle cx="100" cy="100" r="73" stroke-width="2"/></g>'+
+  '<g fill="#AE3A2B" text-anchor="middle" font-family="Hiragino Mincho ProN,Yu Mincho,serif">'+
+  '<text x="100" y="57" font-size="16" letter-spacing="2">試験まで</text>'+
+  '<text x="100" y="127" font-size="55">'+d+'</text>'+
+  '<text x="100" y="163" font-size="18">日</text></g></svg>';
+}
+function levelRows(a){
+  return LVS.map(l=>{
+    const L=a.lv[l]||{n:0,ok:0,master:0,total:0};
+    const mp=L.total?L.master/L.total:0;
+    const ap=L.n?L.ok/L.n:0;
+    return '<div class="lv"><span class="name"><b>'+l+'</b></span>'+
+      '<div class="track"><i class="'+(l==='N2'?'hi':(mp>=0.7?'mid':'') )+'" style="width:'+Math.round(mp*100)+'%"></i></div>'+
+      '<span>'+(L.n?Math.round(mp*100)+'% / '+Math.round(ap*100)+'%':'— / —')+'</span></div>';
+  }).join('');
+}
+function catTable(a){
+  return '<table class="tbl"><colgroup><col style="width:30%"><col style="width:22%"><col style="width:48%"></colgroup>'+
+  '<thead><tr><th>分野</th><th>正答率</th><th>状態</th></tr></thead><tbody>'+
+  CATS.map(k=>{
+    const c=a.cat[k]||{n:0,ok:0};
+    const r=c.n?c.ok/c.n:0;
+    return '<tr><td>'+k+(c.n?'':' <span class="pill">未着手</span>')+'</td>'+
+      '<td class="num'+(c.n&&r<0.6?' weak':'')+'">'+(c.n?Math.round(r*100)+'%':'—')+'</td>'+
+      '<td><div class="mini-bar"><i class="'+(r>=0.75?'':'low')+'" style="width:'+Math.round(r*100)+'%"></i></div></td></tr>';
+  }).join('')+'</tbody></table>';
+}
+function homeHtml(){
+  const a=agg(), c=S.conf, d=daysLeft();
+  const td=targetDate();
+  const ver=verdict(a);
+  const fresh=a.fresh, due=a.due;
+  const catArr=CATS.map(k=>({k,n:(a.cat[k]||{}).n||0,ok:(a.cat[k]||{}).ok||0,r:(a.cat[k]||{}).n?((a.cat[k].ok||0)/a.cat[k].n):0}));
+  const weak=catArr.filter(x=>x.n>=2).sort((x,y)=>x.r-y.r)[0];
+  const best=catArr.filter(x=>x.n>=2).sort((x,y)=>y.r-x.r)[0];
+
+  const acts=[
+    {t: fresh>0 ? '未見の問題から '+Math.min(c.dailyGoal,fresh)+' 問' : '二周目：全体から '+c.dailyGoal+' 問',
+     d: fresh>0 ? '題庫 '+a.bank+' 問のうち、まだ触れていない '+fresh+' 問。出題は未見優先。' : '全問に一度触れました。ここからは重み付きの反復で定着させる段階。',
+     btn:'はじめる', attr:'data-act="quick" data-count="'+Math.min(c.dailyGoal,fresh||c.dailyGoal)+'"'},
+    {t: due>0 ? '復習の期限が来た '+due+' 問' : '復習の期限が来た問題はなし',
+     d: due>0 ? '間隔反復の期日を過ぎた問題から。新規は後回しでいい。' : '次の期日を待つか、いま弱い分野を先に埋める。',
+     btn: due>0?'復習する':'復習の一覧', attr: due>0?'data-act="quick" data-mode="review" data-count="'+Math.min(10,Math.max(due,1))+'"':'data-act="goto" data-to="review"'},
+    {t: weak ? '最も弱い分野「'+weak.k+'」を 10 問' : '弱点のデータはまだない',
+     d: weak ? '正答 '+Math.round(weak.r*100)+'%（'+weak.n+' 回）。同じ分野を続けて解くと、崩れている場所が見える。' : 'まず 20 問解くと、分野別の正答率が出ます。',
+     btn: weak?'練習する':'まず解く', attr:'data-act="quick" data-cat="'+(weak?weak.k:'all')+'" data-count="10"'}
+  ];
+
+  const actsHtml=acts.map(x=>'<div class="act"><div><b>'+x.t+'</b><p>'+x.d+'</p></div><button class="btn sm" '+x.attr+'>'+x.btn+'</button></div>').join('');
+
+  const phases=PHASES();
+  const cur=phases.find(p=>p.now)||phases[0];
+  const tl=phases.map(p=>'<div class="tl-row"><div class="tl-time">'+shortDate(p.a)+'<span>〜'+shortDate(p.b)+'</span></div>'+
+    '<div class="tl-cell"><span class="tl-dot'+(p.now?' now':'')+'"></span></div>'+
+    '<div class="tl-body'+(p.now?' now':'')+'"><strong>'+p.t+(p.now?'<span class="badge-now">今ここ</span>':'')+'</strong><p>'+p.d+'</p></div></div>').join('');
+
+  const mx=Math.max(1,...a.log7.map(x=>x.n));
+  const spark='<div class="spark">'+a.log7.map(x=>'<div class="spark-col'+(x.n?' hi':'')+'"><i style="height:'+(x.n?Math.max(4,Math.round(x.n/mx*66)):0)+'px"></i><em>'+x.w+'</em></div>').join('')+'</div>'+
+    '<div class="spark-legend"><span>直近 7 日：'+(a.log7.reduce((s,x)=>s+x.n,0))+' 問 ・ 正答 '+a.log7.reduce((s,x)=>s+x.ok,0)+' 問</span><span>連続学習 '+a.streak+' 日 ・ 今日 '+a.today+' 問</span></div>';
+
+  const kpi='<div class="kpi">'+
+    '<div><b>'+a.bank+'</b><span>題庫（問）</span></div>'+
+    '<div><b>'+a.seen+'<small>/'+a.bank+'</small></b><span>既習（'+Math.round(a.bank?a.seen/a.bank*100:0)+'%）</span></div>'+
+    '<div><b>'+a.master+'</b><span>定着（3 回連続正解）</span></div>'+
+    '<div><b>'+(a.total?Math.round(a.acc*100)+'<small>%</small>':'—')+'</b><span>累計正答率（'+a.total+' 回答）</span></div>'+
+  '</div>';
+
+  return '<div class="hero"><div>'+
+    '<div class="hero-date">'+td.getFullYear()+'年'+(td.getMonth()+1)+'月'+td.getDate()+'日（'+WD[td.getDay()]+'）／13:30 開始（推定）</div>'+
+    '<h1>試験まで、あと<span class="num">'+d+'</span>日</h1>'+
+    '<p class="hero-sub">自己申告 <b>'+esc(c.startLevel)+'</b> から <b>N2</b> へ。<br>'+
+      (a.total?('これまで '+a.total+' 回答、正答率 '+Math.round(a.acc*100)+'%。'+ver+'。'):'まだ一問も解いていません。今日の '+Math.min(c.dailyGoal,10)+' 問から始めましょう。')+'</p>'+
+    '<div class="hero-acts"><button class="btn primary" data-act="quick" data-count="'+c.dailyGoal+'">今日の '+c.dailyGoal+' 問をはじめる</button>'+
+      '<a class="btn ghost" href="#/practice">出題を組む</a>'+
+      ((S.fav.q.length+S.fav.w.length+S.fav.g.length)?'<a class="btn ghost" href="#/fav">栞 '+(S.fav.q.length+S.fav.w.length+S.fav.g.length)+' 件</a>':'')+'</div>'+
+    '</div><div class="stampbox">'+sealSvg(d)+'</div></div>'+
+    kpi+
+    '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>現在地の推定</h2><span class="rule"></span><span class="note">'+esc(ver)+'</span></div>'+
+      '<p class="desc">左の数字が定着率（3 回連続正解で「定着」）、右が実際の正答率。数字が小さいうちは推定にすぎません。</p></div>'+
+      levelRows(a)+'</section>'+
+    '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>今日の一手</h2><span class="rule"></span><span class="note">所要 8〜15 分</span></div></div>'+
+      '<div class="acts">'+actsHtml+'</div></section>'+
+    '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>分野別の正答率</h2><span class="rule"></span><span class="note">'+
+      (best?'最も得意：'+best.k+' '+Math.round(best.r*100)+'%':'')+'</span></div></div>'+
+      catTable(a)+
+      (weak?('<div class="acts"><div class="act"><div><b>'+weak.k+' が最も弱い（正答 '+Math.round(weak.r*100)+'%、'+weak.n+' 回）</b><p>'+
+        weakTip(weak.k)+'</p></div><button class="btn sm" data-act="quick" data-cat="'+weak.k+'" data-count="10">10 問だけ</button></div></div>'):'')+
+      '</section>'+
+    '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>学習路線</h2><span class="rule"></span><span class="note">7 月 4 日から逆算</span></div>'+
+      '<p class="desc">いまは「'+cur.t+'」。'+cur.d+'</p></div>'+
+      '<div class="tl">'+tl+'</div></section>'+
+    '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>直近の学習</h2><span class="rule"></span><span class="note">記録は自動保存</span></div></div>'+
+      spark+'</section>'+
+    footHtml();
+}
+function weakTip(k){
+  const tips={
+    '漢字読み':'音読み・訓読みを語単位で覚え直す。同じ漢字を含む語を 5 語セットで。',
+    '語彙':'コロケーション（動詞＋名詞）で覚える。例：計画を立てる／責任を回避する。',
+    '文法':'文法点を 1 つ選んで自分の例文を 3 つ作る。錯題の再出題を優先。',
+    '読解':'設問を先に読んでから本文。1 本 15 分で時間を計る。'
+  };
+  return tips[k]||'';
+}
+function footHtml(){
+  return '<p class="foot">問題はすべてこのアプリ用に書き起こしたオリジナルで、公式問題の転載は含みません。'+
+    '追加題庫は <a href="https://www.jlpt.jp/samples/" target="_blank" rel="noopener">JLPT 公式 問題例</a> などを参照。'+
+    '学習記録は localStorage に保存され、サーバーには送られません。日付・開始時刻は 2027 年 7 月 4 日での推定です。</p>';
+}
+
+/* ---------- 練習 ---------- */
+function selHtml(name,items,cur){
+  return '<select data-setup="'+name+'">'+items.map(([v,l])=>{
+    return '<option value="'+v+'"'+(String(v)===String(cur)?' selected':'')+'>'+l+'</option>';
+  }).join('')+'</select>';
+}
+function practiceHtml(){
+  if(!SS) return practiceSetupHtml();
+  if(SS.done) return resultHtml();
+  let guard=0;
+  while(SS.i<SS.ids.length&&!qOf(SS.ids[SS.i])&&guard++<200) SS.i++;
+  if(SS.i>=SS.ids.length){ SS.done=true; return resultHtml(); }
+  return questionHtml();
+}
+function practiceSetupHtml(){
+  const a=agg(), c=S.conf;
+  const pool=allQ().filter(q=>(setup.lv==='all'||q.lv===setup.lv)&&(setup.cat==='all'||q.cat===setup.cat)&&(setup.mode!=='fav'||favq(q.id))).length;
+  return '<div class="pagehead"><h1>練習</h1><p>出題条件を決めて、まとめて解く</p></div>'+
+  '<div class="panel"><div class="panel-t">出題の条件</div>'+
+    '<div class="frow"><label>レベル</label><div>'+selHtml('lv',[['all','すべて（N4 → N2）'],['N4','N4 だけ'],['N3','N3 だけ'],['N2','N2 だけ']],setup.lv)+'</div></div>'+
+    '<div class="frow"><label>分野</label><div>'+selHtml('cat',[['all','すべて'],['漢字読み','漢字読み'],['語彙','語彙'],['文法','文法'],['読解','読解']],setup.cat)+'</div></div>'+
+    '<div class="frow"><label>問題数</label><div>'+selHtml('count',[['5','5 問'],['10','10 問'],['15','15 問'],['20','20 問'],['30','30 問']],setup.count)+'</div></div>'+
+    '<div class="frow"><label>出題</label><div>'+selHtml('mode',[['auto','おすすめ（間隔反復）'],['new','未見を優先'],['review','復習を優先'],['fav','栞に挟んだ問題だけ'],['order','番号順']],setup.mode)+'</div></div>'+
+  '</div>'+
+  '<p class="hint" style="margin-top:14px">対象 <b>'+pool+'</b> 問 ・ 未見 <b>'+a.fresh+'</b> 問 ・ 復習待ち <b>'+a.due+'</b> 問 ・ 定着 <b>'+a.master+'</b> 問<br>'+
+    '「おすすめ」は誤答を重く、正答を軽く扱う重み付き抽選。正答しても期日が来ればまた出ます。誤答は同じ回のうちに一度だけ再出題されます。</p>'+
+  '<div class="legend"><span class="key">hover</span><span>下線のある語にカーソルを合わせると、読みと意味が出ます（スマホはタップ）。</span></div>'+
+  '<div class="legend"><span class="key">訳</span><span>各問題の下にある「全文訳を表示」で、本文と設問の中国語訳をいつでも出せます。</span></div>'+
+  '<div style="margin-top:18px"><button class="btn primary" data-act="start">練習をはじめる</button></div>'+
+  '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>本番の形</h2><span class="rule"></span><span class="note">N2</span></div></div>'+
+    '<table class="tbl"><colgroup><col style="width:40%"><col style="width:26%"><col style="width:34%"></colgroup>'+
+    '<thead><tr><th>区分</th><th>時間</th><th>配点</th></tr></thead><tbody>'+
+    '<tr><td>言語知識（文字・語彙・文法）</td><td class="num">105 分（共通）</td><td class="num">60 点</td></tr>'+
+    '<tr><td>読解</td><td class="num">―（同一試験）</td><td class="num">60 点</td></tr>'+
+    '<tr><td>聴解</td><td class="num">約 50 分</td><td class="num">60 点</td></tr>'+
+    '<tr><td>合計</td><td class="num">—</td><td class="num">180 点</td></tr>'+
+    '<tr><td>合格基準</td><td class="num">総合 90／180</td><td class="num">各区分 19 点以上</td></tr>'+
+    '</tbody></table><p class="hint" style="margin-top:10px">時間・配点は公式の試験内容にもとづく参考値。実施日・受付は受験案内で確認してください。</p></section>'+
+  footHtml();
+}
+function qStemTr(q){
+  if(q.qt) return q.qt;
+  if(q.cat==='漢字読み'){
+    const m=(q.q||'').match(/「(.+?)」/);
+    return m?('请选择「'+m[1]+'」最合适的读音。'):'';
+  }
+  if((q.q||'').indexOf('＿＿')>=0) return '请选择最适合填入 ＿＿ 的一项。';
+  return '';
+}
+function fullTr(q){
+  const rows=[];
+  if(Array.isArray(q.p)&&Array.isArray(q.pt)) q.pt.forEach(t=>{ if(t) rows.push('<p>'+esc(t)+'</p>'); });
+  if(q.tr) rows.push('<p>'+esc(q.tr)+'</p>');
+  const st=qStemTr(q);
+  if(st) rows.push('<p class="tr-q">'+esc(st)+'</p>');
+  return rows.join('');
+}
+function questionHtml(){
+  const q=qOf(SS.ids[SS.i]);
+  if(!SS.cur||SS.cur.id!==q.id){
+    const order=orderOf(q.id,q.opts.length);
+    SS.cur={id:q.id,order,ans:order.indexOf(q.ans),chosen:null,ok:null};
+  }
+  const cur=SS.cur;
+  const total=SS.ids.length;
+
+  const optsHtml=cur.order.map((oi,d)=>{
+    const txt=q.opts[oi];
+    let cls='opt', bub=String(d+1);
+    if(cur.chosen!==null){
+      cls+=' locked';
+      if(d===cur.ans){ cls+=' correct'; bub='✓'; }
+      else if(d===cur.chosen){ cls+=' wrong'; bub='✕'; }
+    }
+    return '<li><button class="'+cls+'" data-act="pick" data-i="'+d+'"'+(cur.chosen!==null?' disabled':'')+'>'+
+      '<span class="bub">'+bub+'</span><span class="tx">'+anqt(q,txt)+'</span></button></li>';
+  }).join('');
+
+  const fb=cur.chosen===null?'':'<div class="fb">'+
+    '<div class="fb-top"><b class="'+(cur.ok?'ok':'ng')+'">'+(cur.ok?'正解':'不正解')+'</b>'+
+      '<span>正解は「'+anqt(q,q.opts[q.ans])+'」'+(cur.ok?'':' ／ あなたの答えは「'+anqt(q,q.opts[cur.order[cur.chosen]])+'」')+'</span></div>'+
+    '<p class="exp">'+anqt(q,q.exp)+'</p>'+
+    usHtml(q)+
+    exHtml(q)+
+    (q.g?'<p class="gpt">文法点 <b>'+esc(q.g)+'</b>'+(q.gm?' — '+esc(q.gm):'')+gFavBtn(q)+'</p>':'')+
+    notesHtml(q)+
+    '<div class="fb-act"><button class="btn primary" data-act="next">'+(SS.i+1>=SS.ids.length?'結果を見る':'次の問題')+'</button></div></div>';
+
+  const trBody=fullTr(q);
+  const autoTr=(S.conf.trMode==='always')||(S.conf.trMode==='after'&&cur.chosen!==null);
+  const trShow=!!SS.showTr||autoTr;
+  const trHtml=(trShow&&trBody)?('<div class="trblock"><div class="tr-h"><span>全文訳</span><em>'+
+    (cur.chosen===null?'答えを見る前の参考訳':'解答後の確認')+'</em></div>'+trBody+'</div>'):'';
+
+  return '<div class="prog"><i style="width:'+Math.round(SS.i/total*100)+'%"></i></div>'+
+  '<div class="qmeta"><span class="chip lv">'+q.lv+'</span><span class="chip cat">'+q.cat+'</span>'+
+    (q.g?'<span class="chip g hov" data-w="'+esc(q.g)+'" data-m="'+esc(q.gm||'')+'">'+esc(q.g)+'</span>':'')+
+    '<span class="idx">第 '+(SS.i+1)+' / '+total+' 問</span>'+qFavBtn(q)+'</div>'+
+  (q.p?'<div class="passage">'+q.p.map(t=>'<p>'+anqt(q,t)+'</p>').join('')+'</div>':'')+
+  (q.b?'<div class="qbody">'+anqt(q,q.b)+'</div>':'')+
+  '<p class="qask">'+esc(q.q)+'</p>'+
+  '<ol class="opts">'+optsHtml+'</ol>'+
+  '<div class="trbar"><button class="trbtn" data-act="tr">'+(trShow?'全文訳を隠す':'全文訳を表示')+'</button>'+
+    (trShow?'':'<span class="hint">訳を見ると答えの手がかりになります。解いたあとに読むのが効きます。</span>')+'</div>'+
+  trHtml+fb+
+  '<div class="legend" style="margin-top:16px"><span class="key">キー</span><span>1〜4 で選択、Enter で次へ。下線の語はホバーで読み・意味。</span></div>';
+}
+function resultHtml(){
+  const res=SS.res;
+  const n=Math.max(1,res.length);
+  const ok=res.filter(r=>r.ok).length;
+  const dur=Math.max(1,Math.round((Date.now()-SS.start)/1000));
+  const mm=Math.floor(dur/60), ss=String(dur%60).padStart(2,'0');
+  const byCat={};
+  res.forEach(r=>{ const q=qOf(r.id); if(!q) return; const b=byCat[q.cat]||(byCat[q.cat]={n:0,ok:0}); b.n++; if(r.ok) b.ok++; });
+  const catRows=Object.keys(byCat).map(k=>{
+    const b=byCat[k], r=b.ok/b.n;
+    return '<div class="lv"><span class="name"><b>'+k+'</b></span>'+
+      '<div class="track"><i class="'+(r>=0.75?'mid':'hi')+'" style="width:'+Math.round(r*100)+'%"></i></div>'+
+      '<span>'+b.ok+' / '+b.n+'</span></div>';
+  }).join('');
+
+  const wTags={};
+  res.forEach(r=>{ if(r.ok) return; const q=qOf(r.id); if(!q) return; const tg=(q.tags&&q.tags.length)?q.tags:[q.cat]; tg.forEach(t=>{ if(t) wTags[t]=(wTags[t]||0)+1; }); });
+  const topTags=Object.keys(wTags).sort((x,y)=>wTags[y]-wTags[x]).slice(0,3);
+
+  const wrong=[]; const seenW=new Set();
+  res.forEach(r=>{ if(!r.ok&&!seenW.has(r.id)){ seenW.add(r.id); wrong.push(r.id); } });
+
+  const list=res.map(r=>{
+    const q=qOf(r.id)||{q:r.id,cat:'',lv:''};
+    const text=(q.b||(q.p&&q.p[0])||q.q||'').replace(/\s+/g,' ');
+    return '<div class="res-row"><span class="m'+(r.ok?'':' ng')+'">'+(r.ok?'✓':'✕')+'</span>'+
+      '<span class="t">'+esc(text.slice(0,60))+'</span><span class="r">'+esc(q.lv+' '+q.cat)+'</span></div>';
+  }).join('');
+
+  return '<div class="pagehead"><h1>結果</h1><p>'+n+' 問 ・ '+mm+':'+ss+'</p></div>'+
+  '<div class="res-head"><div class="res-score">'+ok+'<small>/ '+n+' 問</small></div>'+
+    '<div class="res-meta">正答率 <b>'+Math.round(ok/n*100)+'%</b> ・ 平均 <b>'+(Math.round(dur/n))+' 秒</b>／問<br>'+
+    '誤答は同じ回でもう一度出題され、その後は短い間隔で戻ってきます。</div></div>'+
+  '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>分野別</h2><span class="rule"></span></div></div>'+catRows+'</section>'+
+  '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>今回の弱点</h2><span class="rule"></span><span class="note">誤答のタグ</span></div></div>'+
+    (topTags.length?('<div class="adv">'+topTags.map(t=>'<div class="adv-row"><span class="d">›</span><div><b>'+esc(t)+'（誤答 '+wTags[t]+' 問）</b><p>'+(weakTip(t)||'解説を読み、翌日にもう一度解く。')+'</p></div></div>').join('')+'</div>')
+      :'<div class="empty">全問正解。問題数を増やすか、上のレベルに移る。</div>')+
+  '</section>'+
+  '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>出題の内訳</h2><span class="rule"></span><span class="note">✓ 正解／✕ 誤答</span></div></div>'+
+    '<div class="res-list">'+list+'</div></section>'+
+  '<div class="fb-act" style="justify-content:flex-start;margin-top:22px">'+
+    (wrong.length?'<button class="btn primary" data-act="drill-list" data-ids="'+esc(wrong.join(','))+'">誤答 '+wrong.length+' 問を解き直す</button>':'')+
+    '<button class="btn" data-act="again">同じ条件でもう一度</button>'+
+    '<a class="btn ghost" href="#/review">復習の一覧へ</a>'+
+    '<a class="btn ghost" href="#/home">概況へ</a></div>'+
+  '<p class="hint" style="margin-top:14px">誤答は「理解できていない」ではなく「まだ定着していない」だけ。解説の語彙メモを読み、翌日もう一度解きます。</p>';
+}
+
+/* ---------- 復習 ---------- */
+function reviewHtml(){
+  const items=allQ().filter(q=>{ const p=S.prog[q.id]; return p&&p.ng>0; })
+    .sort((a,b)=>((S.prog[b.id].ng||0)-(S.prog[a.id].ng||0)));
+  const head='<div class="pagehead"><h1>復習</h1><p>誤答した問題 ・ 解説つき</p></div>';
+  if(!items.length){
+    return head+'<div class="empty">まだ誤答の記録がありません。<br>練習で 1 セット解くと、ここに「間違えた問題」が溜まっていきます。</div>'+
+      '<div style="margin-top:16px"><a class="btn primary" href="#/practice">練習へ</a></div>';
+  }
+  const rows=items.map(q=>{
+    const p=S.prog[q.id]||{ng:0,ok:0,box:0};
+    const first=(q.b||(q.p&&q.p[0])||q.q||'').replace(/\s+/g,' ');
+    return '<details><summary><div class="s-t"><b>'+esc(first.slice(0,46))+'</b>'+
+      '<span>'+esc(q.lv+' ・ '+q.cat+(q.g?' ・ '+q.g:''))+'</span></div>'+
+      '<div class="s-r">誤答 '+(p.ng||0)+'<i>正答 '+(p.ok||0)+'</i>'+qFavBtn(q)+'</div></summary>'+
+      '<div class="dbody">'+
+        (q.p?'<div class="passage">'+q.p.map(t=>'<p>'+anqt(q,t)+'</p>').join('')+'</div>':'')+
+        (q.b?'<div class="qbody">'+anqt(q,q.b)+'</div>':'')+
+        '<p class="qask">'+esc(q.q)+'</p>'+
+        '<p class="gpt" style="margin-top:10px">正解 <b style="color:var(--shu)">'+anqt(q,q.opts[q.ans])+'</b></p>'+
+        (q.g?'<p class="gpt">文法点 <b class="hov" data-w="'+esc(q.g)+'" data-m="'+esc(q.gm||'')+'">'+esc(q.g)+'</b>'+(q.gm?' — '+esc(q.gm):'')+gFavBtn(q)+'</p>':'')+
+        '<p class="exp">'+anqt(q,q.exp)+'</p>'+
+        usHtml(q)+exHtml(q)+
+        (fullTr(q)?'<div class="trblock"><div class="tr-h"><span>全文訳</span><em>参考訳</em></div>'+fullTr(q)+'</div>':'')+
+        notesHtml(q)+
+        '<div class="fb-act" style="justify-content:flex-start;margin-top:12px">'+
+          '<button class="btn sm" data-act="drill-single" data-id="'+esc(q.id)+'">この 1 問を解き直す</button></div>'+
+      '</div></details>';
+  }).join('');
+  return head+
+    '<p class="hint">誤答した問題は、正解するまで短期間で戻ってきます。解説を読んだあと、少し時間を置いてから解き直すのが効きます。</p>'+
+    '<div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">'+
+      '<button class="btn primary" data-act="drill-list" data-ids="'+esc(items.map(q=>q.id).join(','))+'">全 '+items.length+' 問をまとめて解く</button></div>'+
+    '<div style="margin-top:8px">'+rows+'</div>';
+}
+
+/* ---------- 栞 ---------- */
+function favHtml(){
+  const fq=S.fav.q.map(id=>qOf(id)).filter(Boolean);
+  const fw=S.fav.w, fg=S.fav.g;
+
+  const qRows=fq.map(q=>{
+    const line=(q.b||(q.p&&q.p[0])||q.q||'').replace(/\s+/g,' ');
+    return '<div class="fvrow"><div class="fvmain"><b>'+esc(line.slice(0,54))+'</b>'+
+      '<div class="fvsrc">'+esc(q.lv+' ・ '+q.cat+(q.g?' ・ '+q.g:''))+'</div></div>'+
+      '<div class="fvact"><button class="btn sm ghost" data-act="drill-single" data-id="'+esc(q.id)+'">解く</button>'+
+      qFavBtn(q)+'</div></div>';
+  }).join('');
+
+  const wRows=fw.map(x=>{
+    const q=qOf(x.qid);
+    return '<div class="fvrow"><div class="fvmain"><div class="fvword">'+wrapNote({t:x.t,r:x.r,m:x.m})+'</div>'+
+      (x.m?'<div class="fvmean">'+esc(x.m)+'</div>':'')+
+      '<div class="fvsrc">'+(q?esc('出典 '+q.lv+' ・ '+q.cat+' ・ '+q.id):'出典の記録なし')+'</div></div>'+
+      '<div class="fvact">'+(q?'<button class="btn sm ghost" data-act="drill-single" data-id="'+esc(q.id)+'">元の 1 問</button>':'')+
+      starBtn('favw',true,' data-id="'+esc(x.qid)+'" data-t="'+esc(x.t)+'" data-r="'+esc(x.r||'')+'" data-m="'+esc(x.m||'')+'"','栞から外す')+'</div></div>';
+  }).join('');
+
+  const gRows=fg.map(x=>{
+    const q=qOf(x.qid);
+    const ex=(q&&q.ex&&q.ex.length)?('<div class="fvex">'+anqt(q,q.ex[0].j)+'</div>'):'';
+    return '<div class="fvrow"><div class="fvmain">'+
+      '<div class="fvword"><span class="hov" data-w="'+esc(x.g)+'" data-m="'+esc(x.gm||'')+'">'+esc(x.g)+'</span></div>'+
+      (x.gm?'<div class="fvmean">'+esc(x.gm)+'</div>':'')+
+      (ex||'')+
+      '<div class="fvsrc">'+(q?esc('出典 '+q.lv+' ・ '+q.cat+' ・ '+q.id):'出典の記録なし')+'</div></div>'+
+      '<div class="fvact">'+(q?'<button class="btn sm ghost" data-act="drill-single" data-id="'+esc(q.id)+'">元の 1 問</button>':'')+
+      starBtn('favg',true,' data-id="'+esc(x.qid)+'" data-g="'+esc(x.g)+'" data-gm="'+esc(x.gm||'')+'"','栞から外す')+'</div></div>';
+  }).join('');
+
+  const sec=(t,noteList,body,emptyTxt)=>
+    '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>'+t+'</h2><span class="rule"></span><span class="note">'+noteList+'</span></div></div>'+
+    (body||'<div class="empty">'+emptyTxt+'</div>')+'</section>';
+
+  return '<div class="pagehead"><h1>栞</h1><p>問題 '+fq.length+' ・ 語彙 '+fw.length+' ・ 文法 '+fg.length+'</p></div>'+
+    sec('問題',fq.length+' 問',
+      fq.length?('<div class="fvlist">'+qRows+'</div>'+
+        (fq.length>1?'<div class="inline" style="margin-top:12px"><button class="btn sm primary" data-act="drill-list" data-ids="'+esc(fq.map(q=>q.id).join(','))+'">栞の '+fq.length+' 問をまとめて解く</button></div>':''))
+      :'','解いた問題の右上の栞から、あとで見たい問題を挟めます。')+
+    sec('語彙',fw.length+' 語',
+      fw.length?('<div class="fvlist">'+wRows+'</div>'):'',
+      '解説の語彙メモの右にある栞から、覚えたい語を挟めます。')+
+    sec('文法',fg.length+' 項',
+      fg.length?('<div class="fvlist">'+gRows+'</div>'):'',
+      '解説の「文法点」の右にある栞から、つまずいた文法を挟めます。')+
+    '<p class="hint" style="margin-top:18px">栞はこの端末に保存されます。練習の「出題」で「栞に挟んだ問題だけ」を選ぶと、栞だけで 1 セット解けます。</p>'+
+    footHtml();
+}
+
+/* ---------- 分析 ---------- */
+function advice(a){
+  if(!a.total) return [{t:'まず基準線をつくる',d:'N4 範囲で 10 問。正答率が数字になると、以降の配分を決められる。'}];
+  const out=[];
+  const cs=CATS.map(k=>({k,n:(a.cat[k]||{}).n||0,ok:(a.cat[k]||{}).ok||0,r:(a.cat[k]||{}).n?((a.cat[k].ok||0)/a.cat[k].n):0})).filter(x=>x.n>=2);
+  cs.sort((x,y)=>x.r-y.r);
+  const worst=cs[0];
+  if(worst&&worst.r<0.75) out.push({t:worst.k+' が最も弱い（正答 '+Math.round(worst.r*100)+'%）',d:weakTip(worst.k)});
+  if(a.due>15) out.push({t:'復習待ちが '+a.due+' 問たまっている',d:'今日は新規を止め、復習だけで回す。期日を過ぎた問題は忘れている前提で扱う。'});
+  const cov=a.bank?a.seen/a.bank:0;
+  if(cov<0.6) out.push({t:'題庫の '+Math.round(cov*100)+'% にしか触れていない',d:'分野を絞らず一巡する。偏った周回は弱点を見えなくする。'});
+  if(a.acc>=0.85&&a.total>=30) out.push({t:'正答率は十分（'+Math.round(a.acc*100)+'%）',d:'N2 範囲の比率を上げ、読解は時間制限を入れて解く。'});
+  const ds=daysLeft();
+  const perWeek=Math.max(1,Math.round(a.bank*2/Math.max(1,ds/7)));
+  out.push({t:'残り '+ds+' 日',d:'題庫を 2 周するなら 1 週あたり約 '+perWeek+' 問、1 日 '+(Math.max(3,Math.round(perWeek/7)))+' 問の計算。'});
+  return out;
+}
+function analysisHtml(){
+  const a=agg();
+  const acc=a.acc;
+  const est=estimateLevel(a);
+  const progRows=Object.keys(S.prog).filter(id=>S.prog[id]&&S.prog[id].n)
+    .map(id=>({id,p:S.prog[id],q:qOf(id)}))
+    .sort((x,y)=>(y.p.last||0)-(x.p.last||0));
+  const shown=progRows.slice(0,40);
+  const dueTxt=ms=>{ if(!ms) return '—'; const dd=Math.floor((ms-Date.now())/DAY); return dd<0?'期日超過':(dd===0?'今日':'+'+dd+' 日'); };
+  const tagRows=Object.keys(a.tag).map(k=>({k,...a.tag[k],r:a.tag[k].n?a.tag[k].ok/a.tag[k].n:0}))
+    .filter(x=>x.n>=2).sort((x,y)=>y.ng-x.ng||x.r-y.r).slice(0,9);
+  const lvRows=LVS.map(l=>{
+    const L=a.lv[l]||{n:0,ok:0,master:0,total:0,seen:0};
+    const r=L.n?L.ok/L.n:0;
+    return '<tr><td>'+l+'</td><td class="num">'+L.seen+' 問</td><td class="num">'+L.n+'</td>'+
+      '<td class="num'+(L.n&&r<0.6?' weak':'')+'">'+(L.n?Math.round(r*100)+'%':'—')+'</td></tr>';
+  }).join('');
+  return '<div class="pagehead"><h1>分析</h1><p>どこが崩れているか、次に何をするか</p></div>'+
+  '<div class="kpi"><div><b>'+a.total+'</b><span>累計回答</span></div>'+
+    '<div><b>'+(a.total?Math.round(acc*100)+'<small>%</small>':'—')+'</b><span>全体の正答率</span></div>'+
+    '<div><b>'+a.streak+'</b><span>連続学習（日）</span></div>'+
+    '<div><b>'+a.ng+'</b><span>累計の誤答</span></div></div>'+
+  '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>次にやること</h2><span class="rule"></span></div></div>'+
+    '<div class="adv">'+advice(a).map(x=>'<div class="adv-row"><span class="d">›</span><div><b>'+x.t+'</b><p>'+x.d+'</p></div></div>').join('')+'</div></section>'+
+  '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>現在地（推定レベル）</h2><span class="rule"></span><span class="note">'+esc(est.label)+'</span></div></div>'+
+    '<div class="est"><div class="est-lv">'+esc(est.label)+'</div>'+
+      '<div class="est-note">'+esc(est.note)+'</div>'+
+      '<div class="est-next">次にやるべきこと：'+esc(est.next)+'</div></div>'+
+    lvBars(a)+
+    '<p class="hint" style="margin-top:12px">判定は「各レベルで 8 問以上のサンプル」を前提にした目安です。N4 が 8 割を超えていれば N3 へ、N3 が 7 割 5 分なら N2 へ移る合図。読解と聴解は別途、時間を計って測ります。</p></section>'+
+  '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>レベル別</h2><span class="rule"></span><span class="note">N4 → N2</span></div></div>'+
+    '<table class="tbl"><colgroup><col style="width:24%"><col style="width:24%"><col style="width:24%"><col style="width:28%"></colgroup>'+
+    '<thead><tr><th>レベル</th><th>触れた問題</th><th>回答数</th><th>正答率</th></tr></thead><tbody>'+lvRows+'</tbody></table></section>'+
+  '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>分野別</h2><span class="rule"></span></div></div>'+catTable(a)+'</section>'+
+  '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>誤答の多いタグ</h2><span class="rule"></span><span class="note">2 回以上出題されたもの</span></div></div>'+
+    (tagRows.length?'<table class="tbl"><colgroup><col style="width:40%"><col style="width:18%"><col style="width:18%"><col style="width:24%"></colgroup>'+
+      '<thead><tr><th>タグ</th><th>出題</th><th>誤答</th><th>誤答率</th></tr></thead><tbody>'+
+      tagRows.map(x=>'<tr><td>'+esc(x.k)+'</td><td class="num">'+x.n+'</td><td class="num">'+x.ng+'</td>'+
+        '<td class="num'+(x.n&&x.ng/x.n>0.4?' weak':'')+'">'+(x.n?Math.round(x.ng/x.n*100)+'%':'—')+'</td></tr>').join('')+
+      '</tbody></table>':'<div class="empty">まだ十分な回数がありません。同じ分野を続けて解くと、タグ別の偏りが見えます。</div>')+
+    '</section>'+
+  '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>解答記録（問題ごと）</h2><span class="rule"></span><span class="note">'+progRows.length+' 問を記録中</span></div></div>'+
+    '<p class="desc">1 問ごとに「解いた回数・正答率・次回の期日」を端末内に保存しています。弱点分析と出題の重みは、この記録から作られます。</p>'+
+    (progRows.length?('<div class="rec-wrap"><table class="tbl" style="margin:0"><colgroup><col style="width:26%"><col style="width:30%"><col style="width:10%"><col style="width:12%"><col style="width:11%"><col style="width:11%"></colgroup>'+
+      '<thead><tr><th>問題</th><th>レベル・分野</th><th>解答</th><th>正答率</th><th>最終</th><th>次回</th></tr></thead><tbody>'+
+      shown.map(x=>{const r=x.p.n?((x.p.ok||0)/x.p.n):0;return '<tr><td>'+esc(x.id)+'</td><td>'+esc((x.q?x.q.lv:'?')+' ・ '+(x.q?x.q.cat:'?'))+'</td>'+
+        '<td class="num">'+x.p.n+'</td><td class="num'+(r<0.6?' weak':'')+'">'+Math.round(r*100)+'%</td>'+
+        '<td class="num">'+dayKey(x.p.last||Date.now())+'</td><td class="num">'+dueTxt(x.p.due)+'</td></tr>';}).join('')+
+      '</tbody></table></div>'+
+      (progRows.length>40?'<p class="hint">新しい 40 問を表示中。全体は CSV で書き出せます。</p>':'')+
+      '<div class="inline" style="margin-top:12px"><button class="btn sm ghost" data-act="exportcsv">CSV で書き出す</button>'+
+        '<button class="btn sm ghost" data-act="export">JSON でバックアップ</button></div>')
+      :'<div class="empty">まだ記録がありません。問題を 1 問解くと、ここに残ります。</div>')+
+    '</section>'+
+  '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>直近 7 日</h2><span class="rule"></span><span class="note">今日 '+a.today+' 問</span></div></div>'+
+    '<div class="spark">'+a.log7.map(x=>'<div class="spark-col'+(x.n?' hi':'')+'"><i style="height:'+(x.n?Math.max(4,Math.round(x.n/Math.max(1,...a.log7.map(y=>y.n))*66)):0)+'px"></i><em>'+x.w+'</em></div>').join('')+'</div>'+
+    '<div class="spark-legend"><span>正答 '+a.log7.reduce((s,x)=>s+x.ok,0)+' ／ 回答 '+a.log7.reduce((s,x)=>s+x.n,0)+'</span><span>定着 '+a.master+' 問</span></div></section>'+
+  footHtml();
+}
+
+/* ---------- 情報（試験要項・お知らせ） ---------- */
+function infoHtml(){
+  const news=[
+    ['2026.09.28','日本語能力試験以外の日本語試験について','公式','https://www.jlpt.jp/'],
+    ['2026.08.01','2026 年 7 月試験の実施概要（速報値）について','公式','https://www.jlpt.jp/'],
+    ['2026.02.13','受験上の配慮に関するページを追加','公式','https://www.jlpt.jp/'],
+    ['2026.01.13','2025 年 12 月試験の実施概要（速報値）について','公式','https://www.jlpt.jp/'],
+    ['2025.08.21','2025 年 12 月試験から、結果に CEFR レベルの参考表示を追加','変更','https://www.jlpt.jp/'],
+    ['2025.03.14','海外で受験する皆様へ：携帯電話等の電子機器の禁止について','変更','https://www.jlpt.jp/'],
+    ['2024.12.01','2025 年 4 月以降の成績証明書複製版の手数料と決済手段','変更','https://www.jlpt.jp/'],
+    ['2022.08.05','N1 の試験時間・問題数の目安の変更について（N2 は対象外）','変更','https://www.jlpt.jp/'],
+    ['2020.02.05','成績書類の偽造にご注意','注意','https://www.jlpt.jp/']
+  ];
+  return '<div class="pagehead"><h1>情報</h1><p>N2 の試験要項と、試験に関するお知らせ</p></div>'+
+
+  '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>2027 年 7 月の試験</h2><span class="rule"></span><span class="note">確認日 2026.11.20</span></div></div>'+
+    '<div class="quote">本アプリの想定日：<b>'+jpDate(targetDate())+'</b>　13:30 開始　—　残り <b>'+daysLeft()+' 日</b>'+
+      '<span class="cn">2027 年第 1 回の実施日は、公式にはまだ公表されていません。公式サイトの実施日は例年 7 月上旬の日曜で、本アプリは第 1 日曜（7 月 4 日）を推定値として使っています。設定で変更できます。</span></div>'+
+    '<ul class="keylist" style="margin-top:14px">'+
+      '<li><b>公表済みの直近の日程</b>：2026 年第 1 回 '+jpDate(new Date(2026,6,5))+'、第 2 回 '+jpDate(new Date(2026,11,6))+'。2027 年の日程は公式サイトの「実施日」欄で確認してください。</li>'+
+      '<li><b>申込時期の目安</b>：日本国内は 3 月下旬〜4 月中旬、台湾・香港・中国大陸は 3〜4 月が中心（過去回の傾向）。締切・手数料は主催機関ごとに違うため、各ページで確認。</li>'+
+      '<li><b>開始時刻は回によって変わる</b>：2026 年第 2 回（日本）は N1・N2 が午前（8:30 入場・9:10 開始）、N3〜N5 が午後（14:30 入場・15:10 開始）。午前／午後は申込時に確定する。</li>'+
+      '<li><b>結果通知</b>：7 月回は 9 月頃、12 月回は 3 月頃（海外は現地主催機関から）。</li>'+
+    '</ul>'+
+    '<p class="src" style="margin-top:12px">出典：<a href="https://www.jlpt.jp/" target="_blank" rel="noopener">日本語能力試験 公式サイト</a>　／　<a href="https://info.jees-jlpt.jp/info/2026-2jisshiannnai.html" target="_blank" rel="noopener">JEES 2026 年第 2 回 実施案内</a></p>'+
+  '</section>'+
+
+  '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>試験の形（N2）</h2><span class="rule"></span><span class="note">180 点満点</span></div></div>'+
+    '<table class="tbl"><colgroup><col style="width:52%"><col style="width:24%"><col style="width:24%"></colgroup>'+
+      '<thead><tr><th>科目</th><th>時間</th><th style="text-align:right">配点</th></tr></thead><tbody>'+
+      '<tr><td>言語知識（文字・語彙・文法）</td><td>105 分（共通）</td><td class="num">60</td></tr>'+
+      '<tr><td>読解</td><td>―（同一試験）</td><td class="num">60</td></tr>'+
+      '<tr><td>聴解</td><td>約 50 分</td><td class="num">60</td></tr>'+
+      '<tr><td>合計</td><td>—</td><td class="num">180</td></tr>'+
+      '<tr><td>合格基準</td><td>総合 90／180</td><td class="num">各区分 19 点以上</td></tr>'+
+      '</tbody></table>'+
+    '<div class="quote" style="margin-top:16px">「日常的な場面で使われる日本語の理解に加え、より幅広い場面で使われる日本語をある程度理解することができる」'+
+      '<span class="cn">在读的方面：能读报纸・杂志的记事与解说、平易的评论等论旨明快的文章；在听的方面：能听接近自然语速的连贯会话与新闻，把握话流、内容、人物关系与要旨。</span></div>'+
+    '<ul class="keylist" style="margin-top:14px">'+
+      '<li><b>本アプリが扱う範囲</b>：言語知識（文字・語彙・文法）と読解。<b>聴解は音声がないため扱っていません</b>。実試験では 3 区分が各 60 点（合計 180 点）で、聴解だけで全体の 3 分の 1 を占めるので別途対策が必要。</li>'+
+      '<li><b>区分ごとの足切り</b>：合計 90 点でも、3 区分（言語知識・読解・聴解）のどれかが 19 点未満なら不合格。1 科目だけ極端に弱いと落ちる。</li>'+
+      '<li><b>CEFR 参考表示</b>：2025 年 12 月回から、結果に CEFR レベルの参考が併記される（合否判定には影響しない）。</li>'+
+    '</ul>'+
+    '<p class="src" style="margin-top:12px">出典：<a href="https://www.jlpt.jp/about/levelsummary.html" target="_blank" rel="noopener">認定の目安（公式）</a>　／　<a href="https://www.jlpt.jp/" target="_blank" rel="noopener">公式サイト</a></p>'+
+  '</section>'+
+
+  '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>当日の注意</h2><span class="rule"></span><span class="note">公式告知より</span></div></div>'+
+    '<ul class="keylist">'+
+      '<li><b>電子機器は持ち込み禁止</b>：海外会場では携帯電話・スマートウォッチ等の持ち込みが禁止（2025.03.14 告知）。日本国内も試験中の使用は不正行為扱い。</li>'+
+      '<li><b>問題・解答の公開は禁止</b>：試験問題と解答の無断公開・販売は禁止（2024.01.19 警告）。本アプリの題庫は、公式問題例の形式を参考にした自作問題で構成している。</li>'+
+      '<li><b>受験票・身分証</b>：指定の写真付き身分証が必要。会場・入場時刻は受験票で確認。</li>'+
+      '<li><b>成績証明書</b>：複製版は 2025 年 4 月以降申込分から有料（2024.05.01 告知）。</li>'+
+    '</ul>'+
+  '</section>'+
+
+  '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>公式のお知らせ</h2><span class="rule"></span><span class="note">新しい順</span></div></div>'+
+    '<div class="news">'+news.map(n=>'<div class="news-row"><span class="d">'+n[0]+'</span>'+
+      '<span class="h"><a href="'+n[3]+'" target="_blank" rel="noopener">'+esc(n[1])+'</a><span class="tag'+(n[2]==='注意'?' warn':'')+'">'+n[2]+'</span></span></div>').join('')+'</div>'+
+    '<p class="src" style="margin-top:12px">一覧は <a href="https://www.jlpt.jp/" target="_blank" rel="noopener">jlpt.jp のお知らせ</a> を 2026.11.20 に確認したもの。日付はサイト掲載日。</p>'+
+  '</section>'+
+
+  '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>報道（未確認）</h2><span class="rule"></span><span class="note">断定しない</span></div></div>'+
+    '<div class="news"><div class="news-row"><span class="d">2026.10</span><span class="h">'+
+      '<a href="https://soizy.education/jlpt-2027-tang-so-dot-thi-them-thi-online/" target="_blank" rel="noopener">2027 年度から試験回数の増加・オンライン試験の導入を検討中との報道</a>'+
+      '<span class="tag warn">未確定</span></span></div></div>'+
+    '<p class="src" style="margin-top:10px">海外メディアの記事で、公式発表ではありません。日程・申込は必ず公式サイトの告知を基準にしてください。この項目は公式に発表があれば書き換えます。</p>'+
+  '</section>'+
+
+  '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>申込・問題例へのリンク</h2><span class="rule"></span><span class="note">公式のみ</span></div></div>'+
+    '<div class="news">'+
+      '<div class="news-row"><span class="d">日本</span><span class="h"><a href="https://info.jees-jlpt.jp/" target="_blank" rel="noopener">JEES（日本国内の実施機関）</a></span></div>'+
+      '<div class="news-row"><span class="d">台湾</span><span class="h"><a href="http://jlpt.jp/sp/tw/" target="_blank" rel="noopener">JLPT 台湾ページ（主辦機関へのリンクあり）</a></span></div>'+
+      '<div class="news-row"><span class="d">中国大陸</span><span class="h"><a href="https://jlpt.neea.cn/" target="_blank" rel="noopener">教育部考试中心 JLPT 报名网</a></span></div>'+
+      '<div class="news-row"><span class="d">問題例</span><span class="h"><a href="https://www.jlpt.jp/samples/" target="_blank" rel="noopener">公式の問題例（レベル別）</a></span></div>'+
+      '<div class="news-row"><span class="d">公式</span><span class="h"><a href="https://www.jlpt.jp/" target="_blank" rel="noopener">日本語能力試験 公式サイト</a>　／　<a href="http://jlpt.jp/cn/faq/" target="_blank" rel="noopener">よくある質問（中文）</a></span></div>'+
+    '</div>'+
+  '</section>'+
+  footHtml();
+}
+
+/* ---------- 設定・題庫 ---------- */
+const TPL='{\n  "lv": "N2",\n  "cat": "文法",\n  "tags": ["文法", "〜に加えて"],\n  "q": "＿＿に入れるのに最もよいものを選んでください。",\n  "qt": "请选择最适合填入 ＿＿ 的一项。",\n  "b": "円安＿＿、輸入品の値段も上がった。",\n  "tr": "由于日元贬值＿＿，进口商品的价格也上涨了。",\n  "opts": ["に加えて", "に応じて", "をめぐって", "に反して"],\n  "ans": 0,\n  "exp": "正解は「に加えて」。前件に加えて後件も起きる。",\n  "notes": [{"t":"円安","r":"えんやす","m":"日元贬值"},{"t":"輸入品","r":"ゆにゅうひん","m":"进口商品"}],\n  "g": "〜に加えて",\n  "gm": "加上…（递加）"\n}';
+function settingsHtml(){
+  const c=S.conf;
+  const books=baseBooks();
+  const isBuiltin=!(S.banks&&S.banks.length);
+  const bankInfo=(isBuiltin
+    ? '<b>内蔵題庫</b> — 1 冊 ／ '+BANK.length+' 問。'
+    : '<b>読み込み済み</b> — '+books.length+' 冊 ／ '+allQ().length+' 問（追加問題 '+S.custom.length+' 問を含む）。')
+    +' 冊子ごとに書き出し・追加ができます。';
+  const bookRows=books.map(b=>'<div class="cl-row"><span>'+esc(b.name)+'　　第 '+b.qs.length+' 問'+(b.level?'　／　'+esc(b.level):'')+'</span>'+
+    '<button class="x" data-act="exportbook" data-id="'+esc(b.id)+'">書き出す</button></div>').join('');
+  const ints=c.intervals.map((v,i)=>'<input class="num-in" type="number" min="1" max="365" step="1" value="'+v+'" data-int="'+i+'" aria-label="'+(i+1)+'回目の間隔">').join('');
+  const customList=S.custom.length?S.custom.map(q=>'<div class="cl-row"><span>'+esc(q.id)+' ／ '+esc(q.lv)+' ／ '+esc(q.cat)+' — '+esc((q.q||'').slice(0,30))+'</span>'+
+    '<button class="x" data-act="delq" data-id="'+esc(q.id)+'">削除</button></div>').join(''):'<p class="hint">まだ追加した問題はありません。</p>';
+  return '<div class="pagehead"><h1>設定</h1><p>出題の重み・表示・データ・題庫</p></div>'+
+  '<div class="sgroup"><div class="t">出題の重み</div>'+
+    '<div class="srow"><div class="lab">誤答した問題<span class="hint">大きいほど、間違えた問題が繰り返し出る</span></div>'+
+      '<div class="inline"><input class="num-in" type="number" step="0.1" min="0.5" max="10" value="'+c.wWrong+'" data-conf="wWrong">倍</div></div>'+
+    '<div class="srow"><div class="lab">未見の問題</div>'+
+      '<div class="inline"><input class="num-in" type="number" step="0.1" min="0.3" max="10" value="'+c.wNew+'" data-conf="wNew">倍</div></div>'+
+    '<div class="srow"><div class="lab">正答した問題<span class="hint">小さくすると「たまに」の頻度になる</span></div>'+
+      '<div class="inline"><input class="num-in" type="number" step="0.05" min="0.1" max="3" value="'+c.wCorrect+'" data-conf="wCorrect">倍</div></div>'+
+    '<div class="srow"><div class="lab">期日超過の加点<span class="hint">1 日遅れるごとに重みを増やす量</span></div>'+
+      '<div class="inline"><input class="num-in" type="number" step="0.05" min="0" max="2" value="'+c.dueGain+'" data-conf="dueGain">／日</div></div>'+
+    '<div class="srow"><div class="lab">復習の間隔（日）<span class="hint">1 回目〜5 回目の連続正解で次回までの間隔</span></div>'+
+      '<div class="inline">'+ints+'</div></div>'+
+    '<div class="srow"><div class="lab">誤答の当堂再出題<span class="hint">同じセットの中で 1 回だけ出し直す</span></div>'+
+      '<div class="inline">'+selConf('repeatWrong',[['1','オン'],['0','オフ']],c.repeatWrong?'1':'0')+'</div></div>'+
+  '</div>'+
+
+  '<div class="sgroup"><div class="t">学習の設定</div>'+
+    '<div class="srow"><div class="lab">1 日の目標問題数</div>'+
+      '<div class="inline"><input class="num-in" type="number" min="1" max="120" step="1" value="'+c.dailyGoal+'" data-conf="dailyGoal">問</div></div>'+
+    '<div class="srow"><div class="lab">現在の自己評価<span class="hint">到達度を見る前の基準として使う</span></div>'+
+      '<div class="inline">'+selConf('startLevel',[['N4','N4'],['N3','N3'],['N2','N2']],c.startLevel)+'</div></div>'+
+    '<div class="srow"><div class="lab">出題のレベル配分<span class="hint">いまの推定レベルに合わせ、N3 を厚めにします</span></div>'+
+      '<div class="inline">'+selConf('lvBias',[['n3','N3 優先（推奨）'],['auto','現在地に合わせる'],['even','均等'],['n2','N2 優先']],c.lvBias||'n3')+'</div></div>'+
+    '<div class="srow"><div class="lab">試験日<span class="hint">2027 年 7 月の第 1 日曜を既定にしています</span></div>'+
+      '<div class="inline"><input type="date" value="'+esc(c.target)+'" data-conf="target"></div></div>'+
+  '</div>'+
+
+  '<div class="sgroup"><div class="t">表示</div>'+
+    '<div class="srow"><div class="lab">読み（ルビ）の出し方</div>'+
+      '<div class="inline">'+selConf('rubi',[['hover','カーソルを合わせたときだけ'],['always','常に表示（ルビ）'],['off','読みを出さない（意味だけ）']],c.rubi)+'</div></div>'+
+    '<div class="srow"><div class="lab">全文訳の出し方<span class="hint">問題文・本文・設問の中国語訳</span></div>'+
+      '<div class="inline">'+selConf('trMode',[['after','解答したあとに出す'],['always','最初から出す'],['off','自動では出さない（ボタンで表示）']],c.trMode)+'</div></div>'+
+  '</div>'+
+
+  '<div class="sgroup"><div class="t">題庫データベース（索引＋冊子）</div>'+
+    '<p class="hint">題庫は <b>bank/manifest.json</b>（索引）と <b>bank/n4.json ・ n3.json ・ n2.json</b>（模擬冊子）、<b>bank/n3-2026-07.json ・ n2-2026-07.json</b>（2026年7月 真题冊子）に分かれています。主 HTML は索引を読み、冊子を順に結合して出題します。冊子を増やせば、そのまま題庫も増えます。<br>'+
+      bankInfo+'</p>'+
+    '<div class="srow"><div class="lab">いま使っている冊子</div><div class="book-list">'+bookRows+'</div></div>'+
+    '<div class="srow"><div class="lab">題庫の読み込み<span class="hint">索引（manifest.json）を選ぶと、その構成で丸ごと差し替え。冊子だけなら追加も選べます。複数まとめて選べます</span></div>'+
+      '<div class="inline"><button class="btn sm primary" data-act="loadbank">選んだ冊子で差し替え</button>'+
+        '<button class="btn sm ghost" data-act="loadbankadd">冊子を追加／更新</button>'+
+        (isBuiltin?'':'<button class="btn sm ghost" data-act="stdbank">内蔵題庫に戻す</button>')+
+        '<input type="file" id="bankFile" accept="application/json,.json" multiple class="sr"></div></div>'+
+    '<div class="srow"><div class="lab">索引の書き出し<span class="hint">いまの冊子構成から manifest.json を作る</span></div>'+
+      '<div class="inline"><button class="btn sm ghost" data-act="exportmanifest">manifest.json を書き出す</button></div></div>'+
+    '<p class="hint">冊子の形：<b>{ "id", "name", "level", "questions": [ … ] }</b>。索引の形：<b>{ "banks": [ { "file", "name", "count" }, … ] }</b>。古い <b>bank.json</b>（問題の配列そのもの）も読めます。<br>'+
+      'この HTML と <b>bank/</b> は同じフォルダにあります。原始 PDF は同じフォルダの <b>source-pdf/</b>（N4・N3・N2 の下位フォルダ）に置いてください。<br>'+
+      '1 問の形：<b>id / lv / cat / q / opts / ans</b> が必須、<b>b</b>（一文）か <b>p</b>（本文の段落配列）のどちらか、<b>tr</b>（全文訳）、<b>pt</b>（段落ごとの訳）、<b>qt</b>（設問の訳）、<b>notes</b>（語彙メモ：t / r / m）、<b>rd</b>（注音専用の語表）、<b>ex</b>（用例：l / j / t）、<b>us</b>（用法の説明）、<b>g / gm</b>（文法点）。</p>'+
+  '</div>'+
+
+  '<div class="sgroup"><div class="t">データ</div>'+
+    '<div class="srow"><div class="lab">バックアップ<span class="hint">学習記録・追加した問題・栞を 1 つの JSON に</span></div>'+
+      '<div class="inline"><button class="btn sm" data-act="export">書き出す</button>'+
+      '<button class="btn sm ghost" data-act="import">読み取る</button>'+
+      '<input type="file" id="impFile" accept="application/json,.json" class="sr"></div></div>'+
+    '<div class="srow"><div class="lab">記録のリセット<span class="hint">正誤・期日・履歴・追加問題・栞をすべて消す</span></div>'+
+      '<div class="inline"><button class="btn sm ghost" data-act="reset">記録を消す</button></div></div>'+
+  '</div>'+
+
+  '<div class="sgroup"><div class="t">題庫に追加</div>'+
+    '<p class="hint">下のテンプレートを貼り替えて「追加する」。1 問ずつでも、配列でまとめてでも入ります。<br>'+
+      '<b>ans</b> は正解の位置（0 始まり）。<b>b</b> は文、長文は <b>p</b> に段落の配列。<b>notes</b> は読みと意味を出したい語（t / r / m、下線は u: 1）。</p>'+
+    '<div class="srow" style="display:block"><textarea id="newQ" spellcheck="false" aria-label="追加する問題の JSON">'+esc(TPL)+'</textarea></div>'+
+    '<div class="inline" style="margin-top:10px"><button class="btn sm primary" data-act="addq">追加する</button>'+
+      '<button class="btn sm ghost" data-act="tpl">テンプレートに戻す</button></div>'+
+    '<div class="custom-list">'+customList+'</div>'+
+  '</div>'+
+
+  '<div class="sgroup"><div class="t">無料の題庫・公式情報</div>'+
+    '<div class="links">'+
+      '<a href="https://www.jlpt.jp/samples/" target="_blank" rel="noopener">JLPT 公式 問題例（N1〜N5）<span>jlpt.jp</span></a>'+
+      '<a href="https://app.boochi-engineer.net/service/japanese-language-proficiency-test-siken" target="_blank" rel="noopener">無料オリジナル問題集 2,500 問（レベル・分野別）<span>boochi-engineer</span></a>'+
+      '<a href="https://www.nihongotojapan.com/en/challenge" target="_blank" rel="noopener">N5〜N1 ドリル（語彙・文法・即時採点）<span>nihongotojapan</span></a>'+
+      '<a href="https://www.jlptpracticetest.com/" target="_blank" rel="noopener">無料模試の比較（2026 年版）<span>jlptpracticetest</span></a>'+
+      '<a href="https://www.jlpt.jp/" target="_blank" rel="noopener">受験案内・実施日<span>jlpt.jp</span></a>'+
+    '</div>'+
+    '<p class="hint" style="margin-top:10px">外部サイトの問題は著作権があるため、このアプリには取り込んでいません。手元の問題は下の JSON で足していけます。</p>'+
+  '</div>'+
+  footHtml();
+}
+function selConf(name,items,cur){
+  return '<select data-conf="'+name+'">'+items.map(([v,l])=>{
+    return '<option value="'+v+'"'+(String(v)===String(cur)?' selected':'')+'>'+l+'</option>';
+  }).join('')+'</select>';
+}
+function exportProgCsv(){
+  const rows=[['問題ID','レベル','分野','解答回数','正解','誤答','正答率','連続正解(ボックス)','最終解答','次回期日']];
+  Object.keys(S.prog).forEach(id=>{
+    const p=S.prog[id]; if(!p||!p.n) return;
+    const q=qOf(id)||{};
+    rows.push([id,q.lv||'',q.cat||'',p.n,p.ok||0,p.ng||0,
+      (p.n?Math.round((p.ok||0)/p.n*100):0)+'%',p.box||0,
+      p.last?dayKey(p.last):'',p.due?dayKey(p.due):'']);
+  });
+  const body=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  try{
+    const blob=new Blob(['\uFEFF'+body],{type:'text/csv;charset=utf-8'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='n2-exam-room-prog-'+new Date().toISOString().slice(0,10)+'.csv';
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },800);
+    toast('解答記録を CSV で書き出しました（'+(rows.length-1)+' 問）');
+  }catch(e){ toast('書き出しに失敗しました'); }
+}
+
+/* ---------- データ操作 ---------- */
+function exportData(){
+  try{
+    const blob=new Blob([JSON.stringify({v:2,exported:new Date().toISOString(),custom:S.custom,prog:S.prog,conf:S.conf,log:S.log,fav:S.fav,banks:S.banks||undefined},null,2)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='n2-exam-room-'+new Date().toISOString().slice(0,10)+'.json';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },800);
+    toast('バックアップを書き出しました');
+  }catch(err){ toast('書き出しに失敗：'+err.message); }
+}
+function normQ(o,i,loose){
+  if(!o||typeof o!=='object'||Array.isArray(o)) throw new Error('オブジェクト形式で書いてください');
+  const q=Object.assign({},o);
+  q.id=String(q.id||('C'+Date.now().toString(36)+i));
+  q.lv=q.lv||'N2';
+  q.cat=q.cat||'文法';
+  q.opts=Array.isArray(q.opts)?q.opts:[];
+  q.notes=Array.isArray(q.notes)?q.notes:[];
+  q.rd=Array.isArray(q.rd)?q.rd.filter(n=>n&&n.t):[];
+  q.ex=Array.isArray(q.ex)?q.ex.filter(n=>n&&n.j):[];
+  q.tags=(Array.isArray(q.tags)&&q.tags.length)?q.tags:[q.cat];
+  q.q=q.q||'＿＿に入れるのに最もよいものを選んでください。';
+  q.ans=Number(q.ans||0);
+  if(!q.b&&!q.p) throw new Error('b（文）か p（本文の配列）が必要です');
+  if(q.opts.length<2) throw new Error('opts は 2 つ以上必要です');
+  if(!(q.ans>=0&&q.ans<q.opts.length)) throw new Error('ans が opts の範囲外です');
+  if(!loose && qOf(q.id)) q.id=q.id+'-'+Date.now().toString(36).slice(-3);
+  return q;
+}
+function normBank(list){
+  if(!Array.isArray(list)||!list.length) throw new Error('問題の配列を読み込んでください');
+  const out=[]; const seen={};
+  list.forEach((o,i)=>{
+    if(!o||typeof o!=='object'||Array.isArray(o)) throw new Error((i+1)+' 番目がオブジェクト形式ではありません');
+    const q=Object.assign({},o);
+    q.id=String(q.id||('B'+String(i+1).padStart(3,'0')));
+    if(seen[q.id]) throw new Error('id が重複しています：'+q.id);
+    seen[q.id]=1;
+    q.lv=q.lv||'N2';
+    q.cat=q.cat||'文法';
+    q.opts=Array.isArray(q.opts)?q.opts:[];
+    q.notes=Array.isArray(q.notes)?q.notes:[];
+    q.rd=Array.isArray(q.rd)?q.rd.filter(n=>n&&n.t):[];
+    q.ex=Array.isArray(q.ex)?q.ex.filter(n=>n&&n.j):[];
+    q.tags=(Array.isArray(q.tags)&&q.tags.length)?q.tags:[q.cat];
+    q.q=q.q||'＿＿に入れるのに最もよいものを選んでください。';
+    q.ans=Number(q.ans)||0;
+    if(!q.b&&!q.p) throw new Error(q.id+'：b（文）か p（本文の配列）が必要です');
+    if(q.opts.length<2) throw new Error(q.id+'：opts は 2 つ以上必要です');
+    if(!(q.ans>=0&&q.ans<q.opts.length)) throw new Error(q.id+'：ans が opts の範囲外です');
+    if(Array.isArray(q.p)&&Array.isArray(q.pt)&&q.pt.length!==q.p.length) throw new Error(q.id+'：pt の段落数が p と合いません');
+    out.push(q);
+  });
+  return out;
+}
+/* 題庫：manifest（索引）＋ 冊子（{questions:[...]} / 配列 / {bank:[...]}） */
+function slugName(n){ return String(n||'bank').replace(/\.json$/i,'').replace(/[^\w\-]+/g,'-').replace(/^-+|-+$/g,'')||'bank'; }
+function parseBankDoc(fileName,data){
+  if(Array.isArray(data)) return {book:{id:slugName(fileName),name:String(fileName||'bank').replace(/\.json$/i,''),level:'',raw:data}};
+  if(data&&Array.isArray(data.banks)) return {manifest:data};
+  if(data&&Array.isArray(data.questions)) return {book:{id:String(data.id||slugName(fileName)),name:String(data.name||fileName),level:String(data.level||''),raw:data.questions}};
+  if(data&&Array.isArray(data.bank)) return {book:{id:slugName(fileName),name:String(fileName||'bank').replace(/\.json$/i,''),level:'',raw:data.bank}};
+  throw new Error(String(fileName||'ファイル')+'：形式が不明です（manifest か {questions:[...]} か 配列）');
+}
+function normBookQ(list,bookName){
+  if(!Array.isArray(list)||!list.length) throw new Error(bookName+'：問題が 0 件です');
+  return list.map((o,i)=>{
+    if(!o||typeof o!=='object'||Array.isArray(o)) throw new Error(bookName+'：'+(i+1)+' 番目がオブジェクトではありません');
+    try{ return normQ(o,i,true); }
+    catch(err){ throw new Error(bookName+'：'+(o.id||('#'+(i+1)))+' '+err.message); }
+  });
+}
+function loadBankFiles(files,mode){
+  const list=[].slice.call(files||[]);
+  if(!list.length) return;
+  Promise.all(list.map(f=>new Promise(res=>{
+    const r=new FileReader();
+    r.onload=()=>{
+      let d=null,err='';
+      try{ d=JSON.parse(String(r.result)); }catch(e){ err='JSON として読めません'; }
+      res({name:f.name,data:d,err:err});
+    };
+    r.onerror=()=>res({name:f.name,data:null,err:'読み込みに失敗'});
+    r.readAsText(f);
+  }))).then(parts=>{
+    try{
+      const bad=parts.filter(p=>p.err);
+      if(bad.length) throw new Error(bad.map(p=>p.name+'：'+p.err).join(' ／ '));
+      let manifest=null; const books=[];
+      parts.forEach(p=>{
+        const doc=parseBankDoc(p.name,p.data);
+        if(doc.manifest) manifest=doc.manifest;
+        else books.push({file:p.name,id:doc.book.id,name:doc.book.name,level:doc.book.level,list:doc.book.raw});
+      });
+      if(manifest&&Array.isArray(manifest.banks)&&manifest.banks.length){
+        const order=manifest.banks.map(b=>String(b.file||b.id||''));
+        books.sort((a,b)=>{
+          const ai=order.indexOf(a.file), bi=order.indexOf(b.file);
+          return (ai<0?999:ai)-(bi<0?999:bi);
+        });
+      }
+      if(!books.length) throw new Error('冊子ファイルが見つかりません（索引だけでは問題を読めません）');
+      const normalized=books.map(bk=>({
+        id:bk.id, name:bk.name, level:bk.level, file:bk.file,
+        qs:normBookQ(bk.list,bk.name||bk.id)
+      }));
+      let out;
+      if(manifest||mode!=='append'){
+        out=normalized;
+      }else{
+        out=baseBooks().map(b=>({id:b.id,name:b.name,level:b.level,file:b.file||'',qs:b.qs.slice()}));
+        normalized.forEach(bk=>{
+          const i=out.findIndex(b=>b.id===bk.id);
+          if(i>=0) out[i]=bk; else out.push(bk);
+        });
+      }
+      /* 冊子をまたぐ id の重複は、後から来たほうに接尾辞を付ける */
+      const used={};
+      out.forEach(bk=>{
+        bk.qs=bk.qs.map(q=>{
+          if(used[q.id]){
+            const base=q.id; let n=2;
+            while(used[base+'-'+n]) n++;
+            q=Object.assign({},q,{id:base+'-'+n});
+          }
+          used[q.id]=1;
+          return q;
+        });
+      });
+      S.banks=out;
+      save(); render();
+      toast((manifest||mode!=='append'?'題庫を差し替えました：':'題庫に追加しました：')+out.length+' 冊 ／ '+allQ().length+' 問');
+    }catch(err){ toast('題庫を読み込めません：'+err.message); }
+  });
+}
+function bookJson(bk){
+  return {id:bk.id,name:bk.name,level:bk.level,file:bk.file||'',updated:new Date().toISOString().slice(0,10),count:bk.qs.length,questions:bk.qs};
+}
+function exportBank(id){
+  try{
+    const bk=baseBooks().find(b=>b.id===id)||baseBooks()[0];
+    const blob=new Blob([JSON.stringify(bookJson(bk),null,2)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=(bk.file&&/^[\w\-]+(?:\.[\w\-]+)?\.json$/.test(bk.file))?bk.file:(bk.id+'.json');
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},800);
+    toast((bk.name||bk.id)+' を書き出しました（'+bk.qs.length+' 問）');
+  }catch(err){ toast('書き出しに失敗：'+err.message); }
+}
+function exportManifest(){
+  try{
+    const banks=baseBooks().map((b,i)=>({id:b.id,name:b.name,level:b.level,file:(b.file&&/^[\w\-]+(?:\.[\w\-]+)?\.json$/.test(b.file))?b.file:(b.id+'.json'),count:b.qs.length,order:i+1}));
+    const blob=new Blob([JSON.stringify({version:1,updated:new Date().toISOString().slice(0,10),note:'主 HTML はこの索引を読み、banks の順に各ファイルを結合して出題します。',banks:banks},null,2)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='manifest.json';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},800);
+    toast('manifest.json を書き出しました（'+banks.length+' 冊）');
+  }catch(err){ toast('書き出しに失敗：'+err.message); }
+}
+function stdBank(){
+  if(!S.banks) { toast('すでに内蔵題庫です'); return; }
+  S.banks=null;
+  save(); render();
+  toast('内蔵題庫に戻しました');
+}
+function addQ(){
+  const ta=$('#newQ');
+  if(!ta) return;
+  const raw=ta.value.trim();
+  if(!raw){ toast('JSON を貼ってください'); return; }
+  try{
+    const d=JSON.parse(raw);
+    const arr=Array.isArray(d)?d:[d];
+    const add=arr.map((o,i)=>normQ(o,i));
+    S.custom=S.custom.concat(add);
+    save(); render();
+    toast(add.length+' 問を追加しました');
+  }catch(err){ toast('追加できません：'+err.message); }
+}
+function importFile(f){
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const d=JSON.parse(String(r.result));
+      if(Array.isArray(d.custom)) S.custom=d.custom.map((o,i)=>normQ(o,i));
+      if(d.prog&&typeof d.prog==='object') S.prog=d.prog;
+      if(d.conf){
+        S.conf=Object.assign({},DEF_CONF,d.conf);
+        if(!Array.isArray(S.conf.intervals)||!S.conf.intervals.length) S.conf.intervals=DEF_CONF.intervals.slice();
+        S.conf.intervals=S.conf.intervals.slice(0,8).map(v=>Math.max(1,Math.round(Number(v)||1)));
+      }
+      if(Array.isArray(d.log)) S.log=d.log.concat(S.log).slice(-4000);
+      if(Array.isArray(d.banks)&&d.banks.length){
+        S.banks=d.banks.filter(b=>b&&Array.isArray(b.qs)).map(b=>({id:String(b.id||'bank'),name:String(b.name||'題庫'),level:String(b.level||''),file:String(b.file||''),qs:normBank(b.qs)}));
+      }
+      if(Array.isArray(d.bank)&&d.bank.length) S.banks=[{id:'legacy',name:'読み込み題庫',level:'',qs:normBank(d.bank)}];
+      if(d.fav&&typeof d.fav==='object'){
+        if(Array.isArray(d.fav.q)) d.fav.q.forEach(id=>{ if(typeof id==='string'&&!favq(id)) S.fav.q.push(id); });
+        if(Array.isArray(d.fav.w)) d.fav.w.forEach(x=>{ if(x&&x.t&&favwIdx(x.t,x.qid)<0) S.fav.w.push({t:x.t,r:x.r||'',m:x.m||'',qid:x.qid||''}); });
+        if(Array.isArray(d.fav.g)) d.fav.g.forEach(x=>{ if(x&&x.g&&favgIdx(x.g,x.qid)<0) S.fav.g.push({g:x.g,gm:x.gm||'',qid:x.qid||''}); });
+      }
+      save(); render();
+      toast('読み取りました（追加問題 '+S.custom.length+' 問・栞 '+(S.fav.q.length+S.fav.w.length+S.fav.g.length)+' 件）');
+    }catch(err){ toast('読み取りに失敗：'+err.message); }
+  };
+  r.readAsText(f);
+}
+function delQ(id){
+  if(BANK.some(b=>b.id===id)){ toast('標準の問題は削除できません'); return; }
+  S.custom=S.custom.filter(x=>x.id!==id);
+  delete S.prog[id];
+  S.fav.q=S.fav.q.filter(x=>x!==id);
+  S.fav.w=S.fav.w.filter(x=>x.qid!==id);
+  S.fav.g=S.fav.g.filter(x=>x.qid!==id);
+  save(); render();
+  toast('削除しました');
+}
+function resetAll(){
+  if(!confirm('学習記録（正誤・期日・履歴）と、追加した問題をすべて消します。よろしいですか？')) return;
+  try{ localStorage.removeItem(KEY); }catch(e){}
+  S.custom=[]; S.prog={}; S.conf=Object.assign({},DEF_CONF); S.log=[]; S.banks=null;
+  S.fav={q:[],w:[],g:[]};
+  SS=null;
+  save(); render();
+  toast('記録を消しました');
+}
+
+/* ---------- ツールチップ ---------- */
+function showTip(el){
+  const t=$('#tip');
+  const w=el.dataset.w||'';
+  const r=el.dataset.r||'';
+  const m=el.dataset.m||'';
+  t.innerHTML=(r?'<div class="tip-r">'+esc(r)+'</div>':'')+
+    '<div class="tip-m">'+esc(w)+'</div>'+
+    (m?'<div class="tip-n">'+esc(m)+'</div>':'');
+  t.hidden=false;
+  const b=el.getBoundingClientRect();
+  const tw=t.offsetWidth, th=t.offsetHeight;
+  let left=b.left+b.width/2-tw/2;
+  left=clamp(left,8,Math.max(8,innerWidth-tw-8));
+  let top=b.top-th-8;
+  if(top<8) top=b.bottom+10;
+  t.style.left=Math.round(left)+'px';
+  t.style.top=Math.round(top)+'px';
+}
+function hideTip(){ const t=$('#tip'); if(t) t.hidden=true; }
+
+/* ---------- イベント ---------- */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-act]');
+  if(!t) return;
+  const act=t.dataset.act;
+  if(act==='quick'){
+    startSession({lv:'all',cat:t.dataset.cat||'all',count:Number(t.dataset.count)||10,mode:t.dataset.mode||'auto'});
+  }else if(act==='start'){
+    startSession({lv:setup.lv,cat:setup.cat,count:Number(setup.count)||10,mode:setup.mode});
+  }else if(act==='pick'){ answer(Number(t.dataset.i)); }
+  else if(act==='next'){ nextQ(); }
+  else if(act==='again'){ if(SS) startSession(SS.cfg); }
+  else if(act==='goto'){ location.hash='#/'+(t.dataset.to||'home'); }
+  else if(act==='drill-single'){ if(t.dataset.id) startSession({ids:[t.dataset.id]}); }
+  else if(act==='drill-list'){
+    const ids=(t.dataset.ids||'').split(',').filter(Boolean);
+    if(ids.length) startSession({ids});
+  }
+  else if(act==='tr'){ if(SS){ SS.showTr=!SS.showTr; render(); } }
+  else if(act==='favq'){ e.preventDefault(); toggleFavQ(t.dataset.id); }
+  else if(act==='favw'){ e.preventDefault(); toggleFavW(t.dataset.t,t.dataset.id,t.dataset.r,t.dataset.m); }
+  else if(act==='favg'){ e.preventDefault(); toggleFavG(t.dataset.g,t.dataset.id,t.dataset.gm); }
+  else if(act==='export'){ exportData(); }
+  else if(act==='exportcsv'){ exportProgCsv(); }
+  else if(act==='import'){ const f=$('#impFile'); if(f) f.click(); }
+  else if(act==='exportbook'){ exportBank(t.dataset.id); }
+  else if(act==='exportmanifest'){ exportManifest(); }
+  else if(act==='loadbank'){ bankMode='replace'; const f=$('#bankFile'); if(f) f.click(); }
+  else if(act==='loadbankadd'){ bankMode='append'; const f=$('#bankFile'); if(f) f.click(); }
+  else if(act==='stdbank'){ stdBank(); }
+  else if(act==='addq'){ addQ(); }
+  else if(act==='delq'){ delQ(t.dataset.id); }
+  else if(act==='tpl'){ const ta=$('#newQ'); if(ta) ta.value=TPL; toast('テンプレートを戻しました'); }
+  else if(act==='reset'){ resetAll(); }
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset.conf){
+    const k=t.dataset.conf;
+    if(k==='repeatWrong') S.conf.repeatWrong=(t.value==='1');
+    else if(k==='dailyGoal') S.conf.dailyGoal=clamp(Number(t.value)||20,1,120);
+    else if(k==='target') S.conf.target=t.value||'2027-07-04';
+    else if(k==='rubi'||k==='startLevel'||k==='trMode') S.conf[k]=t.value;
+    else S.conf[k]=Number(t.value)||0;
+    save(); updateRail();
+    toast('保存しました');
+  }
+  if(t.dataset.int!==undefined&&t.dataset.int!==''){
+    const i=Number(t.dataset.int);
+    S.conf.intervals[i]=clamp(Number(t.value)||1,1,365);
+    t.value=S.conf.intervals[i];
+    save();
+    toast('復習の間隔を更新しました（'+(i+1)+'回目：'+S.conf.intervals[i]+'日）');
+  }
+  if(t.dataset.setup){
+    setup[t.dataset.setup]=t.value;
+    render();
+  }
+  if(t.id==='impFile'&&t.files&&t.files[0]){ importFile(t.files[0]); t.value=''; }
+  if(t.id==='bankFile'&&t.files&&t.files.length){ loadBankFiles(t.files,bankMode); t.value=''; }
+});
+document.addEventListener('mouseover',e=>{
+  const el=e.target.closest('.a,.hov');
+  if(el&&el.dataset.w) showTip(el);
+});
+document.addEventListener('mouseout',e=>{
+  const el=e.target.closest('.a,.hov');
+  if(el) hideTip();
+});
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.a,.hov')) hideTip();
+},true);
+window.addEventListener('scroll',hideTip,{passive:true});
+window.addEventListener('resize',hideTip);
+
+document.addEventListener('keydown',e=>{
+  if(page!=='practice'||!SS||SS.done||!SS.cur) return;
+  const tag=(e.target.tagName||'').toLowerCase();
+  if(tag==='input'||tag==='textarea'||tag==='select') return;
+  if(/^[1-4]$/.test(e.key)){
+    const i=Number(e.key)-1;
+    if(i<SS.cur.order.length) answer(i);
+  }else if(e.key==='Enter'&&SS.cur.chosen!==null){
+    e.preventDefault(); nextQ();
+  }
+});
+
+window.addEventListener('hashchange',render);
+
+load();
+render();
+
+/* オンライン（https）のときは bank/ を読み、失敗したら内蔵データのまま */
+(async function syncBanksFromServer(){
+  const fromServer=Array.isArray(S.banks)&&S.banks.length&&S.banks[0]&&S.banks[0].src==='server';
+  if(S.banks&&S.banks.length&&!fromServer) return;
+  try{
+    const base=new URL('.',location.href).href;
+    const res=await fetch(base+'bank/manifest.json',{cache:'no-store'});
+    if(!res.ok) return;
+    const m=await res.json();
+    if(!m||!Array.isArray(m.banks)||!m.banks.length) return;
+    const books=[];
+    for(const b of m.banks){
+      const f=String((b&&b.file)||'');
+      if(!/^[A-Za-z0-9._-]+\.json$/.test(f)) continue;
+      try{
+        const r2=await fetch(base+'bank/'+f,{cache:'no-store'});
+        if(!r2.ok) continue;
+        const d=await r2.json();
+        const qs=Array.isArray(d)?d:(Array.isArray(d.questions)?d.questions:(Array.isArray(d.bank)?d.bank:null));
+        if(!qs||!qs.length) continue;
+        books.push({id:String(b.id||d.id||f),name:String(b.name||d.name||f),level:String(b.level||d.level||''),file:f,src:'server',qs:normBank(qs)});
+      }catch(e){}
+    }
+    if(!books.length) return;
+    S.banks=books; save(); render();
+  }catch(e){}
+})();
+
+
+</script>
+</body>
+</html>

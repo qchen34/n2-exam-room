@@ -1,0 +1,14 @@
+# 原始资料与备份：不进仓库
+source-pdf/
+_backup/
+
+# 系统与编辑残留
+.DS_Store
+*.swp
+*.tmp
+*.log
+
+# 音频（体积大，单独存放）
+*.mp3
+*.m4a
+*.wav
