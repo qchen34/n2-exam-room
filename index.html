@@ -527,12 +527,18 @@ function load(){
          w:Array.isArray(f.w)?f.w.filter(x=>x&&x.t):[],
          g:Array.isArray(f.g)?f.g.filter(x=>x&&x.g):[]};
 }
-let saveT=0;
+let saveT=0,saveWarned=false;
 function save(){
   clearTimeout(saveT);
   saveT=setTimeout(()=>{
     try{ localStorage.setItem(KEY,JSON.stringify({v:2,custom:S.custom,prog:S.prog,conf:S.conf,log:S.log.slice(-4000),fav:S.fav,banks:S.banks||undefined})); }
-    catch(e){ /* file:// で保存できない環境では、その場の記録だけ残る */ }
+    catch(e){
+      /* 容量超過：題庫データを外して、学習記録だけは必ず残す */
+      try{
+        localStorage.setItem(KEY,JSON.stringify({v:2,custom:S.custom,prog:S.prog,conf:S.conf,log:S.log.slice(-300),fav:S.fav}));
+        if(!saveWarned){ saveWarned=true; toast('保存容量が上限に近づいたため、題庫データを除いて記録だけ保存しています'); }
+      }catch(e2){ /* file:// など保存できない環境では、その場の記録だけ残る */ }
+    }
   },150);
 }
 
