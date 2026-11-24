@@ -547,7 +547,7 @@ function save(opts){
 
 /* ---------- 端末同期（Supabase） ---------- */
 /* 使い方：Supabase の Project URL と anon key をここに入れる（README / supabase/schema.sql 参照） */
-const SYNC_CFG={url:'',anon:''};
+const SYNC_CFG={url:'https://prxapxduqvipywntwj.supabase.co',anon:'sb_publishable_Q6CU46sEiUC1r3eHl0zD_g_3fvAJ34k'};
 const syncReady=()=>!!(SYNC_CFG.url&&SYNC_CFG.anon);
 const syncOn=()=>!!(S.sync&&S.sync.code&&S.sync.key);
 function snap(){ return {prog:S.prog,custom:S.custom,fav:S.fav,log:S.log.slice(-4000)}; }
