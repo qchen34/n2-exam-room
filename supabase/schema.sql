@@ -61,3 +61,16 @@ grant execute on function public.state_put(text, text, jsonb) to anon;
 
 -- 確認用（0 行なら OK）
 -- select code, updated_at from public.sync_state;
+
+-- ============================================================
+--  聴解音声の置き場（public バケット）
+--  これも SQL Editor で 1 回だけ実行。ダッシュボードから
+--  Storage → New bucket で作る場合は、名前 audio・Public を on にすれば同じ。
+-- ============================================================
+insert into storage.buckets (id, name, public)
+values ('audio', 'audio', true)
+on conflict (id) do nothing;
+
+-- 公開バケットは /storage/v1/object/public/audio/<file> で誰でも読める。
+-- バケット内の一覧（list）は既定で拒否。URL を知っている人だけが取得できる。
+-- 音声は著作物なので、この URL を公開ページに貼らないこと。

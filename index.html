@@ -497,9 +497,10 @@ const LVS=['N4','N3','N2'];
 const WD=['日','月','火','水','木','金','土'];
 const PAGES=[['home','概況'],['practice','練習'],['fav','栞'],['review','復習'],['analysis','分析'],['info','情報'],['settings','設定']];
 const DEF_CONF={wWrong:3.5,wNew:1.4,wCorrect:0.55,dueGain:0.35,intervals:[1,3,7,14,30],
-  repeatWrong:true,rubi:'hover',trMode:'after',dailyGoal:20,target:'2027-07-04',startLevel:'N4',lvBias:'n3',auOnce:'1'};
+  repeatWrong:true,rubi:'hover',trMode:'after',dailyGoal:20,target:'2027-07-04',startLevel:'N4',lvBias:'n3',auOnce:'1',auOn:'0'};
 const S={custom:[],prog:{},conf:{},log:[],banks:null,fav:{q:[],w:[],g:[]},sync:null};
 let SS=null;
+let BANK_DIAG='';
 let setup={lv:'all',cat:'all',count:'10',mode:'auto'};
 let bankMode='replace';
 let page='home';
@@ -533,7 +534,7 @@ function load(){
   if(!Array.isArray(S.conf.intervals)||S.conf.intervals.length<3) S.conf.intervals=DEF_CONF.intervals.slice();
   S.log=(d&&Array.isArray(d.log))?d.log:[];
   S.banks=(d&&Array.isArray(d.banks)&&d.banks.length)
-    ? d.banks.filter(b=>b&&Array.isArray(b.qs)).map(b=>({id:String(b.id||'bank'),name:String(b.name||'題庫'),level:String(b.level||''),file:String(b.file||''),qs:b.qs}))
+    ? d.banks.filter(b=>b&&Array.isArray(b.qs)).map(b=>({id:String(b.id||'bank'),name:String(b.name||'題庫'),level:String(b.level||''),file:String(b.file||''),src:String(b.src||''),qs:b.qs}))
     : ((d&&Array.isArray(d.bank)&&d.bank.length)?[{id:'legacy',name:'読み込み題庫',level:'',qs:d.bank}]:null);
   const f=(d&&d.fav&&typeof d.fav==='object')?d.fav:{};
   S.fav={q:Array.isArray(f.q)?f.q.filter(x=>typeof x==='string'):[],
@@ -1038,6 +1039,8 @@ function nextQ(){
 /* ---------- 描画 ---------- */
 function render(){
   page=(location.hash||'#/home').replace(/^#\//,'').split('?')[0]||'home';
+  /* 練習の問題画面を離れたら、鳴っている音声を必ず止める */
+  if(AU&&(page!=='practice'||!SS||SS.done)) auHalt();
   if(!PAGES.some(p=>p[0]===page)) page='home';
   $('#nav').innerHTML=PAGES.map(([k,l])=>'<a href="#/'+k+'" class="'+(page===k?'on':'')+'">'+l+'</a>').join('');
   updateRail();
@@ -1185,14 +1188,32 @@ function practiceHtml(){
   if(SS.i>=SS.ids.length){ SS.done=true; return resultHtml(); }
   return questionHtml();
 }
+function poolQ(q){
+  if(setup.lv!=='all'&&q.lv!==setup.lv) return false;
+  if(setup.cat==='all'){ if(q.cat==='聴解'&&S.conf.auOn!=='1') return false; }
+  else if(q.cat!==setup.cat) return false;
+  if(setup.mode==='fav'&&!favq(q.id)) return false;
+  return true;
+}
 function practiceSetupHtml(){
   auHalt();
   const a=agg(), c=S.conf;
-  const pool=allQ().filter(q=>(setup.lv==='all'||q.lv===setup.lv)&&(setup.cat==='all'||q.cat===setup.cat)&&(setup.mode!=='fav'||favq(q.id))).length;
+  const all=allQ();
+  const catN={}; CATS.forEach(k=>{ catN[k]=all.filter(q=>q.cat===k).length; });
+  const lvN={all:all.length}; ['N4','N3','N2'].forEach(l=>{ lvN[l]=all.filter(q=>q.lv===l).length; });
+  const pool=all.filter(poolQ).length;
+  const empty=pool===0;
+  const emptyHtml=empty?('<div class="panel" style="border-left:3px solid var(--shu)">'+
+    '<div class="panel-t">この条件には問題がありません</div>'+
+    '<p class="hint">'+(setup.cat==='聴解'
+      ? '聴解の題庫はまだ 1 冊も作っていません。音源（Supabase Storage の audio 桶）と、听力原文との区間合わせが要ります。文字・語彙・文法・読解は今すぐ解けます。'
+      : 'レベルか分野を広げてください。')+'</p>'+
+    (setup.cat==='聴解'?'<div class="inline" style="margin-top:6px"><button class="btn sm ghost" data-act="setcat" data-v="all">分野をすべてに戻す</button></div>':'')+
+    '</div>'):'';
   return '<div class="pagehead"><h1>練習</h1><p>出題条件を決めて、まとめて解く</p></div>'+
   '<div class="panel"><div class="panel-t">出題の条件</div>'+
-    '<div class="frow"><label>レベル</label><div>'+selHtml('lv',[['all','すべて（N4 → N2）'],['N4','N4 だけ'],['N3','N3 だけ'],['N2','N2 だけ']],setup.lv)+'</div></div>'+
-    '<div class="frow"><label>分野</label><div>'+selHtml('cat',[['all','すべて'],['漢字読み','漢字読み'],['語彙','語彙'],['文法','文法'],['読解','読解'],['聴解','聴解']],setup.cat)+'</div></div>'+
+    '<div class="frow"><label>レベル</label><div>'+selHtml('lv',[['all','すべて（'+lvN.all+' 問）'],['N4','N4 だけ（'+lvN.N4+' 問）'],['N3','N3 だけ（'+lvN.N3+' 問）'],['N2','N2 だけ（'+lvN.N2+' 問）']],setup.lv)+'</div></div>'+
+    '<div class="frow"><label>分野</label><div>'+selHtml('cat',[['all','すべて'],['漢字読み','漢字読み（'+catN['漢字読み']+' 問）'],['語彙','語彙（'+catN['語彙']+' 問）'],['文法','文法（'+catN['文法']+' 問）'],['読解','読解（'+catN['読解']+' 問）'],['聴解','聴解（'+catN['聴解']+' 問）']],setup.cat)+'</div></div>'+
     '<div class="frow"><label>問題数</label><div>'+selHtml('count',[['5','5 問'],['10','10 問'],['15','15 問'],['20','20 問'],['30','30 問']],setup.count)+'</div></div>'+
     '<div class="frow"><label>出題</label><div>'+selHtml('mode',[['auto','おすすめ（間隔反復）'],['new','未見を優先'],['review','復習を優先'],['fav','栞に挟んだ問題だけ'],['order','番号順']],setup.mode)+'</div></div>'+
   '</div>'+
@@ -1200,7 +1221,8 @@ function practiceSetupHtml(){
     '「おすすめ」は誤答を重く、正答を軽く扱う重み付き抽選。正答しても期日が来ればまた出ます。誤答は同じ回のうちに一度だけ再出題されます。</p>'+
   '<div class="legend"><span class="key">hover</span><span>下線のある語にカーソルを合わせると、読みと意味が出ます（スマホはタップ）。</span></div>'+
   '<div class="legend"><span class="key">訳</span><span>各問題の下にある「全文訳を表示」で、本文と設問の中国語訳をいつでも出せます。</span></div>'+
-  '<div style="margin-top:18px"><button class="btn primary" data-act="start">練習をはじめる</button></div>'+
+  emptyHtml+
+  (empty?'':'<div style="margin-top:18px"><button class="btn primary" data-act="start">練習をはじめる</button></div>')+
   '<section class="sec"><div class="sec-h"><div class="sec-top"><h2>本番の形</h2><span class="rule"></span><span class="note">N2</span></div></div>'+
     '<table class="tbl"><colgroup><col style="width:40%"><col style="width:26%"><col style="width:34%"></colgroup>'+
     '<thead><tr><th>区分</th><th>時間</th><th>配点</th></tr></thead><tbody>'+
@@ -1644,7 +1666,7 @@ function settingsHtml(){
   const bankInfo=(isBuiltin
     ? '<b>内蔵題庫</b> — 1 冊 ／ '+BANK.length+' 問。'
     : '<b>読み込み済み</b> — '+books.length+' 冊 ／ '+allQ().length+' 問（追加問題 '+S.custom.length+' 問を含む）。')
-    +' 冊子ごとに書き出し・追加ができます。';
+    +' 冊子ごとに書き出し・追加ができます。'+(BANK_DIAG?'<br><b>題庫の状態</b>：'+esc(BANK_DIAG):'');
   const bookRows=books.map(b=>'<div class="cl-row"><span>'+esc(b.name)+'　　第 '+b.qs.length+' 問'+(b.level?'　／　'+esc(b.level):'')+'</span>'+
     '<button class="x" data-act="exportbook" data-id="'+esc(b.id)+'">書き出す</button></div>').join('');
   const ints=c.intervals.map((v,i)=>'<input class="num-in" type="number" min="1" max="365" step="1" value="'+v+'" data-int="'+i+'" aria-label="'+(i+1)+'回目の間隔">').join('');
@@ -1675,8 +1697,18 @@ function settingsHtml(){
       '<div class="inline">'+selConf('lvBias',[['n3','N3 優先（推奨）'],['auto','現在地に合わせる'],['even','均等'],['n2','N2 優先']],c.lvBias||'n3')+'</div></div>'+
     '<div class="srow"><div class="lab">試験日<span class="hint">2027 年 7 月の第 1 日曜を既定にしています</span></div>'+
       '<div class="inline"><input type="date" value="'+esc(c.target)+'" data-conf="target"></div></div>'+
+    '<div class="srow"><div class="lab">音声を含める<span class="hint">オフのとき、分野「すべて」の出題から聴解を外します（聴解だけを選べばいつでも出ます）</span></div>'+
+      '<div class="inline">'+selConf('auOn',[['1','含める'],['0','含めない（推奨）']],(c.auOn==='1'?'1':'0'))+'</div></div>'+
     '<div class="srow"><div class="lab">音声の再生回数<span class="hint">聴解の問題で何回まで聞けるか。解答後は何回でも聞けます</span></div>'+
       '<div class="inline">'+selConf('auOnce',[['1','本番どおり 1 回'],['0','何回でも（復習向け）']],(c.auOnce==='0'?'0':'1'))+'</div></div>'+
+  '</div>'+
+
+  '<div class="sgroup"><div class="t">音源（聴解）</div>'+
+    '<p class="hint">Supabase Storage の audio 桶に置いたファイル名を入れて再生確認。頭 8 秒だけ鳴らします。</p>'+
+    '<div class="srow"><div class="lab">ファイル名</div>'+
+      '<div class="inline"><input id="aufile" class="num-in" style="width:230px" placeholder="n2-2026-07.mp3" autocapitalize="none" autocorrect="off">'+
+      '<button class="btn sm ghost" data-act="autest">8 秒試聴</button></div></div>'+
+    '<p class="hint">置き場：<b>'+esc(AUDIO_BASE)+'</b></p>'+
   '</div>'+
 
   '<div class="sgroup"><div class="t">端末同期（スマホと記録を共有）</div>'+
@@ -1691,7 +1723,7 @@ function settingsHtml(){
   '</div>'+
 
   '<div class="sgroup"><div class="t">題庫データベース（索引＋冊子）</div>'+
-    '<p class="hint">題庫は <b>bank/manifest.json</b>（索引）と <b>bank/n4.json ・ n3.json ・ n2.json</b>（模擬冊子）、<b>bank/n3-2026-07.json ・ n2-2026-07.json</b>（2026年7月 真题冊子）に分かれています。主 HTML は索引を読み、冊子を順に結合して出題します。冊子を増やせば、そのまま題庫も増えます。<br>'+
+    '<p class="hint">題庫は <b>bank/manifest.json</b>（索引）と <b>bank/n4.json ・ n3.json ・ n2.json</b>（模擬冊子）、<b>bank/n3-2026-07.json ・ n2-2026-07.json</b>（2026年7月 真题・言語知識）、<b>bank/n2-2026-07-cho.json</b>（同 聴解）に分かれています。主 HTML は索引を読み、冊子を順に結合して出題します。冊子を増やせば、そのまま題庫も増えます。<br>'+
       bankInfo+'</p>'+
     '<div class="srow"><div class="lab">いま使っている冊子</div><div class="book-list">'+bookRows+'</div></div>'+
     '<div class="srow"><div class="lab">題庫の読み込み<span class="hint">索引（manifest.json）を選ぶと、その構成で丸ごと差し替え。冊子だけなら追加も選べます。複数まとめて選べます</span></div>'+
@@ -1788,7 +1820,7 @@ function normQ(o,i,loose){
   q.tags=(Array.isArray(q.tags)&&q.tags.length)?q.tags:[q.cat];
   q.q=q.q||'＿＿に入れるのに最もよいものを選んでください。';
   q.ans=Number(q.ans||0);
-  if(!q.b&&!q.p) throw new Error('b（文）か p（本文の配列）が必要です');
+  if(!q.b&&!q.p&&!(q.au&&q.au.u)) throw new Error('b（文）か p（本文の配列）か au（音声）が必要です');
   if(q.opts.length<2) throw new Error('opts は 2 つ以上必要です');
   if(!(q.ans>=0&&q.ans<q.opts.length)) throw new Error('ans が opts の範囲外です');
   if(!loose && qOf(q.id)) q.id=q.id+'-'+Date.now().toString(36).slice(-3);
@@ -1812,7 +1844,7 @@ function normBank(list){
     q.tags=(Array.isArray(q.tags)&&q.tags.length)?q.tags:[q.cat];
     q.q=q.q||'＿＿に入れるのに最もよいものを選んでください。';
     q.ans=Number(q.ans)||0;
-    if(!q.b&&!q.p) throw new Error(q.id+'：b（文）か p（本文の配列）が必要です');
+    if(!q.b&&!q.p&&!(q.au&&q.au.u)) throw new Error(q.id+'：b（文）か p（本文の配列）か au（音声）が必要です');
     if(q.opts.length<2) throw new Error(q.id+'：opts は 2 つ以上必要です');
     if(!(q.ans>=0&&q.ans<q.opts.length)) throw new Error(q.id+'：ans が opts の範囲外です');
     if(Array.isArray(q.p)&&Array.isArray(q.pt)&&q.pt.length!==q.p.length) throw new Error(q.id+'：pt の段落数が p と合いません');
@@ -2025,7 +2057,11 @@ document.addEventListener('click',e=>{
   const act=t.dataset.act;
   if(act==='quick'){
     startSession({lv:'all',cat:t.dataset.cat||'all',count:Number(t.dataset.count)||10,mode:t.dataset.mode||'auto'});
+  }else if(act==='setcat'){
+    setup.cat=t.dataset.v||'all'; render();
   }else if(act==='start'){
+    const n=allQ().filter(poolQ).length;
+    if(!n){ toast('この条件には問題がありません'); return; }
     startSession({lv:setup.lv,cat:setup.cat,count:Number(setup.count)||10,mode:setup.mode});
   }else if(act==='pick'){ answer(Number(t.dataset.i)); }
   else if(act==='next'){ nextQ(); }
@@ -2048,6 +2084,16 @@ document.addEventListener('click',e=>{
   else if(act==='sync-off'){ syncOff(); }
   else if(act==='sync-copy'){ syncCopy(); }
   else if(act==='sync-diag'){ syncDiag(); }
+  else if(act==='autest'){
+    const f=String(($('#aufile')||{}).value||'').trim();
+    if(!f){ toast('ファイル名を入れてください'); return; }
+    try{
+      const a=new Audio(auUrl(f));
+      a.play().then(()=>{ toast('再生中（8 秒で止めます）。音が出なければ URL と MIME を確認'); })
+        .catch(()=>toast('再生できません。桶が public か、ファイル名と URL を確認してください'));
+      setTimeout(()=>{ try{ a.pause(); }catch(e){} },8000);
+    }catch(e){ toast('再生できません'); }
+  }
   else if(act==='aplay'){ auPlay(SS&&SS.cur?qOf(SS.cur.id):null,SS&&SS.cur); }
   else if(act==='sync-join'){ syncJoin(($('#syc')||{}).value,($('#syk')||{}).value); }
   else if(act==='import'){ const f=$('#impFile'); if(f) f.click(); }
@@ -2123,32 +2169,43 @@ document.addEventListener('visibilitychange',()=>{
   if(document.hidden) syncPush(true); else syncPull(true);
 });
 
-/* オンライン（https）のときは bank/ を読み、失敗したら内蔵データのまま */
+/* オンライン（http/https）のときは bank/ を毎回確認し、索引が変わっていたら読み直す */
 (async function syncBanksFromServer(){
-  const fromServer=Array.isArray(S.banks)&&S.banks.length&&S.banks[0]&&S.banks[0].src==='server';
-  if(S.banks&&S.banks.length&&!fromServer) return;
+  if(!/^https?:/.test(location.protocol)){
+    BANK_DIAG='ローカルファイル（file://）で開いているため、bank/ を読めません。フォルダで python3 -m http.server 8000 を実行し、http://localhost:8000 で開いてください。';
+    render(); return;
+  }
   try{
     const base=new URL('.',location.href).href;
     const res=await fetch(base+'bank/manifest.json',{cache:'no-store'});
-    if(!res.ok) return;
+    if(!res.ok){ BANK_DIAG='manifest.json を取得できません（HTTP '+res.status+'）。bank/ が index.html と同じ場所にあるか確認してください。'; render(); return; }
     const m=await res.json();
-    if(!m||!Array.isArray(m.banks)||!m.banks.length) return;
-    const books=[];
+    if(!m||!Array.isArray(m.banks)||!m.banks.length){ BANK_DIAG='manifest.json の形式が想定外です。'; render(); return; }
+    const want=m.banks.map(b=>String((b&&b.file)||''));
+    const cur=Array.isArray(S.banks)?S.banks:[];
+    const same=cur.length===want.length&&cur.every((b,i)=>String(b.file||'')===want[i]&&b.src==='server');
+    if(same){ BANK_DIAG='サーバーの題庫 '+cur.length+' 冊（変更なし）。'; render(); return; }
+    const books=[], fails=[];
     for(const b of m.banks){
       const f=String((b&&b.file)||'');
-      if(!/^[A-Za-z0-9._-]+\.json$/.test(f)) continue;
+      if(!/^[A-Za-z0-9._-]+\.json$/.test(f)){ fails.push(f+'（名前が不正）'); continue; }
       try{
         const r2=await fetch(base+'bank/'+f,{cache:'no-store'});
-        if(!r2.ok) continue;
+        if(!r2.ok){ fails.push(f+'（HTTP '+r2.status+'）'); continue; }
         const d=await r2.json();
         const qs=Array.isArray(d)?d:(Array.isArray(d.questions)?d.questions:(Array.isArray(d.bank)?d.bank:null));
-        if(!qs||!qs.length) continue;
+        if(!qs||!qs.length){ fails.push(f+'（問題 0 件）'); continue; }
         books.push({id:String(b.id||d.id||f),name:String(b.name||d.name||f),level:String(b.level||d.level||''),file:f,src:'server',qs:normBank(qs)});
-      }catch(e){}
+      }catch(e){ fails.push(f+'（'+(e&&e.message?e.message:'読めません')+'）'); console.warn('[bank]',f,e); }
     }
-    if(!books.length) return;
-    S.banks=books; save(); render();
-  }catch(e){}
+    if(!books.length){ BANK_DIAG='題庫を 1 冊も読めません：'+fails.join(' / '); render(); return; }
+    S.banks=books; save();
+    BANK_DIAG='サーバーの題庫 '+books.length+' 冊 ／ '+allQ().length+' 問'+(fails.length?'（未読込：'+fails.join(' / ')+'）':'')+'。';
+    render();
+  }catch(e){
+    BANK_DIAG='題庫の取得に失敗：'+(e&&e.message?e.message:e);
+    console.warn('[bank] sync',e); render();
+  }
 })();
 
 

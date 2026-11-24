@@ -1,42 +1,49 @@
 {
-  "version": 1,
-  "updated": "2026-11-20",
-  "note": "主 HTML はこの索引を読み、banks の順に各ファイルを結合して出題する。",
-  "banks": [
-    {
-      "id": "jlpt-n4",
-      "name": "N4 基礎（文字・語彙・文法・読解）",
-      "level": "N4",
-      "file": "n4.json",
-      "count": 22
-    },
-    {
-      "id": "jlpt-n3",
-      "name": "N3 橋渡し",
-      "level": "N3",
-      "file": "n3.json",
-      "count": 22
-    },
-    {
-      "id": "jlpt-n2",
-      "name": "N2 本番対策",
-      "level": "N2",
-      "file": "n2.json",
-      "count": 22
-    },
-    {
-      "id": "jlpt-n3-2026-07",
-      "name": "N3 2026年7月 真题・文字語彙",
-      "level": "N3",
-      "file": "n3-2026-07.json",
-      "count": 35
-    },
-    {
-      "id": "jlpt-n2-2026-07",
-      "name": "N2 2026年7月 真题・言語知識（文字・語彙・文法）",
-      "level": "N2",
-      "file": "n2-2026-07.json",
-      "count": 46
-    }
-  ]
+ "version": 1,
+ "updated": "2026-11-24",
+ "note": "主 HTML はこの索引を読み、banks の順に各ファイルを結合して出題する。",
+ "banks": [
+  {
+   "id": "jlpt-n4",
+   "name": "N4 基礎（文字・語彙・文法・読解）",
+   "level": "N4",
+   "file": "n4.json",
+   "count": 22
+  },
+  {
+   "id": "jlpt-n3",
+   "name": "N3 橋渡し",
+   "level": "N3",
+   "file": "n3.json",
+   "count": 22
+  },
+  {
+   "id": "jlpt-n2",
+   "name": "N2 本番対策",
+   "level": "N2",
+   "file": "n2.json",
+   "count": 22
+  },
+  {
+   "id": "jlpt-n3-2026-07",
+   "name": "N3 2026年7月 真题・文字語彙",
+   "level": "N3",
+   "file": "n3-2026-07.json",
+   "count": 35
+  },
+  {
+   "id": "jlpt-n2-2026-07",
+   "name": "N2 2026年7月 真题・言語知識（文字・語彙・文法）",
+   "level": "N2",
+   "file": "n2-2026-07.json",
+   "count": 46
+  },
+  {
+   "id": "jlpt-n2-2026-07-cho",
+   "name": "N2 2026年7月 真题・聴解（問題1 課題理解）",
+   "level": "N2",
+   "file": "n2-2026-07-cho.json",
+   "count": 5
+  }
+ ]
 }
