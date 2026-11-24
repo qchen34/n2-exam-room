@@ -603,6 +603,9 @@ async function syncPull(quiet){
 async function syncPush(quiet){
   if(!syncOn()) return false;
   try{
+    /* アップロード前に必ず一度取得してマージする（別端末の新しい記録を古いスナップショットで上書きしないため） */
+    const d=await sbRpc('state_get',{p_code:S.sync.code,p_key:S.sync.key});
+    if(d&&typeof d==='object') mergeRemote(d);
     await sbRpc('state_put',{p_code:S.sync.code,p_key:S.sync.key,p_data:snap()});
     S.sync.lastAt=Date.now();
     save({noSync:true});
