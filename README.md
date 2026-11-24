@@ -120,7 +120,7 @@ const AUDIO_BASE='https://<project>.supabase.co/storage/v1/object/public/audio/'
 
 即 Supabase Storage 建一个 **public** 桶 `audio`，把压缩后的考试音频放进去。仓库里不放音频（体积与版权）。
 
-压缩（45MB → 约 11MB，听力练习完全够）：
+压缩（45MB → 约 22MB；1GB 免费额度够放 20 套左右的听力）：
 
 ```bash
 ffmpeg -i "2026年7月日语能力考N2-音频.mp3" -ac 1 -b:a 64k -af loudnorm "n2-2026-07.mp3"
