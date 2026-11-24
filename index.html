@@ -175,6 +175,16 @@ ul,ol{margin:0}
 .frow label{font-size:.8rem;color:var(--ink2);letter-spacing:.08em}
 select,input[type=date],input[type=number],input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--line);background:#FBFAF4;border-radius:2px;font-size:16px}
 select{appearance:none;-webkit-appearance:none;padding-right:30px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 5 5-5' fill='none' stroke='%2356534A' stroke-width='1.2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
+.aubar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0 14px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;}
+.aubtn{border:1px solid var(--ink);background:var(--ink);color:#fff;border-radius:6px;padding:7px 12px;font-size:13px;font-family:var(--sans);cursor:pointer;}
+.aubtn.off{background:#fff;color:var(--ink3);border-color:var(--line);cursor:not-allowed;}
+.autrack{flex:1;min-width:90px;height:4px;background:var(--line);border-radius:2px;overflow:hidden;}
+.autrack i{display:block;height:100%;width:0;background:var(--shu);transition:width .2s linear;}
+.autime{font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums;}
+.aunote{font-size:11px;color:var(--ink3);}
+.scblock{margin:12px 0 4px;padding:10px 12px;border-left:3px solid var(--celadon);background:#fff;}
+.scblock p{margin:0 0 6px;font-size:13px;line-height:1.75;}
+.qask.rev{margin-top:2px;font-weight:600;}
 .diagbox{white-space:pre-wrap;word-break:break-all;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;line-height:1.5;background:#fff;border:1px solid var(--line);border-radius:6px;padding:8px;margin:6px 0 2px;color:var(--ink2);}
 .hint{font-size:.74rem;color:var(--ink3);line-height:1.7}
 .hint b{color:var(--ink2);font-weight:600}
@@ -480,12 +490,14 @@ const BANK=[
    ============================================================ */
 const KEY='n2examroom.v1';
 const DAY=86400000;
-const CATS=['漢字読み','語彙','文法','読解'];
+const CATS=['漢字読み','語彙','文法','読解','聴解'];
+/* 聴解音声の置き場（Supabase Storage の公開バケット） */
+const AUDIO_BASE='https://prxapqxduqvlpywnutwj.supabase.co/storage/v1/object/public/audio/';
 const LVS=['N4','N3','N2'];
 const WD=['日','月','火','水','木','金','土'];
 const PAGES=[['home','概況'],['practice','練習'],['fav','栞'],['review','復習'],['analysis','分析'],['info','情報'],['settings','設定']];
 const DEF_CONF={wWrong:3.5,wNew:1.4,wCorrect:0.55,dueGain:0.35,intervals:[1,3,7,14,30],
-  repeatWrong:true,rubi:'hover',trMode:'after',dailyGoal:20,target:'2027-07-04',startLevel:'N4',lvBias:'n3'};
+  repeatWrong:true,rubi:'hover',trMode:'after',dailyGoal:20,target:'2027-07-04',startLevel:'N4',lvBias:'n3',auOnce:'1'};
 const S={custom:[],prog:{},conf:{},log:[],banks:null,fav:{q:[],w:[],g:[]},sync:null};
 let SS=null;
 let setup={lv:'all',cat:'all',count:'10',mode:'auto'};
@@ -1174,12 +1186,13 @@ function practiceHtml(){
   return questionHtml();
 }
 function practiceSetupHtml(){
+  auHalt();
   const a=agg(), c=S.conf;
   const pool=allQ().filter(q=>(setup.lv==='all'||q.lv===setup.lv)&&(setup.cat==='all'||q.cat===setup.cat)&&(setup.mode!=='fav'||favq(q.id))).length;
   return '<div class="pagehead"><h1>練習</h1><p>出題条件を決めて、まとめて解く</p></div>'+
   '<div class="panel"><div class="panel-t">出題の条件</div>'+
     '<div class="frow"><label>レベル</label><div>'+selHtml('lv',[['all','すべて（N4 → N2）'],['N4','N4 だけ'],['N3','N3 だけ'],['N2','N2 だけ']],setup.lv)+'</div></div>'+
-    '<div class="frow"><label>分野</label><div>'+selHtml('cat',[['all','すべて'],['漢字読み','漢字読み'],['語彙','語彙'],['文法','文法'],['読解','読解']],setup.cat)+'</div></div>'+
+    '<div class="frow"><label>分野</label><div>'+selHtml('cat',[['all','すべて'],['漢字読み','漢字読み'],['語彙','語彙'],['文法','文法'],['読解','読解'],['聴解','聴解']],setup.cat)+'</div></div>'+
     '<div class="frow"><label>問題数</label><div>'+selHtml('count',[['5','5 問'],['10','10 問'],['15','15 問'],['20','20 問'],['30','30 問']],setup.count)+'</div></div>'+
     '<div class="frow"><label>出題</label><div>'+selHtml('mode',[['auto','おすすめ（間隔反復）'],['new','未見を優先'],['review','復習を優先'],['fav','栞に挟んだ問題だけ'],['order','番号順']],setup.mode)+'</div></div>'+
   '</div>'+
@@ -1216,6 +1229,60 @@ function fullTr(q){
   if(st) rows.push('<p class="tr-q">'+esc(st)+'</p>');
   return rows.join('');
 }
+/* ---------- 音声（聴解） ---------- */
+let AU=null,AUQ=null,AUS=0,AUEnd=0;
+function auUrl(u){ u=String(u||''); return /^https?:\/\//.test(u)?u:AUDIO_BASE+u.replace(/^\/+/, ''); }
+function auSec(v){ const s=Math.max(0,Math.round(Number(v)||0)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function auEnsure(){
+  if(AU) return AU;
+  AU=new Audio(); AU.preload='none';
+  AU.addEventListener('timeupdate',auTick);
+  AU.addEventListener('ended',()=>{ AUQ=null; render(); });
+  return AU;
+}
+function auHalt(){ if(AU&&!AU.paused) AU.pause(); }
+function auTick(){
+  if(!AU) return;
+  const bar=document.getElementById('aubar-i'), tm=document.getElementById('aubar-t');
+  if(bar&&AUEnd>AUS) bar.style.width=Math.round(Math.max(0,Math.min(1,(AU.currentTime-AUS)/(AUEnd-AUS)))*100)+'%';
+  if(tm) tm.textContent=auSec(Math.max(0,AU.currentTime-AUS));
+  if(AUEnd>AUS&&AU.currentTime>=AUEnd-0.08){ AU.pause(); AU.currentTime=AUS; AUQ=null; render(); }
+}
+function auPlay(q,cur){
+  if(!q||!q.au) return;
+  const el=auEnsure();
+  if(AUQ===q.id&&!el.paused){ auHalt(); render(); return; }
+  if(AUQ!==q.id){ el.pause(); el.src=auUrl(q.au.u); AUQ=q.id; }
+  AUS=Number(q.au.s)||0; AUEnd=Number(q.au.e)||0;
+  cur.played=(cur.played||0)+1;
+  el.play().then(()=>{
+    try{ if(AUS>0.2&&Math.abs(el.currentTime-AUS)>2) el.currentTime=AUS; }catch(e){}
+    save(); render();
+  }).catch(()=>{
+    AUQ=null; toast('音声を再生できません。音源の配置と URL を確認してください'); render();
+  });
+}
+function auHtml(q,cur){
+  if(!q.au) return '';
+  const once=S.conf.auOnce!=='0';
+  const used=cur.played||0;
+  const playing=(AUQ===q.id&&AU&&!AU.paused);
+  const locked=once&&used>=1&&!playing&&cur.chosen===null;
+  return '<div class="aubar">'+
+    '<button class="aubtn'+(locked?' off':'')+'" data-act="aplay"'+(locked?' disabled':'')+'>'+
+      (playing?'■ 停止':'▶ 音声を再生')+'</button>'+
+    '<div class="autrack"><i id="aubar-i"></i></div>'+
+    '<span class="autime" id="aubar-t">0:00</span>'+
+    '<span class="aunote">'+(locked?'再生済み（本番は 1 回）':(once?(used?'この問題は再生済み':'本番どおり 1 回'):'何回でも再生できます'))+'</span>'+
+  '</div>';
+}
+function scHtml(q){
+  if(!q.sc) return '';
+  const lines=String(q.sc).split(/\n+/).filter(x=>x.trim());
+  return '<div class="scblock"><div class="tr-h"><span>スクリプト</span><em>音声の原文（漢字はホバーで読み）</em></div>'+
+    lines.map(l=>'<p>'+anqt(q,l)+'</p>').join('')+
+    (q.sct?'<p class="tr-q">'+esc(q.sct)+'</p>':'')+'</div>';
+}
 function questionHtml(){
   const q=qOf(SS.ids[SS.i]);
   if(!SS.cur||SS.cur.id!==q.id){
@@ -1224,6 +1291,10 @@ function questionHtml(){
   }
   const cur=SS.cur;
   const total=SS.ids.length;
+  if(AUQ&&AUQ!==q.id){ auHalt(); AUQ=null; }
+  const askHtml=(q.cat==='聴解'&&cur.chosen===null)
+    ? '<p class="qask">音声を聞いて、下の選択肢から選んでください</p>'
+    : '<p class="qask">'+esc(q.q)+'</p>';
 
   const optsHtml=cur.order.map((oi,d)=>{
     const txt=q.opts[oi];
@@ -1245,6 +1316,7 @@ function questionHtml(){
     exHtml(q)+
     (q.g?'<p class="gpt">文法点 <b>'+esc(q.g)+'</b>'+(q.gm?' — '+esc(q.gm):'')+gFavBtn(q)+'</p>':'')+
     notesHtml(q)+
+    scHtml(q)+
     '<div class="fb-act"><button class="btn primary" data-act="next">'+(SS.i+1>=SS.ids.length?'結果を見る':'次の問題')+'</button></div></div>';
 
   const trBody=fullTr(q);
@@ -1257,9 +1329,10 @@ function questionHtml(){
   '<div class="qmeta"><span class="chip lv">'+q.lv+'</span><span class="chip cat">'+q.cat+'</span>'+
     (q.g?'<span class="chip g hov" data-w="'+esc(q.g)+'" data-m="'+esc(q.gm||'')+'">'+esc(q.g)+'</span>':'')+
     '<span class="idx">第 '+(SS.i+1)+' / '+total+' 問</span>'+qFavBtn(q)+'</div>'+
+  (q.au?auHtml(q,cur):'')+
   (q.p?'<div class="passage">'+q.p.map(t=>'<p>'+anqt(q,t)+'</p>').join('')+'</div>':'')+
   (q.b?'<div class="qbody">'+anqt(q,q.b)+'</div>':'')+
-  '<p class="qask">'+esc(q.q)+'</p>'+
+  askHtml+
   '<ol class="opts">'+optsHtml+'</ol>'+
   '<div class="trbar"><button class="trbtn" data-act="tr">'+(trShow?'全文訳を隠す':'全文訳を表示')+'</button>'+
     (trShow?'':'<span class="hint">訳を見ると答えの手がかりになります。解いたあとに読むのが効きます。</span>')+'</div>'+
@@ -1267,6 +1340,7 @@ function questionHtml(){
   '<div class="legend" style="margin-top:16px"><span class="key">キー</span><span>1〜4 で選択、Enter で次へ。下線の語はホバーで読み・意味。</span></div>';
 }
 function resultHtml(){
+  auHalt();
   const res=SS.res;
   const n=Math.max(1,res.length);
   const ok=res.filter(r=>r.ok).length;
@@ -1335,7 +1409,8 @@ function reviewHtml(){
         '<p class="qask">'+esc(q.q)+'</p>'+
         '<p class="gpt" style="margin-top:10px">正解 <b style="color:var(--shu)">'+anqt(q,q.opts[q.ans])+'</b></p>'+
         (q.g?'<p class="gpt">文法点 <b class="hov" data-w="'+esc(q.g)+'" data-m="'+esc(q.gm||'')+'">'+esc(q.g)+'</b>'+(q.gm?' — '+esc(q.gm):'')+gFavBtn(q)+'</p>':'')+
-        '<p class="exp">'+anqt(q,q.exp)+'</p>'+
+        ((q.cat==='聴解'&&q.q)?'<p class="qask rev">'+esc(q.q)+'</p>':'')+
+      '<p class="exp">'+anqt(q,q.exp)+'</p>'+
         usHtml(q)+exHtml(q)+
         (fullTr(q)?'<div class="trblock"><div class="tr-h"><span>全文訳</span><em>参考訳</em></div>'+fullTr(q)+'</div>':'')+
         notesHtml(q)+
@@ -1600,6 +1675,8 @@ function settingsHtml(){
       '<div class="inline">'+selConf('lvBias',[['n3','N3 優先（推奨）'],['auto','現在地に合わせる'],['even','均等'],['n2','N2 優先']],c.lvBias||'n3')+'</div></div>'+
     '<div class="srow"><div class="lab">試験日<span class="hint">2027 年 7 月の第 1 日曜を既定にしています</span></div>'+
       '<div class="inline"><input type="date" value="'+esc(c.target)+'" data-conf="target"></div></div>'+
+    '<div class="srow"><div class="lab">音声の再生回数<span class="hint">聴解の問題で何回まで聞けるか。解答後は何回でも聞けます</span></div>'+
+      '<div class="inline">'+selConf('auOnce',[['1','本番どおり 1 回'],['0','何回でも（復習向け）']],(c.auOnce==='0'?'0':'1'))+'</div></div>'+
   '</div>'+
 
   '<div class="sgroup"><div class="t">端末同期（スマホと記録を共有）</div>'+
@@ -1971,6 +2048,7 @@ document.addEventListener('click',e=>{
   else if(act==='sync-off'){ syncOff(); }
   else if(act==='sync-copy'){ syncCopy(); }
   else if(act==='sync-diag'){ syncDiag(); }
+  else if(act==='aplay'){ auPlay(SS&&SS.cur?qOf(SS.cur.id):null,SS&&SS.cur); }
   else if(act==='sync-join'){ syncJoin(($('#syc')||{}).value,($('#syk')||{}).value); }
   else if(act==='import'){ const f=$('#impFile'); if(f) f.click(); }
   else if(act==='exportbook'){ exportBank(t.dataset.id); }
