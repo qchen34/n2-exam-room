@@ -175,6 +175,7 @@ ul,ol{margin:0}
 .frow label{font-size:.8rem;color:var(--ink2);letter-spacing:.08em}
 select,input[type=date],input[type=number],input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--line);background:#FBFAF4;border-radius:2px;font-size:16px}
 select{appearance:none;-webkit-appearance:none;padding-right:30px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 5 5-5' fill='none' stroke='%2356534A' stroke-width='1.2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
+.diagbox{white-space:pre-wrap;word-break:break-all;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;line-height:1.5;background:#fff;border:1px solid var(--line);border-radius:6px;padding:8px;margin:6px 0 2px;color:var(--ink2);}
 .hint{font-size:.74rem;color:var(--ink3);line-height:1.7}
 .hint b{color:var(--ink2);font-weight:600}
 .legend{display:flex;gap:6px;align-items:baseline;font-size:.72rem;color:var(--ink3);margin-top:10px;line-height:1.7}
@@ -648,6 +649,26 @@ function syncCopy(){
     navigator.clipboard.writeText(txt).then(()=>toast('コードと鍵をコピーしました'),()=>toast('コピーできません。手で控えてください'));
   }catch(e){ toast('コードと鍵を手で控えてください'); }
 }
+let DIAG='';
+async function syncProbe(label,url,opts){
+  try{
+    const r=await fetch(url,opts);
+    const t=await r.text();
+    return label+' → HTTP '+r.status+(t?('  '+t.slice(0,320)):'  (empty)');
+  }catch(e){ return label+' → 通信失敗 '+String(e.message||e); }
+}
+async function syncDiag(){
+  const base=String(SYNC_CFG.url).replace(/\/+$/,'');
+  const H={'Content-Type':'application/json','apikey':SYNC_CFG.anon,'Authorization':'Bearer '+SYNC_CFG.anon};
+  const out=['URL  '+base,
+             'KEY  '+String(SYNC_CFG.anon).slice(0,20)+'…（'+String(SYNC_CFG.anon).length+' 文字）'];
+  out.push(await syncProbe('① 表を直接読む（鍵の有効性）',base+'/rest/v1/sync_state?select=code&limit=1',{headers:H}));
+  out.push(await syncProbe('② state_get',base+'/rest/v1/rpc/state_get',{method:'POST',headers:H,body:JSON.stringify({p_code:'DIAGTEST',p_key:'x'})}));
+  out.push(await syncProbe('③ state_put',base+'/rest/v1/rpc/state_put',{method:'POST',headers:H,body:JSON.stringify({p_code:'DIAGTEST',p_key:'x',p_data:{prog:{}}})}));
+  DIAG=out.join('\n');
+  render();
+  toast('接続テスト完了。結果を下に表示しました');
+}
 function syncPanel(){
   if(!syncReady()) return '<p class="hint">接続先が未設定です。<b>index.html</b> 冒頭の <b>SYNC_CFG</b> に Supabase の Project URL と anon key を入れると有効になります（手順は <b>supabase/schema.sql</b> と README）。</p>';
   if(!syncOn()){
@@ -662,11 +683,14 @@ function syncPanel(){
   const t=S.sync.lastAt?new Date(S.sync.lastAt):null;
   const ts=t?((t.getMonth()+1)+'/'+t.getDate()+' '+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0')):'未同期';
   return '<p class="hint">接続中　コード <b>'+esc(S.sync.code)+'</b>　最終同期 '+esc(ts)+'</p>'+
+    (S.sync.lastAt?'':'<p class="hint">⚠ まだ一度もアップロードできていません。下の「アップロード」を押すか、「接続テスト」で原因を見てください。</p>')+
     '<div class="srow"><div class="lab">いま同期する</div><div class="inline">'+
       '<button class="btn sm primary" data-act="sync-push">アップロード</button>'+
       '<button class="btn sm ghost" data-act="sync-pull">取り込む</button>'+
       '<button class="btn sm ghost" data-act="sync-copy">コードと鍵をコピー</button>'+
-      '<button class="btn sm ghost" data-act="sync-off">解除</button></div></div>'+
+      '<button class="btn sm ghost" data-act="sync-off">解除</button>'+
+      '<button class="btn sm ghost" data-act="sync-diag">接続テスト</button></div></div>'+
+    (DIAG?'<pre class="diagbox">'+esc(DIAG)+'</pre>':'')+
     '<p class="hint">問題を解くと 6 秒後に自動でアップロード。ページを開いたとき・タブに戻ったときは自動で取り込みます。競合は「解答回数が多い方→最終解答が新しい方」で 1 問ずつ決着させます。</p>';
 }
 
@@ -1943,6 +1967,7 @@ document.addEventListener('click',e=>{
   else if(act==='sync-pull'){ syncPull(); }
   else if(act==='sync-off'){ syncOff(); }
   else if(act==='sync-copy'){ syncCopy(); }
+  else if(act==='sync-diag'){ syncDiag(); }
   else if(act==='sync-join'){ syncJoin(($('#syc')||{}).value,($('#syk')||{}).value); }
   else if(act==='import'){ const f=$('#impFile'); if(f) f.click(); }
   else if(act==='exportbook'){ exportBank(t.dataset.id); }
