@@ -182,6 +182,7 @@ select{appearance:none;-webkit-appearance:none;padding-right:30px;background-ima
 .autrack i{display:block;height:100%;width:0;background:var(--shu);transition:width .2s linear;}
 .autime{font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums;}
 .aunote{font-size:11px;color:var(--ink3);}
+.q-figure{display:block;max-width:min(100%,480px);height:auto;margin:12px auto;}
 .scblock{margin:12px 0 4px;padding:10px 12px;border-left:3px solid var(--celadon);background:#fff;}
 .scblock p{margin:0 0 6px;font-size:13px;line-height:1.75;}
 .qask.rev{margin-top:2px;font-weight:600;}
@@ -197,7 +198,7 @@ select{appearance:none;-webkit-appearance:none;padding-right:30px;background-ima
 .qmeta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .qmeta .idx{margin-left:auto;font-size:.74rem;color:var(--ink3);font-variant-numeric:tabular-nums;letter-spacing:.06em}
 .passage{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px 16px;margin:12px 0 2px;font-family:var(--serif);font-size:1rem;line-height:2.05;letter-spacing:.02em}
-.passage p{margin:0 0 .55em}
+.passage p{margin:0 0 .55em;white-space:pre-line}
 .passage p:last-child{margin-bottom:0}
 .qbody{font-family:var(--serif);font-size:1.12rem;line-height:2.05;letter-spacing:.02em;margin:10px 0 0;padding:12px 14px;background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .qask{display:flex;gap:8px;font-size:.88rem;line-height:1.75;margin-top:14px;align-items:flex-start}
@@ -534,7 +535,7 @@ function load(){
   if(!Array.isArray(S.conf.intervals)||S.conf.intervals.length<3) S.conf.intervals=DEF_CONF.intervals.slice();
   S.log=(d&&Array.isArray(d.log))?d.log:[];
   S.banks=(d&&Array.isArray(d.banks)&&d.banks.length)
-    ? d.banks.filter(b=>b&&Array.isArray(b.qs)).map(b=>({id:String(b.id||'bank'),name:String(b.name||'題庫'),level:String(b.level||''),file:String(b.file||''),src:String(b.src||''),qs:b.qs}))
+    ? d.banks.filter(b=>b&&Array.isArray(b.qs)).map(b=>({id:String(b.id||'bank'),name:String(b.name||'題庫'),level:String(b.level||''),file:String(b.file||''),src:String(b.src||''),rev:String(b.rev||''),qs:b.qs}))
     : ((d&&Array.isArray(d.bank)&&d.bank.length)?[{id:'legacy',name:'読み込み題庫',level:'',qs:d.bank}]:null);
   const f=(d&&d.fav&&typeof d.fav==='object')?d.fav:{};
   S.fav={q:Array.isArray(f.q)?f.q.filter(x=>typeof x==='string'):[],
@@ -565,11 +566,16 @@ const SYNC_CFG={url:'https://prxapqxduqvlpywnutwj.supabase.co',anon:'sb_publisha
 const syncReady=()=>!!(SYNC_CFG.url&&SYNC_CFG.anon);
 const syncOn=()=>!!(S.sync&&S.sync.code&&S.sync.key);
 function snap(){ return {prog:S.prog,custom:S.custom,fav:S.fav,log:S.log.slice(-4000)}; }
+function syncHeaders(){
+  const headers={'Content-Type':'application/json','apikey':SYNC_CFG.anon};
+  if(!SYNC_CFG.anon.startsWith('sb_publishable_')) headers.Authorization='Bearer '+SYNC_CFG.anon;
+  return headers;
+}
 async function sbRpc(fn,body){
   const base=String(SYNC_CFG.url).replace(/\/+$/,'');
   const r=await fetch(base+'/rest/v1/rpc/'+fn,{
     method:'POST',
-    headers:{'Content-Type':'application/json','apikey':SYNC_CFG.anon,'Authorization':'Bearer '+SYNC_CFG.anon},
+    headers:syncHeaders(),
     body:JSON.stringify(body)
   });
   const txt=await r.text();
@@ -600,8 +606,10 @@ function mergeRemote(remote){
 }
 async function syncPull(quiet){
   if(!syncOn()) return false;
+  const sync=S.sync;
   try{
-    const d=await sbRpc('state_get',{p_code:S.sync.code,p_key:S.sync.key});
+    const d=await sbRpc('state_get',{p_code:sync.code,p_key:sync.key});
+    if(S.sync!==sync) return false;
     if(d&&typeof d==='object'){
       const c=mergeRemote(d);
       S.sync.lastAt=Date.now();
@@ -615,11 +623,16 @@ async function syncPull(quiet){
 }
 async function syncPush(quiet){
   if(!syncOn()) return false;
+  const sync=S.sync;
+  const credentials={p_code:sync.code,p_key:sync.key};
   try{
     /* アップロード前に必ず一度取得してマージする（別端末の新しい記録を古いスナップショットで上書きしないため） */
-    const d=await sbRpc('state_get',{p_code:S.sync.code,p_key:S.sync.key});
+    const d=await sbRpc('state_get',credentials);
+    if(S.sync!==sync) return false;
     if(d&&typeof d==='object') mergeRemote(d);
-    await sbRpc('state_put',{p_code:S.sync.code,p_key:S.sync.key,p_data:snap()});
+    const written=await sbRpc('state_put',{...credentials,p_data:snap()});
+    if(S.sync!==sync) return false;
+    if(written!==true) throw new Error('サーバーが保存を受け付けませんでした。コードと鍵を確認してください');
     S.sync.lastAt=Date.now();
     save({noSync:true});
     if(!quiet) toast('同期しました');
@@ -641,7 +654,7 @@ function syncNew(){
   if(!syncReady()){ toast('先に SYNC_CFG へ Supabase の URL と anon key を入れてください'); return; }
   S.sync={code:syncRnd(8),key:syncRnd(40,'abcdefghijkmnpqrstuvwxyz23456789'),lastAt:0};
   save({noSync:true});
-  syncPush().then(()=>{ render(); toast('同期を有効にしました。コードと鍵を控えてください'); });
+  syncPush().then(ok=>{ render(); if(ok) toast('同期を有効にしました。コードと鍵を控えてください'); });
 }
 async function syncJoin(code,key){
   if(!syncReady()){ toast('先に SYNC_CFG へ Supabase の URL と anon key を入れてください'); return; }
@@ -675,7 +688,7 @@ async function syncProbe(label,url,opts){
 }
 async function syncDiag(){
   const base=String(SYNC_CFG.url).replace(/\/+$/,'');
-  const H={'Content-Type':'application/json','apikey':SYNC_CFG.anon,'Authorization':'Bearer '+SYNC_CFG.anon};
+  const H=syncHeaders();
   const out=['URL  '+base,
              'KEY  '+String(SYNC_CFG.anon).slice(0,20)+'…（'+String(SYNC_CFG.anon).length+' 文字）'];
   out.push(await syncProbe('① 表を直接読む（鍵の有効性）',base+'/rest/v1/sync_state?select=code&limit=1',{headers:H}));
@@ -959,9 +972,7 @@ function weightOf(q){
   return Math.max(0.05, base*(1+overdue*(S.conf.dueGain||0))*lvWeight(q.lv));
 }
 function buildQueue(cfg){
-  const filter=q=>(cfg.lv==='all'||q.lv===cfg.lv)&&(cfg.cat==='all'||q.cat===cfg.cat);
-  let pool=allQ().filter(filter);
-  if(cfg.mode==='fav') pool=pool.filter(q=>favq(q.id));
+  let pool=allQ().filter(q=>poolQ(q,cfg));
   if(!pool.length) return [];
   if(cfg.mode==='order') return pool.slice(0,cfg.count).map(q=>q.id);
   if(cfg.mode==='new'){
@@ -1001,7 +1012,8 @@ function startSession(cfg){
     ids=buildQueue(cfg);
     if(!ids.length){ toast('この条件に合う問題がありません。レベルか分野を広げてください。'); return; }
   }
-  SS={ids, i:0, res:[], start:Date.now(), repeat:{}, cur:null, done:false, showTr:false,
+  auHalt();
+  SS={ids, i:0, res:[], start:Date.now(), repeat:{}, cur:null, done:false,
       cfg: cfg.ids?{ids:ids.slice()}:cfg};
   if(page!=='practice') location.hash='#/practice'; else render();
   window.scrollTo(0,0);
@@ -1009,6 +1021,7 @@ function startSession(cfg){
 function answer(d){
   if(!SS||!SS.cur||SS.cur.chosen!==null) return;
   const cur=SS.cur; const q=qOf(cur.id); if(!q) return;
+  if(!Number.isInteger(d)||d<0||d>=cur.order.length) return;
   cur.chosen=d; cur.ok=(d===cur.ans);
   const p=S.prog[cur.id]||{n:0,ok:0,ng:0,box:0,due:0,last:0};
   p.n=(p.n||0)+1; p.last=Date.now(); p.lastOk=cur.ok;
@@ -1030,6 +1043,7 @@ function answer(d){
 }
 function nextQ(){
   if(!SS) return;
+  auHalt();
   SS.cur=null; SS.i++;
   if(SS.i>=SS.ids.length) SS.done=true;
   render();
@@ -1171,7 +1185,7 @@ function weakTip(k){
 function footHtml(){
   return '<p class="foot">問題はすべてこのアプリ用に書き起こしたオリジナルで、公式問題の転載は含みません。'+
     '追加題庫は <a href="https://www.jlpt.jp/samples/" target="_blank" rel="noopener">JLPT 公式 問題例</a> などを参照。'+
-    '学習記録は localStorage に保存され、サーバーには送られません。日付・開始時刻は 2027 年 7 月 4 日での推定です。</p>';
+    '学習記録はこの端末に保存されます。端末同期を有効にすると、解答記録と栞を Supabase に同期します。</p>';
 }
 
 /* ---------- 練習 ---------- */
@@ -1188,11 +1202,11 @@ function practiceHtml(){
   if(SS.i>=SS.ids.length){ SS.done=true; return resultHtml(); }
   return questionHtml();
 }
-function poolQ(q){
-  if(setup.lv!=='all'&&q.lv!==setup.lv) return false;
-  if(setup.cat==='all'){ if(q.cat==='聴解'&&S.conf.auOn!=='1') return false; }
-  else if(q.cat!==setup.cat) return false;
-  if(setup.mode==='fav'&&!favq(q.id)) return false;
+function poolQ(q,cfg){
+  if(cfg.lv!=='all'&&q.lv!==cfg.lv) return false;
+  if(cfg.cat==='all'){ if(q.cat==='聴解'&&String(S.conf.auOn)!=='1') return false; }
+  else if(q.cat!==cfg.cat) return false;
+  if(cfg.mode==='fav'&&!favq(q.id)) return false;
   return true;
 }
 function practiceSetupHtml(){
@@ -1201,12 +1215,12 @@ function practiceSetupHtml(){
   const all=allQ();
   const catN={}; CATS.forEach(k=>{ catN[k]=all.filter(q=>q.cat===k).length; });
   const lvN={all:all.length}; ['N4','N3','N2'].forEach(l=>{ lvN[l]=all.filter(q=>q.lv===l).length; });
-  const pool=all.filter(poolQ).length;
+  const pool=all.filter(q=>poolQ(q,setup)).length;
   const empty=pool===0;
   const emptyHtml=empty?('<div class="panel" style="border-left:3px solid var(--shu)">'+
     '<div class="panel-t">この条件には問題がありません</div>'+
     '<p class="hint">'+(setup.cat==='聴解'
-      ? '聴解の題庫はまだ 1 冊も作っていません。音源（Supabase Storage の audio 桶）と、听力原文との区間合わせが要ります。文字・語彙・文法・読解は今すぐ解けます。'
+      ? 'このレベルと条件で使える聴解問題はありません。レベルを変更するか、題庫の読み込み状況を設定で確認してください。'
       : 'レベルか分野を広げてください。')+'</p>'+
     (setup.cat==='聴解'?'<div class="inline" style="margin-top:6px"><button class="btn sm ghost" data-act="setcat" data-v="all">分野をすべてに戻す</button></div>':'')+
     '</div>'):'';
@@ -1252,50 +1266,119 @@ function fullTr(q){
   return rows.join('');
 }
 /* ---------- 音声（聴解） ---------- */
-let AU=null,AUQ=null,AUS=0,AUEnd=0;
-function auUrl(u){ u=String(u||''); return /^https?:\/\//.test(u)?u:AUDIO_BASE+u.replace(/^\/+/, ''); }
+let AU=null, audioClip=null, audioTimer=0;
+function auUrl(u){
+  u=String(u||'');
+  if(/^https?:\/\//i.test(u)) return u;
+  const local=['127.0.0.1','localhost','[::1]'].includes(location.hostname)&&new URLSearchParams(location.search).get('audio')==='local';
+  const base=local?new URL('audio/',location.href).href:AUDIO_BASE;
+  return base+u.replace(/^\/+/, '');
+}
 function auSec(v){ const s=Math.max(0,Math.round(Number(v)||0)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
 function auEnsure(){
   if(AU) return AU;
-  AU=new Audio(); AU.preload='none';
+  AU=new Audio(); AU.preload='metadata';
   AU.addEventListener('timeupdate',auTick);
-  AU.addEventListener('ended',()=>{ AUQ=null; render(); });
+  AU.addEventListener('ended',()=>{
+    const clip=audioClip;
+    if(!clip||clip.state!=='playing'||AU.currentSrc!==clip.url) return;
+    if(AU.currentTime>=clip.end-0.12) auFinish(clip); else auFail(clip);
+  });
+  AU.addEventListener('error',()=>{ if(audioClip&&AU.error) auFail(audioClip); });
   return AU;
 }
-function auHalt(){ if(AU&&!AU.paused) AU.pause(); }
-function auTick(){
+function auHalt(){
+  const clip=audioClip;
+  audioClip=null;
+  clearInterval(audioTimer);
   if(!AU) return;
+  if(clip&&(clip.state==='starting'||clip.state==='playing')&&!AU.seeking){
+    clip.cur.audioPosition=clamp(AU.currentTime-clip.start,0,clip.end-clip.start);
+  }
+  AU.pause();
+}
+function auPrepare(q,cur){
+  if(audioClip&&audioClip.cur===cur) return audioClip;
+  auHalt();
+  const el=auEnsure();
+  const url=new URL(auUrl(q.au.u),location.href).href;
+  audioClip={cur,url,start:Number(q.au.s),end:Number(q.au.e),state:'ready'};
+  if(el.src!==url) el.src=url;
+  return audioClip;
+}
+function auFinish(clip){
+  clearInterval(audioTimer);
+  AU.pause();
+  clip.state='ready';
+  clip.cur.auDone=true;
+  clip.cur.audioPosition=0;
+  render();
+}
+function auFail(clip){
+  if(audioClip!==clip||clip.state==='error') return;
+  clearInterval(audioTimer);
+  AU.pause();
+  clip.state='error';
+  toast('音声を再生できません。音源と接続を確認して、もう一度お試しください');
+  render();
+}
+function auTick(){
+  const clip=audioClip;
+  if(!clip||clip.state!=='playing'||AU.seeking||AU.currentSrc!==clip.url) return;
+  const duration=clip.end-clip.start;
+  const elapsed=clamp(AU.currentTime-clip.start,0,duration);
+  clip.cur.audioPosition=elapsed;
+  if(AU.currentTime>=clip.end-0.04){ auFinish(clip); return; }
   const bar=document.getElementById('aubar-i'), tm=document.getElementById('aubar-t');
-  if(bar&&AUEnd>AUS) bar.style.width=Math.round(Math.max(0,Math.min(1,(AU.currentTime-AUS)/(AUEnd-AUS)))*100)+'%';
-  if(tm) tm.textContent=auSec(Math.max(0,AU.currentTime-AUS));
-  if(AUEnd>AUS&&AU.currentTime>=AUEnd-0.08){ AU.pause(); AU.currentTime=AUS; AUQ=null; render(); }
+  if(bar) bar.style.width=Math.round(elapsed/duration*100)+'%';
+  if(tm) tm.textContent=auSec(elapsed);
 }
 function auPlay(q,cur){
-  if(!q||!q.au) return;
-  const el=auEnsure();
-  if(AUQ===q.id&&!el.paused){ auHalt(); render(); return; }
-  if(AUQ!==q.id){ el.pause(); el.src=auUrl(q.au.u); AUQ=q.id; }
-  AUS=Number(q.au.s)||0; AUEnd=Number(q.au.e)||0;
-  cur.played=(cur.played||0)+1;
-  el.play().then(()=>{
-    try{ if(AUS>0.2&&Math.abs(el.currentTime-AUS)>2) el.currentTime=AUS; }catch(e){}
-    save(); render();
-  }).catch(()=>{
-    AUQ=null; toast('音声を再生できません。音源の配置と URL を確認してください'); render();
-  });
+  if(!q||!q.au||!cur||auLocked(cur)) return;
+  const clip=auPrepare(q,cur),el=AU;
+  if(clip.state==='starting') return;
+  if(clip.state==='playing'&&!el.paused){
+    auTick();
+    if(clip.state==='playing') clip.state='paused';
+    clearInterval(audioTimer);
+    el.pause(); render(); return;
+  }
+  if(!(clip.start>=0&&clip.end>clip.start&&Number.isFinite(clip.end))){ auFail(clip); return; }
+  if(clip.state==='error') el.load();
+  clearInterval(audioTimer);
+  const elapsed=cur.audioPosition||0;
+  clip.state='starting';
+  try{
+    // Seek before play() while the click still has browser audio permission.
+    el.currentTime=clip.start+elapsed;
+    el.play().then(()=>{
+      if(audioClip!==clip||clip.state!=='starting') return;
+      if(el.currentTime<clip.start-0.12) el.currentTime=clip.start+elapsed;
+      clip.state='playing';
+      audioTimer=setInterval(auTick,50);
+      render(); auTick();
+    }).catch(()=>auFail(clip));
+    render();
+  }catch(e){ auFail(clip); }
 }
+function auLocked(cur){ return String(S.conf.auOnce)!=='0'&&cur.auDone&&cur.chosen===null; }
 function auHtml(q,cur){
-  if(!q.au) return '';
-  const once=S.conf.auOnce!=='0';
-  const used=cur.played||0;
-  const playing=(AUQ===q.id&&AU&&!AU.paused);
-  const locked=once&&used>=1&&!playing&&cur.chosen===null;
+  const clip=auPrepare(q,cur);
+  const starting=clip.state==='starting';
+  const playing=clip.state==='playing'&&!AU.paused;
+  const locked=auLocked(cur);
+  const elapsed=cur.audioPosition||0;
+  const pausedMid=!playing&&(clip.state==='paused'||elapsed>0);
+  const label=starting?'読み込み中…':(playing?'■ 一時停止':(pausedMid?'▶ 続きから':'▶ 音声を再生'));
+  const note=locked?'最後まで流しました（本番は 1 回）'
+    :(clip.state==='error'?'音声の読み込みに失敗しました。再試行できます。'
+      :(pausedMid?'一時停止中。続きから再生できます':(cur.chosen!==null||String(S.conf.auOnce)==='0'?'何回でも再生できます':'本番どおり 1 回')));
+  const progress=locked?100:Math.round(100*clamp(elapsed/(clip.end-clip.start)||0,0,1));
   return '<div class="aubar">'+
-    '<button class="aubtn'+(locked?' off':'')+'" data-act="aplay"'+(locked?' disabled':'')+'>'+
-      (playing?'■ 停止':'▶ 音声を再生')+'</button>'+
-    '<div class="autrack"><i id="aubar-i"></i></div>'+
-    '<span class="autime" id="aubar-t">0:00</span>'+
-    '<span class="aunote">'+(locked?'再生済み（本番は 1 回）':(once?(used?'この問題は再生済み':'本番どおり 1 回'):'何回でも再生できます'))+'</span>'+
+    '<button class="aubtn'+(locked||starting?' off':'')+'" data-act="aplay"'+(locked||starting?' disabled':'')+'>'+label+'</button>'+
+    '<div class="autrack"><i id="aubar-i" style="width:'+progress+'%"></i></div>'+
+    '<span class="autime" id="aubar-t">'+auSec(locked?clip.end-clip.start:elapsed)+'</span>'+
+    '<span class="aunote">'+note+'</span>'+
   '</div>';
 }
 function scHtml(q){
@@ -1305,21 +1388,29 @@ function scHtml(q){
     lines.map(l=>'<p>'+anqt(q,l)+'</p>').join('')+
     (q.sct?'<p class="tr-q">'+esc(q.sct)+'</p>':'')+'</div>';
 }
+function questionFigure(q){
+  const figure=q.figure;
+  if(!figure||!/^bank\/figures\/[a-z0-9-]+\.webp$/.test(figure.src)) return '';
+  return '<img class="q-figure" src="'+esc(figure.src)+'" alt="'+esc(figure.alt||'')+'">';
+}
+function showTranslation(cur){
+  return cur.showTr??(S.conf.trMode==='always'||(S.conf.trMode==='after'&&cur.chosen!==null));
+}
 function questionHtml(){
   const q=qOf(SS.ids[SS.i]);
   if(!SS.cur||SS.cur.id!==q.id){
-    const order=orderOf(q.id,q.opts.length);
+    const order=q.cat==='聴解'?q.opts.map((_,i)=>i):orderOf(q.id,q.opts.length);
     SS.cur={id:q.id,order,ans:order.indexOf(q.ans),chosen:null,ok:null};
   }
   const cur=SS.cur;
   const total=SS.ids.length;
-  if(AUQ&&AUQ!==q.id){ auHalt(); AUQ=null; }
+  if(audioClip&&audioClip.cur!==cur) auHalt();
   const askHtml=(q.cat==='聴解'&&cur.chosen===null)
     ? '<p class="qask">音声を聞いて、下の選択肢から選んでください</p>'
     : '<p class="qask">'+esc(q.q)+'</p>';
 
   const optsHtml=cur.order.map((oi,d)=>{
-    const txt=q.opts[oi];
+    const txt=q.audioOptions&&cur.chosen===null?'':q.opts[oi];
     let cls='opt', bub=String(d+1);
     if(cur.chosen!==null){
       cls+=' locked';
@@ -1341,9 +1432,8 @@ function questionHtml(){
     scHtml(q)+
     '<div class="fb-act"><button class="btn primary" data-act="next">'+(SS.i+1>=SS.ids.length?'結果を見る':'次の問題')+'</button></div></div>';
 
-  const trBody=fullTr(q);
-  const autoTr=(S.conf.trMode==='always')||(S.conf.trMode==='after'&&cur.chosen!==null);
-  const trShow=!!SS.showTr||autoTr;
+  const trBody=q.au&&cur.chosen===null?'':fullTr(q);
+  const trShow=showTranslation(cur);
   const trHtml=(trShow&&trBody)?('<div class="trblock"><div class="tr-h"><span>全文訳</span><em>'+
     (cur.chosen===null?'答えを見る前の参考訳':'解答後の確認')+'</em></div>'+trBody+'</div>'):'';
 
@@ -1352,14 +1442,16 @@ function questionHtml(){
     (q.g?'<span class="chip g hov" data-w="'+esc(q.g)+'" data-m="'+esc(q.gm||'')+'">'+esc(q.g)+'</span>':'')+
     '<span class="idx">第 '+(SS.i+1)+' / '+total+' 問</span>'+qFavBtn(q)+'</div>'+
   (q.au?auHtml(q,cur):'')+
+  questionFigure(q)+
   (q.p?'<div class="passage">'+q.p.map(t=>'<p>'+anqt(q,t)+'</p>').join('')+'</div>':'')+
   (q.b?'<div class="qbody">'+anqt(q,q.b)+'</div>':'')+
   askHtml+
   '<ol class="opts">'+optsHtml+'</ol>'+
-  '<div class="trbar"><button class="trbtn" data-act="tr">'+(trShow?'全文訳を隠す':'全文訳を表示')+'</button>'+
-    (trShow?'':'<span class="hint">訳を見ると答えの手がかりになります。解いたあとに読むのが効きます。</span>')+'</div>'+
+  (trBody?'<div class="trbar"><button class="trbtn" data-act="tr">'+(trShow?'全文訳を隠す':'全文訳を表示')+'</button>'+
+    (trShow?'':'<span class="hint">訳を見ると答えの手がかりになります。解いたあとに読むのが効きます。</span>')+'</div>':'')+
   trHtml+fb+
-  '<div class="legend" style="margin-top:16px"><span class="key">キー</span><span>1〜4 で選択、Enter で次へ。下線の語はホバーで読み・意味。</span></div>';
+  '<div class="legend" style="margin-top:16px"><span class="key">キー</span><span>1〜4 で選択、Enter で次へ。下線の語はホバーで読み・意味。</span></div>'+
+  '<button class="btn sm ghost" style="margin-top:12px" data-act="practice-setup">出題条件に戻る</button>';
 }
 function resultHtml(){
   auHalt();
@@ -1405,6 +1497,7 @@ function resultHtml(){
   '<div class="fb-act" style="justify-content:flex-start;margin-top:22px">'+
     (wrong.length?'<button class="btn primary" data-act="drill-list" data-ids="'+esc(wrong.join(','))+'">誤答 '+wrong.length+' 問を解き直す</button>':'')+
     '<button class="btn" data-act="again">同じ条件でもう一度</button>'+
+    '<button class="btn ghost" data-act="practice-setup">出題条件を変える</button>'+
     '<a class="btn ghost" href="#/review">復習の一覧へ</a>'+
     '<a class="btn ghost" href="#/home">概況へ</a></div>'+
   '<p class="hint" style="margin-top:14px">誤答は「理解できていない」ではなく「まだ定着していない」だけ。解説の語彙メモを読み、翌日もう一度解きます。</p>';
@@ -1428,7 +1521,7 @@ function reviewHtml(){
       '<div class="dbody">'+
         (q.p?'<div class="passage">'+q.p.map(t=>'<p>'+anqt(q,t)+'</p>').join('')+'</div>':'')+
         (q.b?'<div class="qbody">'+anqt(q,q.b)+'</div>':'')+
-        '<p class="qask">'+esc(q.q)+'</p>'+
+        questionFigure(q)+'<p class="qask">'+esc(q.q)+'</p>'+
         '<p class="gpt" style="margin-top:10px">正解 <b style="color:var(--shu)">'+anqt(q,q.opts[q.ans])+'</b></p>'+
         (q.g?'<p class="gpt">文法点 <b class="hov" data-w="'+esc(q.g)+'" data-m="'+esc(q.gm||'')+'">'+esc(q.g)+'</b>'+(q.gm?' — '+esc(q.gm):'')+gFavBtn(q)+'</p>':'')+
         ((q.cat==='聴解'&&q.q)?'<p class="qask rev">'+esc(q.q)+'</p>':'')+
@@ -1664,7 +1757,7 @@ function settingsHtml(){
   const books=baseBooks();
   const isBuiltin=!(S.banks&&S.banks.length);
   const bankInfo=(isBuiltin
-    ? '<b>内蔵題庫</b> — 1 冊 ／ '+BANK.length+' 問。'
+    ? '<b>内蔵題庫</b> — '+books.length+' 冊 ／ '+allQ().length+' 問（追加問題 '+S.custom.length+' 問を含む）。'
     : '<b>読み込み済み</b> — '+books.length+' 冊 ／ '+allQ().length+' 問（追加問題 '+S.custom.length+' 問を含む）。')
     +' 冊子ごとに書き出し・追加ができます。'+(BANK_DIAG?'<br><b>題庫の状態</b>：'+esc(BANK_DIAG):'');
   const bookRows=books.map(b=>'<div class="cl-row"><span>'+esc(b.name)+'　　第 '+b.qs.length+' 問'+(b.level?'　／　'+esc(b.level):'')+'</span>'+
@@ -1698,9 +1791,9 @@ function settingsHtml(){
     '<div class="srow"><div class="lab">試験日<span class="hint">2027 年 7 月の第 1 日曜を既定にしています</span></div>'+
       '<div class="inline"><input type="date" value="'+esc(c.target)+'" data-conf="target"></div></div>'+
     '<div class="srow"><div class="lab">音声を含める<span class="hint">オフのとき、分野「すべて」の出題から聴解を外します（聴解だけを選べばいつでも出ます）</span></div>'+
-      '<div class="inline">'+selConf('auOn',[['1','含める'],['0','含めない（推奨）']],(c.auOn==='1'?'1':'0'))+'</div></div>'+
+      '<div class="inline">'+selConf('auOn',[['1','含める'],['0','含めない（推奨）']],(String(c.auOn)==='1'?'1':'0'))+'</div></div>'+
     '<div class="srow"><div class="lab">音声の再生回数<span class="hint">聴解の問題で何回まで聞けるか。解答後は何回でも聞けます</span></div>'+
-      '<div class="inline">'+selConf('auOnce',[['1','本番どおり 1 回'],['0','何回でも（復習向け）']],(c.auOnce==='0'?'0':'1'))+'</div></div>'+
+      '<div class="inline">'+selConf('auOnce',[['1','本番どおり 1 回'],['0','何回でも（復習向け）']],(String(c.auOnce)==='0'?'0':'1'))+'</div></div>'+
   '</div>'+
 
   '<div class="sgroup"><div class="t">音源（聴解）</div>'+
@@ -1708,7 +1801,7 @@ function settingsHtml(){
     '<div class="srow"><div class="lab">ファイル名</div>'+
       '<div class="inline"><input id="aufile" class="num-in" style="width:230px" placeholder="n2-2026-07.mp3" autocapitalize="none" autocorrect="off">'+
       '<button class="btn sm ghost" data-act="autest">8 秒試聴</button></div></div>'+
-    '<p class="hint">置き場：<b>'+esc(AUDIO_BASE)+'</b></p>'+
+    '<p class="hint">置き場：<b>'+esc(auUrl(''))+'</b></p>'+
   '</div>'+
 
   '<div class="sgroup"><div class="t">端末同期（スマホと記録を共有）</div>'+
@@ -1723,7 +1816,7 @@ function settingsHtml(){
   '</div>'+
 
   '<div class="sgroup"><div class="t">題庫データベース（索引＋冊子）</div>'+
-    '<p class="hint">題庫は <b>bank/manifest.json</b>（索引）と <b>bank/n4.json ・ n3.json ・ n2.json</b>（模擬冊子）、<b>bank/n3-2026-07.json ・ n2-2026-07.json</b>（2026年7月 真题・言語知識）、<b>bank/n2-2026-07-cho.json</b>（同 聴解）に分かれています。主 HTML は索引を読み、冊子を順に結合して出題します。冊子を増やせば、そのまま題庫も増えます。<br>'+
+    '<p class="hint">主 HTML は <b>bank/manifest.json</b> の索引を読み、下の冊子を順に結合して出題します。<br>'+
       bankInfo+'</p>'+
     '<div class="srow"><div class="lab">いま使っている冊子</div><div class="book-list">'+bookRows+'</div></div>'+
     '<div class="srow"><div class="lab">題庫の読み込み<span class="hint">索引（manifest.json）を選ぶと、その構成で丸ごと差し替え。冊子だけなら追加も選べます。複数まとめて選べます</span></div>'+
@@ -1819,10 +1912,10 @@ function normQ(o,i,loose){
   q.ex=Array.isArray(q.ex)?q.ex.filter(n=>n&&n.j):[];
   q.tags=(Array.isArray(q.tags)&&q.tags.length)?q.tags:[q.cat];
   q.q=q.q||'＿＿に入れるのに最もよいものを選んでください。';
-  q.ans=Number(q.ans||0);
+  q.ans=Number(q.ans??0);
   if(!q.b&&!q.p&&!(q.au&&q.au.u)) throw new Error('b（文）か p（本文の配列）か au（音声）が必要です');
   if(q.opts.length<2) throw new Error('opts は 2 つ以上必要です');
-  if(!(q.ans>=0&&q.ans<q.opts.length)) throw new Error('ans が opts の範囲外です');
+  if(!Number.isInteger(q.ans)||q.ans<0||q.ans>=q.opts.length) throw new Error('ans が opts の範囲外です');
   if(!loose && qOf(q.id)) q.id=q.id+'-'+Date.now().toString(36).slice(-3);
   return q;
 }
@@ -1843,10 +1936,10 @@ function normBank(list){
     q.ex=Array.isArray(q.ex)?q.ex.filter(n=>n&&n.j):[];
     q.tags=(Array.isArray(q.tags)&&q.tags.length)?q.tags:[q.cat];
     q.q=q.q||'＿＿に入れるのに最もよいものを選んでください。';
-    q.ans=Number(q.ans)||0;
+    q.ans=Number(q.ans??0);
     if(!q.b&&!q.p&&!(q.au&&q.au.u)) throw new Error(q.id+'：b（文）か p（本文の配列）か au（音声）が必要です');
     if(q.opts.length<2) throw new Error(q.id+'：opts は 2 つ以上必要です');
-    if(!(q.ans>=0&&q.ans<q.opts.length)) throw new Error(q.id+'：ans が opts の範囲外です');
+    if(!Number.isInteger(q.ans)||q.ans<0||q.ans>=q.opts.length) throw new Error(q.id+'：ans が opts の範囲外です');
     if(Array.isArray(q.p)&&Array.isArray(q.pt)&&q.pt.length!==q.p.length) throw new Error(q.id+'：pt の段落数が p と合いません');
     out.push(q);
   });
@@ -2060,19 +2153,20 @@ document.addEventListener('click',e=>{
   }else if(act==='setcat'){
     setup.cat=t.dataset.v||'all'; render();
   }else if(act==='start'){
-    const n=allQ().filter(poolQ).length;
+    const n=allQ().filter(q=>poolQ(q,setup)).length;
     if(!n){ toast('この条件には問題がありません'); return; }
     startSession({lv:setup.lv,cat:setup.cat,count:Number(setup.count)||10,mode:setup.mode});
   }else if(act==='pick'){ answer(Number(t.dataset.i)); }
   else if(act==='next'){ nextQ(); }
   else if(act==='again'){ if(SS) startSession(SS.cfg); }
+  else if(act==='practice-setup'){ auHalt(); SS=null; render(); window.scrollTo(0,0); }
   else if(act==='goto'){ location.hash='#/'+(t.dataset.to||'home'); }
   else if(act==='drill-single'){ if(t.dataset.id) startSession({ids:[t.dataset.id]}); }
   else if(act==='drill-list'){
     const ids=(t.dataset.ids||'').split(',').filter(Boolean);
     if(ids.length) startSession({ids});
   }
-  else if(act==='tr'){ if(SS){ SS.showTr=!SS.showTr; render(); } }
+  else if(act==='tr'){ if(SS&&SS.cur){ SS.cur.showTr=!showTranslation(SS.cur); render(); } }
   else if(act==='favq'){ e.preventDefault(); toggleFavQ(t.dataset.id); }
   else if(act==='favw'){ e.preventDefault(); toggleFavW(t.dataset.t,t.dataset.id,t.dataset.r,t.dataset.m); }
   else if(act==='favg'){ e.preventDefault(); toggleFavG(t.dataset.g,t.dataset.id,t.dataset.gm); }
@@ -2114,7 +2208,7 @@ document.addEventListener('change',e=>{
     if(k==='repeatWrong') S.conf.repeatWrong=(t.value==='1');
     else if(k==='dailyGoal') S.conf.dailyGoal=clamp(Number(t.value)||20,1,120);
     else if(k==='target') S.conf.target=t.value||'2027-07-04';
-    else if(k==='rubi'||k==='startLevel'||k==='trMode') S.conf[k]=t.value;
+    else if(['rubi','startLevel','trMode','lvBias','auOn','auOnce'].includes(k)) S.conf[k]=t.value;
     else S.conf[k]=Number(t.value)||0;
     save(); updateRail();
     toast('保存しました');
@@ -2172,35 +2266,42 @@ document.addEventListener('visibilitychange',()=>{
 /* オンライン（http/https）のときは bank/ を毎回確認し、索引が変わっていたら読み直す */
 (async function syncBanksFromServer(){
   if(!/^https?:/.test(location.protocol)){
-    BANK_DIAG='ローカルファイル（file://）で開いているため、bank/ を読めません。フォルダで python3 -m http.server 8000 を実行し、http://localhost:8000 で開いてください。';
+    BANK_DIAG='ローカルファイル（file://）で開いているため、bank/ を読めません。フォルダで python3 tools/serve_local.py を実行し、表示された URL を開いてください。';
     render(); return;
   }
   try{
+    const usesManualBooks=()=>S.banks&&S.banks.some(b=>b.src!=='server');
+    if(usesManualBooks()){
+      BANK_DIAG='手動で読み込んだ題庫を使用しています。自動更新を使うには内蔵題庫に戻してから再読み込みしてください。'; render(); return;
+    }
     const base=new URL('.',location.href).href;
     const res=await fetch(base+'bank/manifest.json',{cache:'no-store'});
     if(!res.ok){ BANK_DIAG='manifest.json を取得できません（HTTP '+res.status+'）。bank/ が index.html と同じ場所にあるか確認してください。'; render(); return; }
     const m=await res.json();
     if(!m||!Array.isArray(m.banks)||!m.banks.length){ BANK_DIAG='manifest.json の形式が想定外です。'; render(); return; }
-    const want=m.banks.map(b=>String((b&&b.file)||''));
+    const revision=String(m.revision||m.updated||m.version||'');
     const cur=Array.isArray(S.banks)?S.banks:[];
-    const same=cur.length===want.length&&cur.every((b,i)=>String(b.file||'')===want[i]&&b.src==='server');
+    const same=cur.length===m.banks.length&&cur.every((b,i)=>b.file===m.banks[i]?.file&&b.src==='server'&&b.rev===revision);
     if(same){ BANK_DIAG='サーバーの題庫 '+cur.length+' 冊（変更なし）。'; render(); return; }
-    const books=[], fails=[];
-    for(const b of m.banks){
+    const entries=await Promise.all(m.banks.map(async b=>{
       const f=String((b&&b.file)||'');
-      if(!/^[A-Za-z0-9._-]+\.json$/.test(f)){ fails.push(f+'（名前が不正）'); continue; }
+      if(!/^[A-Za-z0-9._-]+\.json$/.test(f)) return {error:f+'（名前が不正）'};
       try{
         const r2=await fetch(base+'bank/'+f,{cache:'no-store'});
-        if(!r2.ok){ fails.push(f+'（HTTP '+r2.status+'）'); continue; }
+        if(!r2.ok) return {error:f+'（HTTP '+r2.status+'）'};
         const d=await r2.json();
-        const qs=Array.isArray(d)?d:(Array.isArray(d.questions)?d.questions:(Array.isArray(d.bank)?d.bank:null));
-        if(!qs||!qs.length){ fails.push(f+'（問題 0 件）'); continue; }
-        books.push({id:String(b.id||d.id||f),name:String(b.name||d.name||f),level:String(b.level||d.level||''),file:f,src:'server',qs:normBank(qs)});
-      }catch(e){ fails.push(f+'（'+(e&&e.message?e.message:'読めません')+'）'); console.warn('[bank]',f,e); }
-    }
-    if(!books.length){ BANK_DIAG='題庫を 1 冊も読めません：'+fails.join(' / '); render(); return; }
-    S.banks=books; save();
-    BANK_DIAG='サーバーの題庫 '+books.length+' 冊 ／ '+allQ().length+' 問'+(fails.length?'（未読込：'+fails.join(' / ')+'）':'')+'。';
+        const qs=normBank(Array.isArray(d)?d:(d.questions||d.bank));
+        if(Number.isInteger(b.count)&&b.count!==qs.length) return {error:f+'（問題数が索引と異なる）'};
+        return {id:String(b.id||d.id||f),name:String(b.name||d.name||f),level:String(b.level||d.level||''),file:f,src:'server',rev:revision,qs};
+      }catch(e){ console.warn('[bank]',f,e); return {error:f+'（'+(e&&e.message?e.message:'読めません')+'）'}; }
+    }));
+    const failures=entries.filter(b=>b.error).map(b=>b.error);
+    if(failures.length){ BANK_DIAG='題庫を更新できません：'+failures.join(' / '); render(); return; }
+    const ids=entries.flatMap(b=>b.qs.map(q=>q.id));
+    if(new Set(ids).size!==ids.length){ BANK_DIAG='題庫を更新できません：冊子間で問題 ID が重複しています。'; render(); return; }
+    if(usesManualBooks()) return;
+    S.banks=entries; save();
+    BANK_DIAG='サーバーの題庫 '+entries.length+' 冊 ／ '+allQ().length+' 問。';
     render();
   }catch(e){
     BANK_DIAG='題庫の取得に失敗：'+(e&&e.message?e.message:e);

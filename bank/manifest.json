@@ -1,6 +1,7 @@
 {
  "version": 1,
- "updated": "2026-11-24",
+ "updated": "2026-11-25",
+ "revision": "2026-11-25-n3-2",
  "note": "主 HTML はこの索引を読み、banks の順に各ファイルを結合して出題する。",
  "banks": [
   {
@@ -30,6 +31,41 @@
    "level": "N3",
    "file": "n3-2026-07.json",
    "count": 35
+  },
+  {
+   "id": "jlpt-n3-2026-07-g",
+   "name": "N3 2026年7月 真题・文法／読解",
+   "level": "N3",
+   "file": "n3-2026-07-g.json",
+   "count": 38
+  },
+  {
+   "id": "jlpt-n3-2026-07-cho",
+   "name": "N3 2026年7月 真题・聴解",
+   "level": "N3",
+   "file": "n3-2026-07-cho.json",
+   "count": 28
+  },
+  {
+   "id": "jlpt-n3-2025-12",
+   "name": "N3 2025年12月 真题・文字語彙",
+   "level": "N3",
+   "file": "n3-2025-12.json",
+   "count": 35
+  },
+  {
+   "id": "jlpt-n3-2025-12-g",
+   "name": "N3 2025年12月 真题・文法／読解",
+   "level": "N3",
+   "file": "n3-2025-12-g.json",
+   "count": 38
+  },
+  {
+   "id": "jlpt-n3-2025-12-cho",
+   "name": "N3 2025年12月 真题・聴解",
+   "level": "N3",
+   "file": "n3-2025-12-cho.json",
+   "count": 28
   },
   {
    "id": "jlpt-n2-2026-07",
