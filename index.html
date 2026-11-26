@@ -1237,7 +1237,7 @@ function answer(d){
   const unit=currentUnit(),cur=SS?.cur;
   if(!unit||!cur||unit.submitted||!Number.isInteger(d)||d<0||d>=cur.order.length) return;
   if(SS.paper||unit.grouped){ cur.chosen=d; render(); return; }
-  if(cur.chosen!==null||(unit.recall&&!cur.studyRevealed)) return;
+  if(cur.chosen!==null) return;
   const q=unit.questions[0];
   cur.chosen=d; cur.ok=d===cur.ans;
   recordAnswer(q,cur.ok,!!unit.retry);
@@ -1435,20 +1435,18 @@ function practiceModeHtml(){
 }
 
 /* ---------- 語彙・文法 ---------- */
-const STUDY_KINDS={all:'語彙と文法',meaning:'語彙・意味',reading:'語彙・読み',grammar:'文法・用法'};
+const STUDY_KINDS={all:'語彙と文法',meaning:'語彙・意味',grammar:'文法・意味'};
 const studyKey=text=>String(text||'').normalize('NFKC').replace(/[〜～]/g,'~').replace(/\s+/g,'').toLowerCase();
 const studyText=text=>typeof text==='string'?text.trim():'';
 const studyReading=text=>studyKey(text).replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60));
-function studyCatalog(){
-  const words=new Map(), grammar=new Map(), readings=new Map();
-  for(const q of allQ()){
+function studyCatalog(questions=allQ()){
+  const words=new Map(), grammar=new Map();
+  for(const q of questions){
     if(!['N3','N2'].includes(q.lv)) continue;
     for(const [rank,notes] of [q.notes,q.rd].entries()) for(const n of notes||[]){
       const t=studyText(n?.t), r=studyText(n?.r), m=studyText(n?.m);
       if(!t||!m) continue;
       const term=studyKey(t), reading=studyReading(r);
-      if(!readings.has(term)) readings.set(term,new Set());
-      if(reading) readings.get(term).add(reading);
       const key=JSON.stringify([term,reading]);
       if(!words.has(key)) words.set(key,{key,t,r,levels:new Set(),sources:[],meanings:new Set()});
       const word=words.get(key);
@@ -1456,29 +1454,28 @@ function studyCatalog(){
       word.meanings.add(m);
       if(!word.sources.some(s=>s.q.id===q.id)) word.sources.push({q,t,r,m,rank});
     }
-    if(q.cat==='文法'){
-      const g=studyText(q.g);
-      const key=g?'point:'+studyKey(g):'question:'+q.id;
-      if(!grammar.has(key)) grammar.set(key,{key,t:g||(q.materialId||q.p?'文章の文法':'文法')+' · '+q.id,levels:new Set(),sources:[]});
+    const g=studyText(q.g), gm=studyText(q.gm);
+    if(q.cat==='文法'&&g&&gm){
+      const key='point:'+studyKey(g);
+      if(!grammar.has(key)) grammar.set(key,{key,t:g,levels:new Set(),sources:[],meanings:new Set()});
       const item=grammar.get(key);
       item.levels.add(q.lv);
-      item.sources.push({q,m:studyText(q.gm)});
+      item.meanings.add(gm);
+      item.sources.push({q,t:g,m:gm});
     }
   }
   const vocab=[...words.values()];
-  for(const word of vocab){
-    word.sources.sort((a,b)=>a.rank-b.rank);
-    word.readable=!!word.r&&/\p{Script=Han}/u.test(word.t)&&readings.get(studyKey(word.t)).size===1;
-  }
+  for(const word of vocab) word.sources.sort((a,b)=>a.rank-b.rank);
   return {vocab,grammar:[...grammar.values()]};
 }
 function studyItems(config,catalog){
   const kinds=config.kind==='all'?['meaning','grammar']:[config.kind];
   return kinds.flatMap(kind=>{
     const pool=kind==='grammar'?catalog.grammar:catalog.vocab;
-    return pool.filter(e=>(config.lv==='all'||e.levels.has(config.lv))&&(kind!=='reading'||e.readable)).map(entry=>{
+    const prefix=kind==='grammar'?'study:grammar-meaning:':'study:meaning:';
+    return pool.filter(e=>config.lv==='all'||e.levels.has(config.lv)).map(entry=>{
       const sources=config.lv==='all'?entry.sources:entry.sources.filter(s=>s.q.lv===config.lv);
-      return {id:'study:'+kind+':'+encodeURIComponent(entry.key),kind,entry,sources};
+      return {id:prefix+encodeURIComponent(entry.key),kind,entry,sources};
     });
   });
 }
@@ -1492,22 +1489,19 @@ function studyMeaningParts(text){
   const noNotes=text.replace(/[（(][^）)]*[）)]/g,'');
   return [studyKey(text),...noNotes.split(/[、，,；;／/]/).map(x=>studyKey(x).replace(/[.…。]+$/g,''))].filter(Boolean);
 }
-function studyOptions(item,source,vocab){
-  const reading=item.kind==='reading';
-  const target=reading?source.r:source.m;
-  const keys=reading?new Set([studyReading(target)]):new Set([...item.entry.meanings].flatMap(studyMeaningParts));
-  const options=[target];
-  const candidates=vocab.filter(w=>w!==item.entry&&(!reading||w.readable)).map(w=>{
-    const sources=w.sources;
-    const same=sources.find(s=>s.q.lv===source.q.lv);
-    const other=same||sources[0];
-    return {value:reading?other.r:other.m,level:!!same,random:Math.random()};
+function studyOptions(item,source,pool){
+  const keys=new Set([...item.entry.meanings].flatMap(studyMeaningParts));
+  const options=[source.m];
+  const candidates=pool.filter(entry=>entry.key!==item.entry.key).map(entry=>{
+    const same=entry.sources.find(s=>s.q.lv===source.q.lv);
+    return {meaning:(same||entry.sources[0]).m,level:!!same,random:Math.random()};
   });
   candidates.sort((a,b)=>Number(b.level)-Number(a.level)||a.random-b.random);
   for(const choice of candidates){
-    const parts=reading?[studyReading(choice.value)]:studyMeaningParts(choice.value);
-    if(!parts.length||parts.some(x=>keys.has(x))) continue;
-    options.push(choice.value);
+    const parts=studyMeaningParts(choice.meaning);
+    if(!parts.length||parts.some(part=>[...keys].some(key=>part===key||
+      (Math.min(part.length,key.length)>=3&&(part.includes(key)||key.includes(part)))))) continue;
+    options.push(choice.meaning);
     parts.forEach(x=>keys.add(x));
     if(options.length===4) break;
   }
@@ -1515,7 +1509,8 @@ function studyOptions(item,source,vocab){
 }
 function startStudy(config=studySetup,ids){
   config={...config};
-  const catalog=studyCatalog(), now=Date.now(), materials=questionMaterials(true);
+  const catalog=studyCatalog(), now=Date.now();
+  let embedded;
   const items=studyItems(config,catalog);
   const priority=item=>S.prog[item.id]?.lastOk===false||studyStatus(item,'due',now)?0:S.prog[item.id]?.n?2:1;
   let selected=items.filter(i=>ids?ids.has(i.id):studyStatus(i,config.status,now));
@@ -1531,11 +1526,17 @@ function startStudy(config=studySetup,ids){
   }
   const units=selected.slice(0,count).map(item=>{
     const grammar=item.kind==='grammar';
-    const source=grammar?item.sources[Math.floor(Math.random()*item.sources.length)]:item.sources[0];
-    const choices=grammar?source.q.opts:studyOptions(item,source,catalog.vocab);
-    const recall=choices.length<2;
-    const q=grammar?{...source.q,id:item.id}:{id:item.id,lv:source.q.lv,cat:'語彙',opts:recall?['覚えていた','要復習']:choices,ans:0};
-    return {questions:[q],material:materials.get(source.q.id)?.material,recall,item,source};
+    const source=item.sources[0];
+    const pool=grammar?'grammar':'vocab';
+    let choices=studyOptions(item,source,catalog[pool]);
+    if(choices.length<4){
+      embedded??=studyCatalog(BUILTIN_BOOKS.flatMap(book=>book.qs));
+      choices=studyOptions(item,source,catalog[pool].concat(embedded[pool]));
+    }
+    const ans=Math.floor(Math.random()*choices.length);
+    [choices[0],choices[ans]]=[choices[ans],choices[0]];
+    const q={id:item.id,lv:source.q.lv,cat:grammar?'文法':'語彙',opts:choices,ans};
+    return {questions:[q],item,source};
   });
   if(!units.length){ toast('この条件に合う項目がありません'); return; }
   practiceMode='study';
@@ -1570,36 +1571,20 @@ function studySetupHtml(){
     '<div id="study-list">'+studyListHtml(studyVisible,studySearch)+'</div></details>';
 }
 function studyQuestionHtml(unit){
-  const q=unit.questions[0], {item,source}=unit, grammar=item.kind==='grammar';
-  if(!SS.cur) SS.cur=newChoice(q,unit.recall);
+  const q=unit.questions[0];
+  const {source,item}=unit;
+  if(!SS.cur) SS.cur=newChoice(q);
   const cur=SS.cur, graded=cur.chosen!==null;
-  const passage=unit.material?.type==='reading'?unit.material:source.q;
-  const context=grammar&&Array.isArray(passage.p)?'<div id="material-passage" class="passage study-context" role="region" aria-label="本文" tabindex="0">'+
-    passage.p.map(p=>'<p>'+esc(p)+'</p>').join('')+'</div>':'';
-  const stem=grammar?(q.b?'<div class="qbody">'+esc(q.b)+'</div>':'')+'<p class="qask">'+esc(q.q)+'</p>':
-    '<div class="study-entry"><strong class="study-prompt">'+esc(source.t)+'</strong>'+(item.kind==='meaning'&&source.r?'<span>'+esc(source.r)+'</span>':'')+wFavBtn(source.q,source)+'</div>'+
-    '<p class="qask">'+(unit.recall?'思い出してから答えを表示してください。':item.kind==='reading'?'読み方を選んでください。':'中国語の意味を選んでください。')+'</p>';
-  const reveal=unit.recall&&!cur.studyRevealed;
-  const options=reveal?'<button class="btn" data-act="study-reveal">答えを表示</button>':questionOptions(q,cur,graded);
-  const vocabAnswer=!grammar&&cur.studyRevealed?'<p class="study-source">'+esc([source.r,source.m].filter(Boolean).join(' · '))+'</p>':'';
-  const translation=grammar&&graded?fullTr({...q,p:passage.p,pt:passage.pt}):'';
-  const feedback=graded?(grammar?questionFeedback(source.q,cur,translation?'<div class="trblock">'+translation+'</div>':''):studyWordFeedback(unit,cur))+
-    '<div class="fb-act">'+nextButton('次の問題')+'</div>':'';
+  const favorite=item.kind==='grammar'?gFavBtn(source.q):wFavBtn(source.q,source);
+  const variants=[...item.entry.meanings].filter(m=>studyKey(m)!==studyKey(source.m));
+  const feedback=graded?'<div class="fb"><div class="fb-top"><b class="'+(cur.ok?'ok':'ng')+'">'+(cur.ok?'正解':'要復習')+'</b><span>'+
+    esc(source.m)+'</span></div>'+(variants.length?'<p class="exp">題庫にあるほかの意味 '+esc(variants.join(' ／ '))+'</p>':'')+
+    '<p class="hint">出典 '+esc(source.q.id)+'</p></div><div class="fb-act">'+nextButton('次の問題')+'</div>':'';
   return '<div class="pagehead"><h1>'+STUDY_KINDS[item.kind]+'</h1><p>'+esc(q.lv)+' ・ '+(SS.i+1)+' / '+SS.units.length+'</p></div>'+
     '<div class="prog"><i style="width:'+Math.round(SS.i/SS.units.length*100)+'%"></i></div>'+
-    '<section class="panel">'+context+stem+vocabAnswer+options+feedback+
-    (graded?'<details class="study-source"><summary>出典 '+esc(source.q.id)+'</summary><p>'+esc(source.q.b||source.q.q)+'</p><button class="btn sm ghost" data-act="drill-single" data-id="'+esc(source.q.id)+'">元の問題を解く</button></details>':'')+
-    '</section><button class="btn sm ghost study-source" data-act="practice-setup">語彙・文法の条件に戻る</button>';
-}
-function studyWordFeedback(unit,cur){
-  const {source,item}=unit;
-  const variant=[...item.entry.meanings].filter(m=>studyKey(m)!==studyKey(source.m));
-  const excerpt=[source.q.b,...(unit.material?.p||source.q.p||[]),...(source.q.ex||[]).map(e=>e.j),source.q.q,unit.material?.sc||source.q.sc]
-    .flatMap(t=>studyText(t).split(/(?<=[。！？])|\n/)).find(t=>t.includes(source.t));
-  return '<div class="fb"><div class="fb-top"><b class="'+(cur.ok?'ok':'ng')+'">'+(cur.ok?'正解':'要復習')+'</b><span>'+
-    esc([source.t,source.r,source.m].filter(Boolean).join(' · '))+'</span></div>'+
-    (variant.length?'<p class="exp">ほかの用例での意味 '+esc(variant.join(' ／ '))+'</p>':'')+
-    (excerpt?'<p class="exp">'+paperMark(excerpt,[source.t])+'</p>':'')+'</div>';
+    '<section class="panel"><div class="study-entry"><strong class="study-prompt">'+esc(source.t)+'</strong>'+
+    (source.r?'<span>'+esc(source.r)+'</span>':'')+favorite+'</div><p class="qask">中国語の意味を選んでください。</p>'+
+    questionOptions(q,cur,graded)+feedback+'</section><button class="btn sm ghost study-source" data-act="practice-setup">語彙・文法の条件に戻る</button>';
 }
 function studyResultHtml(){
   const n=SS.res.length, ok=SS.res.filter(r=>r.ok).length;
@@ -2840,8 +2825,6 @@ document.addEventListener('click',e=>{
     practiceMode=t.dataset.mode; render();
   }else if(act==='study-start'){
     startStudy();
-  }else if(act==='study-reveal'&&SS?.study&&currentUnit()?.recall){
-    SS.cur.studyRevealed=true; render();
   }else if(act==='study-retry'&&SS?.study&&SS.done){
     startStudy(SS.cfg,new Set(SS.res.filter(r=>!r.ok).map(r=>r.id)));
   }else if(act==='paper-start'){
