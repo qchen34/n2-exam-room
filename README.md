@@ -7,7 +7,7 @@
 ```
 index.html            主程序（单文件：CSS / JS / 内嵌兜底题库）
 bank/                 题库（manifest.json 索引 + 各册 JSON）
-  manifest.json       索引：按顺序列出所有册子
+  manifest.json       册子索引与「回次 → 分节 → 大题」目录
   n4.json n3.json n2.json        自建模拟册（各 22 题）
   n2-2026-07.json     N2 2026年7月 真题・言語知識（46 题）
   n2-2026-07-cho.json N2 2026年7月 听力（5 道独立题、1 段共用录音的 2 道题）
@@ -29,7 +29,7 @@ _backup/              历史版本（不进 git）
 python3 tools/serve_local.py
 ```
 
-`?audio=local` 从 `audio/` 读取 `au.u` 对应的 MP3，HTTP 服务支持按字节区间定位音频。在练习页选择「N3 → 聴解」。手动导入题库时，同时选中册子 JSON，可选 `bank/manifest.json` 指定排列顺序。
+`?audio=local` 从 `audio/` 读取 `au.u` 对应的 MP3，HTTP 服务支持按字节区间定位音频。练习页默认打开「過去問・題型別」。选择「N3 2026年7月」，再在「聴解」下选一道大题。自建模拟册和导入题也能按题型练习，词汇抽练和到期复习则从「ミックス練習」进入。手动导入整库时，同时选中册子 JSON 和 `bank/manifest.json` 可保留原卷目录。
 
 ## 部署后（Vercel）
 
@@ -51,7 +51,9 @@ python3 tools/serve_local.py
 讲解用 `tr`（整题中文译）、`exp`（为什么选它），可选 `notes`（词汇注音）、`g`/`gm`（文法点）、
 `qt`/`pt`（设问与段落译）、`ex`（用例）。加册后记得同步 `manifest.json` 的 `count`。
 
-册子可用 `materials` 保存共用材料，小题用 `materialId` 引用同册材料。阅读材料写 `type: "reading"`、`p` 与可选的 `pt`。听力材料写 `type: "listening"`、`au` 与可选的 `sc`、`sct`。练习时同一材料的小题按册子顺序排列，整组提交后逐题保存。原先写在单题里的材料字段仍可读取。
+册子可用 `materials` 保存共用材料，小题用 `materialId` 引用同册材料。阅读材料写 `type: "reading"`、`p` 与可选的 `pt`。听力材料写 `type: "listening"`、`au` 与可选的 `sc`、`sct`。原先写在单题里的材料字段仍可读取。
+
+在 `manifest.json` 的 `exams` 下维护回次、科目和大题。每道大题的 `items` 按原卷顺序列出 `no` 与 `questionId`。共享材料的条目还用 `group` 标记 `materialId`。尚未录入的原卷题位省略 `questionId`。在「過去問・題型別」整道大题交卷后逐题保存。加题后运行 `python3 tools/check_bank.py`，校验所有外置题都有唯一的大题归属。 [分类方案](prd.md#9-按真题回次和原卷大题练习)
 
 ## 进度与记录
 

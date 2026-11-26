@@ -17,6 +17,7 @@
 終了コード: 0 = 問題なし, 1 = 不備あり
 """
 import argparse, glob, json, math, os, re, sys
+from collections import defaultdict
 
 CATS = ["漢字読み", "語彙", "文法", "読解", "聴解"]
 LVS = ["N5", "N4", "N3", "N2", "N1"]
@@ -93,12 +94,70 @@ def check_materials(book, name, bad):
         check_figure(item, tag, bad)
     return materials
 
+def index_entries(entries, field, kind, where, bad):
+    if not isinstance(entries, list) or not entries:
+        bad.append(f"{where}: {field} の一覧が空または形式が不正")
+        return
+    seen = set()
+    for entry in entries:
+        value = entry.get(field) if isinstance(entry, dict) else None
+        if type(value) is not kind or not value or value in seen:
+            bad.append(f"{where}: {field} が空または重複（{value}）")
+            continue
+        seen.add(value)
+        yield entry
+
+def check_exams(exams, questions, sources, bad):
+    assigned, used_groups = set(), set()
+    material_members = defaultdict(set)
+    for qid, q in questions.items():
+        if isinstance(q.get("materialId"), str):
+            material_members[q["materialId"]].add(qid)
+    for exam in index_entries(exams, "id", str, "manifest exams", bad):
+        exam_id = exam["id"]
+        expected = exam_id.removeprefix("mock-")
+        for section in index_entries(exam.get("sections"), "id", str, exam_id, bad):
+            section_id = section["id"]
+            for block in index_entries(section.get("blocks"), "no", int, f"{exam_id}/{section_id}", bad):
+                label = f"{exam_id}/{section_id}/問題{block['no']}"
+                groups, previous = defaultdict(set), None
+                for item in index_entries(block.get("items"), "no", str, label, bad):
+                    group = item.get("group")
+                    if group is not None:
+                        if not isinstance(group, str) or not group or (group in groups and group != previous):
+                            bad.append(f"{label} {item['no']}: 共通資料の形式または順序が不正")
+                            continue
+                        groups[group]
+                    previous = group
+                    if "questionId" not in item:
+                        continue
+                    qid = item["questionId"]
+                    q = questions.get(qid) if isinstance(qid, str) else None
+                    if not q or qid in assigned or q.get("lv") != exam.get("level") or q.get("materialId") != group:
+                        bad.append(f"{label} {item['no']}: 問題の参照が不正（{qid}）")
+                        continue
+                    source = os.path.basename(sources[qid]).removesuffix(".json")
+                    if source != expected and not source.startswith(expected + "-"):
+                        bad.append(f"{label}: 別の試験回を参照（{qid}）")
+                    if not exam.get("kind") and (section_id == "listening") != (q.get("cat") == "聴解"):
+                        bad.append(f"{label}: 分野が科目と合わない（{qid}）")
+                    assigned.add(qid)
+                    if group:
+                        groups[group].add(qid)
+                for group, members in groups.items():
+                    if group in used_groups or members != material_members[group]:
+                        bad.append(f"{label}: 共通資料の所属が不正（{group}）")
+                    used_groups.add(group)
+    for qid in sorted(set(questions) - assigned):
+        bad.append(f"manifest: 大問に未分類（{qid}）")
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("-v", "--verbose", action="store_true")
     a = ap.parse_args()
     bad = []
     ids = {}
+    questions = {}
     per_book = {}
 
     files = sorted(glob.glob(os.path.join(ROOT, "bank", "*.json")))
@@ -130,6 +189,7 @@ def main():
                 bad.append(f"{tag}: id 重複 {qid}（{ids[qid]} と）")
             else:
                 ids[qid] = name
+                questions[qid] = q
             if q.get("lv") not in LVS:
                 bad.append(f"{tag} {qid}: lv が不正（{q.get('lv')}）")
             if q.get("cat") not in CATS:
@@ -144,6 +204,10 @@ def main():
             ans = q.get("ans")
             if type(ans) is not int or not isinstance(opts, list) or not 0 <= ans < len(opts):
                 bad.append(f"{tag} {qid}: ans が opts の範囲外（{ans}）")
+            printed = q.get("paperOptions")
+            if "paperOptions" in q and (not isinstance(printed, list) or not isinstance(opts, list)
+                                          or len(printed) != len(opts) or not all(isinstance(x, str) for x in printed)):
+                bad.append(f"{tag} {qid}: paperOptions が opts と合わない")
             if not str(q.get("q", "")).strip() and q.get("cat") != "聴解":
                 bad.append(f"{tag} {qid}: q（設問）が空")
             if not str(q.get("exp", "")).strip():
@@ -188,6 +252,8 @@ def main():
             real = per_book[name]
             if type(b.get("count")) is not int or b["count"] != real:
                 bad.append(f"manifest: {fn} の count={b.get('count')} だが実際は {real} 問")
+        if isinstance(manifest, dict):
+            check_exams(manifest.get("exams"), questions, ids, bad)
     else:
         bad.append("bank/manifest.json がない")
 

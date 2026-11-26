@@ -1,7 +1,7 @@
 {
  "version": 1,
- "updated": "2026-11-25",
- "revision": "2026-11-25-materials-1",
+ "updated": "2026-11-26",
+ "revision": "2026-11-26-exam-blocks-1",
  "note": "主 HTML はこの索引を読み、banks の順に各ファイルを結合して出題する。",
  "banks": [
   {
@@ -80,6 +80,1011 @@
    "level": "N2",
    "file": "n2-2026-07-cho.json",
    "count": 7
+  }
+ ],
+ "exams": [
+  {
+   "id": "n3-2026-07",
+   "level": "N3",
+   "date": "2026-07",
+   "name": "N3 2026年7月",
+   "sections": [
+    {
+     "id": "words",
+     "name": "言語知識（文字・語彙）",
+     "blocks": [
+      {
+       "no": 1,
+       "type": "kanji",
+       "name": "漢字読み",
+       "instruction": "下線の言葉の読み方として、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1", "questionId": "N3S2607-01"},
+        {"no": "2", "questionId": "N3S2607-02"},
+        {"no": "3", "questionId": "N3S2607-03"},
+        {"no": "4", "questionId": "N3S2607-04"},
+        {"no": "5", "questionId": "N3S2607-05"},
+        {"no": "6", "questionId": "N3S2607-06"},
+        {"no": "7", "questionId": "N3S2607-07"},
+        {"no": "8", "questionId": "N3S2607-08"}
+       ]
+      },
+      {
+       "no": 2,
+       "type": "writing",
+       "name": "表記",
+       "instruction": "下線の言葉を漢字で書くとき、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "9", "questionId": "N3S2607-09"},
+        {"no": "10", "questionId": "N3S2607-10"},
+        {"no": "11", "questionId": "N3S2607-11"},
+        {"no": "12", "questionId": "N3S2607-12"},
+        {"no": "13", "questionId": "N3S2607-13"},
+        {"no": "14", "questionId": "N3S2607-14"}
+       ]
+      },
+      {
+       "no": 3,
+       "type": "context",
+       "name": "文脈規定",
+       "instruction": "（　）に入れるのに最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "15", "questionId": "N3S2607-15"},
+        {"no": "16", "questionId": "N3S2607-16"},
+        {"no": "17", "questionId": "N3S2607-17"},
+        {"no": "18", "questionId": "N3S2607-18"},
+        {"no": "19", "questionId": "N3S2607-19"},
+        {"no": "20", "questionId": "N3S2607-20"},
+        {"no": "21", "questionId": "N3S2607-21"},
+        {"no": "22", "questionId": "N3S2607-22"},
+        {"no": "23", "questionId": "N3S2607-23"},
+        {"no": "24", "questionId": "N3S2607-24"},
+        {"no": "25", "questionId": "N3S2607-25"}
+       ]
+      },
+      {
+       "no": 4,
+       "type": "synonym",
+       "name": "言い換え類義",
+       "instruction": "下線の言葉に意味が最も近いものを一つ選びなさい。",
+       "items": [
+        {"no": "26", "questionId": "N3S2607-26"},
+        {"no": "27", "questionId": "N3S2607-27"},
+        {"no": "28", "questionId": "N3S2607-28"},
+        {"no": "29", "questionId": "N3S2607-29"},
+        {"no": "30", "questionId": "N3S2607-30"}
+       ]
+      },
+      {
+       "no": 5,
+       "type": "usage",
+       "name": "用法",
+       "instruction": "次の言葉の使い方として最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "31", "questionId": "N3S2607-31"},
+        {"no": "32", "questionId": "N3S2607-32"},
+        {"no": "33", "questionId": "N3S2607-33"},
+        {"no": "34", "questionId": "N3S2607-34"},
+        {"no": "35", "questionId": "N3S2607-35"}
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reading",
+     "name": "言語知識（文法）・読解",
+     "blocks": [
+      {
+       "no": 1,
+       "type": "grammar",
+       "name": "文法形式の判断",
+       "instruction": "（　）に入れるのに最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1", "questionId": "N3S2607-G01"},
+        {"no": "2", "questionId": "N3S2607-G02"},
+        {"no": "3", "questionId": "N3S2607-G03"},
+        {"no": "4", "questionId": "N3S2607-G04"},
+        {"no": "5", "questionId": "N3S2607-G05"},
+        {"no": "6", "questionId": "N3S2607-G06"},
+        {"no": "7", "questionId": "N3S2607-G07"},
+        {"no": "8", "questionId": "N3S2607-G08"},
+        {"no": "9", "questionId": "N3S2607-G09"},
+        {"no": "10", "questionId": "N3S2607-G10"},
+        {"no": "11", "questionId": "N3S2607-G11"},
+        {"no": "12", "questionId": "N3S2607-G12"},
+        {"no": "13", "questionId": "N3S2607-G13"}
+       ]
+      },
+      {
+       "no": 2,
+       "type": "order",
+       "name": "文の組み立て",
+       "instruction": "文の ★ に入る最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "14", "questionId": "N3S2607-G14"},
+        {"no": "15", "questionId": "N3S2607-G15"},
+        {"no": "16", "questionId": "N3S2607-G16"},
+        {"no": "17", "questionId": "N3S2607-G17"},
+        {"no": "18", "questionId": "N3S2607-G18"}
+       ]
+      },
+      {
+       "no": 3,
+       "type": "cloze",
+       "name": "文章の文法",
+       "instruction": "文章全体の内容を考えて、番号の空欄に入る最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "19", "questionId": "N3S2607-G19", "group": "N3S2607-G19-passage"},
+        {"no": "20", "questionId": "N3S2607-G20", "group": "N3S2607-G19-passage"},
+        {"no": "21", "questionId": "N3S2607-G21", "group": "N3S2607-G19-passage"},
+        {"no": "22", "questionId": "N3S2607-G22", "group": "N3S2607-G19-passage"}
+       ]
+      },
+      {
+       "no": 4,
+       "type": "short",
+       "name": "内容理解（短文）",
+       "instruction": "次の文章を読んで、質問の答えとして最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "23", "questionId": "N3S2607-G23", "group": "N3S2607-G23-passage"},
+        {"no": "24", "questionId": "N3S2607-G24", "group": "N3S2607-G24-passage"},
+        {"no": "25", "questionId": "N3S2607-G25", "group": "N3S2607-G25-passage"},
+        {"no": "26", "questionId": "N3S2607-G26", "group": "N3S2607-G26-passage"}
+       ]
+      },
+      {
+       "no": 5,
+       "type": "medium",
+       "name": "内容理解（中文）",
+       "instruction": "次の文章を読んで、質問の答えとして最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "27", "questionId": "N3S2607-G27", "group": "N3S2607-G27-passage"},
+        {"no": "28", "questionId": "N3S2607-G28", "group": "N3S2607-G27-passage"},
+        {"no": "29", "questionId": "N3S2607-G29", "group": "N3S2607-G27-passage"},
+        {"no": "30", "questionId": "N3S2607-G30", "group": "N3S2607-G30-passage"},
+        {"no": "31", "questionId": "N3S2607-G31", "group": "N3S2607-G30-passage"},
+        {"no": "32", "questionId": "N3S2607-G32", "group": "N3S2607-G30-passage"}
+       ]
+      },
+      {
+       "no": 6,
+       "type": "long",
+       "name": "内容理解（長文）",
+       "instruction": "次の文章を読んで、質問の答えとして最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "33", "questionId": "N3S2607-G33", "group": "N3S2607-G33-passage"},
+        {"no": "34", "questionId": "N3S2607-G34", "group": "N3S2607-G33-passage"},
+        {"no": "35", "questionId": "N3S2607-G35", "group": "N3S2607-G33-passage"},
+        {"no": "36", "questionId": "N3S2607-G36", "group": "N3S2607-G33-passage"}
+       ]
+      },
+      {
+       "no": 7,
+       "type": "lookup",
+       "name": "情報検索",
+       "instruction": "案内を読んで、条件に合うものを一つ選びなさい。",
+       "items": [
+        {"no": "37", "questionId": "N3S2607-G37", "group": "N3S2607-G37-passage"},
+        {"no": "38", "questionId": "N3S2607-G38", "group": "N3S2607-G37-passage"}
+       ]
+      }
+     ]
+    },
+    {
+     "id": "listening",
+     "name": "聴解",
+     "blocks": [
+      {
+       "no": 1,
+       "type": "task",
+       "name": "課題理解",
+       "instruction": "まず質問を聞いてください。それから話を聞いて、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1番", "questionId": "N3S2607-CH01"},
+        {"no": "2番", "questionId": "N3S2607-CH02"},
+        {"no": "3番", "questionId": "N3S2607-CH03"},
+        {"no": "4番", "questionId": "N3S2607-CH04"},
+        {"no": "5番", "questionId": "N3S2607-CH05"},
+        {"no": "6番", "questionId": "N3S2607-CH06"}
+       ]
+      },
+      {
+       "no": 2,
+       "type": "point",
+       "name": "ポイント理解",
+       "instruction": "まず質問を聞いて、選択肢を読んでください。それから話を聞いて、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1番", "questionId": "N3S2607-CH07"},
+        {"no": "2番", "questionId": "N3S2607-CH08"},
+        {"no": "3番", "questionId": "N3S2607-CH09"},
+        {"no": "4番", "questionId": "N3S2607-CH10"},
+        {"no": "5番", "questionId": "N3S2607-CH11"},
+        {"no": "6番", "questionId": "N3S2607-CH12"}
+       ]
+      },
+      {
+       "no": 3,
+       "type": "summary",
+       "name": "概要理解",
+       "instruction": "話を聞いてください。それから質問と選択肢を聞いて、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1番", "questionId": "N3S2607-CH13"},
+        {"no": "2番", "questionId": "N3S2607-CH14"},
+        {"no": "3番", "questionId": "N3S2607-CH15"}
+       ]
+      },
+      {
+       "no": 4,
+       "type": "speech",
+       "name": "発話表現",
+       "instruction": "絵を見ながら質問を聞いてください。選択肢を聞いて、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1番", "questionId": "N3S2607-CH16"},
+        {"no": "2番", "questionId": "N3S2607-CH17"},
+        {"no": "3番", "questionId": "N3S2607-CH18"},
+        {"no": "4番", "questionId": "N3S2607-CH19"}
+       ]
+      },
+      {
+       "no": 5,
+       "type": "reply",
+       "name": "即時応答",
+       "instruction": "文を聞いてください。それに対する返事として最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1番", "questionId": "N3S2607-CH20"},
+        {"no": "2番", "questionId": "N3S2607-CH21"},
+        {"no": "3番", "questionId": "N3S2607-CH22"},
+        {"no": "4番", "questionId": "N3S2607-CH23"},
+        {"no": "5番", "questionId": "N3S2607-CH24"},
+        {"no": "6番", "questionId": "N3S2607-CH25"},
+        {"no": "7番", "questionId": "N3S2607-CH26"},
+        {"no": "8番", "questionId": "N3S2607-CH27"},
+        {"no": "9番", "questionId": "N3S2607-CH28"}
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "n3-2025-12",
+   "level": "N3",
+   "date": "2025-12",
+   "name": "N3 2025年12月",
+   "sections": [
+    {
+     "id": "words",
+     "name": "言語知識（文字・語彙）",
+     "blocks": [
+      {
+       "no": 1,
+       "type": "kanji",
+       "name": "漢字読み",
+       "instruction": "下線の言葉の読み方として、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1", "questionId": "N3S2512-W01"},
+        {"no": "2", "questionId": "N3S2512-W02"},
+        {"no": "3", "questionId": "N3S2512-W03"},
+        {"no": "4", "questionId": "N3S2512-W04"},
+        {"no": "5", "questionId": "N3S2512-W05"},
+        {"no": "6", "questionId": "N3S2512-W06"},
+        {"no": "7", "questionId": "N3S2512-W07"},
+        {"no": "8", "questionId": "N3S2512-W08"}
+       ]
+      },
+      {
+       "no": 2,
+       "type": "writing",
+       "name": "表記",
+       "instruction": "下線の言葉を漢字で書くとき、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "9", "questionId": "N3S2512-W09"},
+        {"no": "10", "questionId": "N3S2512-W10"},
+        {"no": "11", "questionId": "N3S2512-W11"},
+        {"no": "12", "questionId": "N3S2512-W12"},
+        {"no": "13", "questionId": "N3S2512-W13"},
+        {"no": "14", "questionId": "N3S2512-W14"}
+       ]
+      },
+      {
+       "no": 3,
+       "type": "context",
+       "name": "文脈規定",
+       "instruction": "（　）に入れるのに最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "15", "questionId": "N3S2512-W15"},
+        {"no": "16", "questionId": "N3S2512-W16"},
+        {"no": "17", "questionId": "N3S2512-W17"},
+        {"no": "18", "questionId": "N3S2512-W18"},
+        {"no": "19", "questionId": "N3S2512-W19"},
+        {"no": "20", "questionId": "N3S2512-W20"},
+        {"no": "21", "questionId": "N3S2512-W21"},
+        {"no": "22", "questionId": "N3S2512-W22"},
+        {"no": "23", "questionId": "N3S2512-W23"},
+        {"no": "24", "questionId": "N3S2512-W24"},
+        {"no": "25", "questionId": "N3S2512-W25"}
+       ]
+      },
+      {
+       "no": 4,
+       "type": "synonym",
+       "name": "言い換え類義",
+       "instruction": "下線の言葉に意味が最も近いものを一つ選びなさい。",
+       "items": [
+        {"no": "26", "questionId": "N3S2512-W26"},
+        {"no": "27", "questionId": "N3S2512-W27"},
+        {"no": "28", "questionId": "N3S2512-W28"},
+        {"no": "29", "questionId": "N3S2512-W29"},
+        {"no": "30", "questionId": "N3S2512-W30"}
+       ]
+      },
+      {
+       "no": 5,
+       "type": "usage",
+       "name": "用法",
+       "instruction": "次の言葉の使い方として最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "31", "questionId": "N3S2512-W31"},
+        {"no": "32", "questionId": "N3S2512-W32"},
+        {"no": "33", "questionId": "N3S2512-W33"},
+        {"no": "34", "questionId": "N3S2512-W34"},
+        {"no": "35", "questionId": "N3S2512-W35"}
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reading",
+     "name": "言語知識（文法）・読解",
+     "blocks": [
+      {
+       "no": 1,
+       "type": "grammar",
+       "name": "文法形式の判断",
+       "instruction": "（　）に入れるのに最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1", "questionId": "N3S2512-G01"},
+        {"no": "2", "questionId": "N3S2512-G02"},
+        {"no": "3", "questionId": "N3S2512-G03"},
+        {"no": "4", "questionId": "N3S2512-G04"},
+        {"no": "5", "questionId": "N3S2512-G05"},
+        {"no": "6", "questionId": "N3S2512-G06"},
+        {"no": "7", "questionId": "N3S2512-G07"},
+        {"no": "8", "questionId": "N3S2512-G08"},
+        {"no": "9", "questionId": "N3S2512-G09"},
+        {"no": "10", "questionId": "N3S2512-G10"},
+        {"no": "11", "questionId": "N3S2512-G11"},
+        {"no": "12", "questionId": "N3S2512-G12"},
+        {"no": "13", "questionId": "N3S2512-G13"}
+       ]
+      },
+      {
+       "no": 2,
+       "type": "order",
+       "name": "文の組み立て",
+       "instruction": "文の ★ に入る最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "14", "questionId": "N3S2512-G14"},
+        {"no": "15", "questionId": "N3S2512-G15"},
+        {"no": "16", "questionId": "N3S2512-G16"},
+        {"no": "17", "questionId": "N3S2512-G17"},
+        {"no": "18", "questionId": "N3S2512-G18"}
+       ]
+      },
+      {
+       "no": 3,
+       "type": "cloze",
+       "name": "文章の文法",
+       "instruction": "文章全体の内容を考えて、番号の空欄に入る最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "19", "questionId": "N3S2512-G19", "group": "N3S2512-G19-passage"},
+        {"no": "20", "questionId": "N3S2512-G20", "group": "N3S2512-G19-passage"},
+        {"no": "21", "questionId": "N3S2512-G21", "group": "N3S2512-G19-passage"},
+        {"no": "22", "questionId": "N3S2512-G22", "group": "N3S2512-G19-passage"}
+       ]
+      },
+      {
+       "no": 4,
+       "type": "short",
+       "name": "内容理解（短文）",
+       "instruction": "次の文章を読んで、質問の答えとして最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "23", "questionId": "N3S2512-G23", "group": "N3S2512-G23-passage"},
+        {"no": "24", "questionId": "N3S2512-G24", "group": "N3S2512-G24-passage"},
+        {"no": "25", "questionId": "N3S2512-G25", "group": "N3S2512-G25-passage"},
+        {"no": "26", "questionId": "N3S2512-G26", "group": "N3S2512-G26-passage"}
+       ]
+      },
+      {
+       "no": 5,
+       "type": "medium",
+       "name": "内容理解（中文）",
+       "instruction": "次の文章を読んで、質問の答えとして最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "27", "questionId": "N3S2512-G27", "group": "N3S2512-G27-passage"},
+        {"no": "28", "questionId": "N3S2512-G28", "group": "N3S2512-G27-passage"},
+        {"no": "29", "questionId": "N3S2512-G29", "group": "N3S2512-G27-passage"},
+        {"no": "30", "questionId": "N3S2512-G30", "group": "N3S2512-G30-passage"},
+        {"no": "31", "questionId": "N3S2512-G31", "group": "N3S2512-G30-passage"},
+        {"no": "32", "questionId": "N3S2512-G32", "group": "N3S2512-G30-passage"}
+       ]
+      },
+      {
+       "no": 6,
+       "type": "long",
+       "name": "内容理解（長文）",
+       "instruction": "次の文章を読んで、質問の答えとして最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "33", "questionId": "N3S2512-G33", "group": "N3S2512-G33-passage"},
+        {"no": "34", "questionId": "N3S2512-G34", "group": "N3S2512-G33-passage"},
+        {"no": "35", "questionId": "N3S2512-G35", "group": "N3S2512-G33-passage"},
+        {"no": "36", "questionId": "N3S2512-G36", "group": "N3S2512-G33-passage"}
+       ]
+      },
+      {
+       "no": 7,
+       "type": "lookup",
+       "name": "情報検索",
+       "instruction": "案内を読んで、条件に合うものを一つ選びなさい。",
+       "items": [
+        {"no": "37", "questionId": "N3S2512-G37", "group": "N3S2512-G37-passage"},
+        {"no": "38", "questionId": "N3S2512-G38", "group": "N3S2512-G37-passage"}
+       ]
+      }
+     ]
+    },
+    {
+     "id": "listening",
+     "name": "聴解",
+     "blocks": [
+      {
+       "no": 1,
+       "type": "task",
+       "name": "課題理解",
+       "instruction": "まず質問を聞いてください。それから話を聞いて、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1番", "questionId": "N3S2512-CH01"},
+        {"no": "2番", "questionId": "N3S2512-CH02"},
+        {"no": "3番", "questionId": "N3S2512-CH03"},
+        {"no": "4番", "questionId": "N3S2512-CH04"},
+        {"no": "5番", "questionId": "N3S2512-CH05"},
+        {"no": "6番", "questionId": "N3S2512-CH06"}
+       ]
+      },
+      {
+       "no": 2,
+       "type": "point",
+       "name": "ポイント理解",
+       "instruction": "まず質問を聞いて、選択肢を読んでください。それから話を聞いて、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1番", "questionId": "N3S2512-CH07"},
+        {"no": "2番", "questionId": "N3S2512-CH08"},
+        {"no": "3番", "questionId": "N3S2512-CH09"},
+        {"no": "4番", "questionId": "N3S2512-CH10"},
+        {"no": "5番", "questionId": "N3S2512-CH11"},
+        {"no": "6番", "questionId": "N3S2512-CH12"}
+       ]
+      },
+      {
+       "no": 3,
+       "type": "summary",
+       "name": "概要理解",
+       "instruction": "話を聞いてください。それから質問と選択肢を聞いて、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1番", "questionId": "N3S2512-CH13"},
+        {"no": "2番", "questionId": "N3S2512-CH14"},
+        {"no": "3番", "questionId": "N3S2512-CH15"}
+       ]
+      },
+      {
+       "no": 4,
+       "type": "speech",
+       "name": "発話表現",
+       "instruction": "絵を見ながら質問を聞いてください。選択肢を聞いて、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1番", "questionId": "N3S2512-CH16"},
+        {"no": "2番", "questionId": "N3S2512-CH17"},
+        {"no": "3番", "questionId": "N3S2512-CH18"},
+        {"no": "4番", "questionId": "N3S2512-CH19"}
+       ]
+      },
+      {
+       "no": 5,
+       "type": "reply",
+       "name": "即時応答",
+       "instruction": "文を聞いてください。それに対する返事として最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1番", "questionId": "N3S2512-CH20"},
+        {"no": "2番", "questionId": "N3S2512-CH21"},
+        {"no": "3番", "questionId": "N3S2512-CH22"},
+        {"no": "4番", "questionId": "N3S2512-CH23"},
+        {"no": "5番", "questionId": "N3S2512-CH24"},
+        {"no": "6番", "questionId": "N3S2512-CH25"},
+        {"no": "7番", "questionId": "N3S2512-CH26"},
+        {"no": "8番", "questionId": "N3S2512-CH27"},
+        {"no": "9番", "questionId": "N3S2512-CH28"}
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "n2-2026-07",
+   "level": "N2",
+   "date": "2026-07",
+   "name": "N2 2026年7月",
+   "sections": [
+    {
+     "id": "written",
+     "name": "言語知識（文字・語彙・文法）・読解",
+     "blocks": [
+      {
+       "no": 1,
+       "type": "kanji",
+       "name": "漢字読み",
+       "instruction": "下線の言葉の読み方として、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1", "questionId": "N2S2607-01"},
+        {"no": "2", "questionId": "N2S2607-02"},
+        {"no": "3", "questionId": "N2S2607-03"},
+        {"no": "4", "questionId": "N2S2607-04"},
+        {"no": "5", "questionId": "N2S2607-05"}
+       ]
+      },
+      {
+       "no": 2,
+       "type": "writing",
+       "name": "表記",
+       "instruction": "下線の言葉を漢字で書くとき、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "6", "questionId": "N2S2607-06"},
+        {"no": "7", "questionId": "N2S2607-07"},
+        {"no": "8", "questionId": "N2S2607-08"},
+        {"no": "9", "questionId": "N2S2607-09"},
+        {"no": "10", "questionId": "N2S2607-10"}
+       ]
+      },
+      {
+       "no": 3,
+       "type": "formation",
+       "name": "語形成",
+       "instruction": "（　）に入れるのに最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "11", "questionId": "N2S2607-11"},
+        {"no": "12", "questionId": "N2S2607-12"},
+        {"no": "13", "questionId": "N2S2607-13"}
+       ]
+      },
+      {
+       "no": 4,
+       "type": "context",
+       "name": "文脈規定",
+       "instruction": "（　）に入れるのに最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "14", "questionId": "N2S2607-14"},
+        {"no": "15", "questionId": "N2S2607-15"},
+        {"no": "16", "questionId": "N2S2607-16"},
+        {"no": "17", "questionId": "N2S2607-17"},
+        {"no": "18", "questionId": "N2S2607-18"},
+        {"no": "19", "questionId": "N2S2607-19"},
+        {"no": "20", "questionId": "N2S2607-20"}
+       ]
+      },
+      {
+       "no": 5,
+       "type": "synonym",
+       "name": "言い換え類義",
+       "instruction": "下線の言葉に意味が最も近いものを一つ選びなさい。",
+       "items": [
+        {"no": "21", "questionId": "N2S2607-21"},
+        {"no": "22", "questionId": "N2S2607-22"},
+        {"no": "23", "questionId": "N2S2607-23"},
+        {"no": "24", "questionId": "N2S2607-24"},
+        {"no": "25", "questionId": "N2S2607-25"}
+       ]
+      },
+      {
+       "no": 6,
+       "type": "usage",
+       "name": "用法",
+       "instruction": "次の言葉の使い方として最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "26", "questionId": "N2S2607-26"},
+        {"no": "27", "questionId": "N2S2607-27"},
+        {"no": "28", "questionId": "N2S2607-28"},
+        {"no": "29", "questionId": "N2S2607-29"},
+        {"no": "30", "questionId": "N2S2607-30"}
+       ]
+      },
+      {
+       "no": 7,
+       "type": "grammar",
+       "name": "文法形式の判断",
+       "instruction": "（　）に入れるのに最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "31", "questionId": "N2S2607-31"},
+        {"no": "32", "questionId": "N2S2607-32"},
+        {"no": "33", "questionId": "N2S2607-33"},
+        {"no": "34", "questionId": "N2S2607-34"},
+        {"no": "35", "questionId": "N2S2607-35"},
+        {"no": "36", "questionId": "N2S2607-36"},
+        {"no": "37", "questionId": "N2S2607-37"},
+        {"no": "38", "questionId": "N2S2607-38"},
+        {"no": "39", "questionId": "N2S2607-39"},
+        {"no": "40", "questionId": "N2S2607-40"},
+        {"no": "41", "questionId": "N2S2607-41"},
+        {"no": "42", "questionId": "N2S2607-42"}
+       ]
+      },
+      {
+       "no": 8,
+       "type": "order",
+       "name": "文の組み立て",
+       "instruction": "文の ★ に入る最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "43"},
+        {"no": "44"},
+        {"no": "45"},
+        {"no": "46"},
+        {"no": "47"}
+       ]
+      },
+      {
+       "no": 9,
+       "type": "cloze",
+       "name": "文章の文法",
+       "instruction": "文章全体の内容を考えて、番号の空欄に入る最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "48", "questionId": "N2S2607-48", "group": "N2S2607-48-passage"},
+        {"no": "49", "questionId": "N2S2607-49", "group": "N2S2607-48-passage"},
+        {"no": "50", "questionId": "N2S2607-50", "group": "N2S2607-48-passage"},
+        {"no": "51", "questionId": "N2S2607-51", "group": "N2S2607-48-passage"}
+       ]
+      },
+      {
+       "no": 10,
+       "type": "short",
+       "name": "内容理解（短文）",
+       "instruction": "次の文章を読んで、質問の答えとして最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "52"},
+        {"no": "53"},
+        {"no": "54"},
+        {"no": "55"},
+        {"no": "56"}
+       ]
+      },
+      {
+       "no": 11,
+       "type": "medium",
+       "name": "内容理解（中文）",
+       "instruction": "次の文章を読んで、質問の答えとして最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "57"},
+        {"no": "58"},
+        {"no": "59"},
+        {"no": "60"},
+        {"no": "61"},
+        {"no": "62"},
+        {"no": "63"},
+        {"no": "64"}
+       ]
+      },
+      {
+       "no": 12,
+       "type": "compare",
+       "name": "統合理解",
+       "instruction": "二つの文章を読んで、質問の答えとして最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "65"},
+        {"no": "66"}
+       ]
+      },
+      {
+       "no": 13,
+       "type": "claim",
+       "name": "主張理解（長文）",
+       "instruction": "次の文章を読んで、質問の答えとして最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "67"},
+        {"no": "68"},
+        {"no": "69"}
+       ]
+      },
+      {
+       "no": 14,
+       "type": "lookup",
+       "name": "情報検索",
+       "instruction": "案内を読んで、条件に合うものを一つ選びなさい。",
+       "items": [
+        {"no": "70"},
+        {"no": "71"}
+       ]
+      }
+     ]
+    },
+    {
+     "id": "listening",
+     "name": "聴解",
+     "blocks": [
+      {
+       "no": 1,
+       "type": "task",
+       "name": "課題理解",
+       "instruction": "まず質問を聞いてください。それから話を聞いて、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1番", "questionId": "N2S2607-CH01"},
+        {"no": "2番", "questionId": "N2S2607-CH02"},
+        {"no": "3番", "questionId": "N2S2607-CH03"},
+        {"no": "4番", "questionId": "N2S2607-CH04"},
+        {"no": "5番", "questionId": "N2S2607-CH05"}
+       ]
+      },
+      {
+       "no": 2,
+       "type": "point",
+       "name": "ポイント理解",
+       "instruction": "まず質問を聞いて、選択肢を読んでください。それから話を聞いて、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1番"},
+        {"no": "2番"},
+        {"no": "3番"},
+        {"no": "4番"},
+        {"no": "5番"},
+        {"no": "6番"}
+       ]
+      },
+      {
+       "no": 3,
+       "type": "summary",
+       "name": "概要理解",
+       "instruction": "話を聞いてください。それから質問と選択肢を聞いて、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1番"},
+        {"no": "2番"},
+        {"no": "3番"},
+        {"no": "4番"},
+        {"no": "5番"}
+       ]
+      },
+      {
+       "no": 4,
+       "type": "reply",
+       "name": "即時応答",
+       "instruction": "文を聞いてください。それに対する返事として最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1番"},
+        {"no": "2番"},
+        {"no": "3番"},
+        {"no": "4番"},
+        {"no": "5番"},
+        {"no": "6番"},
+        {"no": "7番"},
+        {"no": "8番"},
+        {"no": "9番"},
+        {"no": "10番"},
+        {"no": "11番"}
+       ]
+      },
+      {
+       "no": 5,
+       "type": "integration",
+       "name": "統合理解",
+       "instruction": "話を聞いてください。それから質問を聞いて、最もよいものを選びなさい。",
+       "items": [
+        {"no": "1番"},
+        {"no": "2番・質問1", "questionId": "N2S2607-CH5-2-1", "group": "N2S2607-CH5-2-audio"},
+        {"no": "2番・質問2", "questionId": "N2S2607-CH5-2-2", "group": "N2S2607-CH5-2-audio"}
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mock-n4",
+   "level": "N4",
+   "name": "N4 自作模擬題",
+   "kind": "mock",
+   "sections": [
+    {
+     "id": "practice",
+     "name": "文字・語彙・文法・読解",
+     "blocks": [
+      {
+       "no": 1,
+       "type": "kanji",
+       "name": "漢字読み",
+       "instruction": "下線の言葉の読み方として、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1", "questionId": "N4K01"},
+        {"no": "2", "questionId": "N4K02"},
+        {"no": "3", "questionId": "N4K03"},
+        {"no": "4", "questionId": "N4K04"},
+        {"no": "5", "questionId": "N4K05"},
+        {"no": "6", "questionId": "N4K06"}
+       ]
+      },
+      {
+       "no": 2,
+       "type": "context",
+       "name": "文脈規定",
+       "instruction": "（　）に入れるのに最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "7", "questionId": "N4V01"},
+        {"no": "8", "questionId": "N4V02"},
+        {"no": "9", "questionId": "N4V03"},
+        {"no": "10", "questionId": "N4V04"},
+        {"no": "11", "questionId": "N4V05"},
+        {"no": "12", "questionId": "N4V06"}
+       ]
+      },
+      {
+       "no": 3,
+       "type": "grammar",
+       "name": "文法形式の判断",
+       "instruction": "（　）に入れるのに最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "13", "questionId": "N4G01"},
+        {"no": "14", "questionId": "N4G02"},
+        {"no": "15", "questionId": "N4G03"},
+        {"no": "16", "questionId": "N4G04"},
+        {"no": "17", "questionId": "N4G05"},
+        {"no": "18", "questionId": "N4G06"}
+       ]
+      },
+      {
+       "no": 4,
+       "type": "short",
+       "name": "内容理解（短文）",
+       "instruction": "次の文章を読んで、質問の答えとして最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "19", "questionId": "N4R01a", "group": "N4R01a-passage"},
+        {"no": "20", "questionId": "N4R01b", "group": "N4R01a-passage"},
+        {"no": "21", "questionId": "N4R02a", "group": "N4R02a-passage"},
+        {"no": "22", "questionId": "N4R02b", "group": "N4R02a-passage"}
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mock-n3",
+   "level": "N3",
+   "name": "N3 自作模擬題",
+   "kind": "mock",
+   "sections": [
+    {
+     "id": "practice",
+     "name": "文字・語彙・文法・読解",
+     "blocks": [
+      {
+       "no": 1,
+       "type": "kanji",
+       "name": "漢字読み",
+       "instruction": "下線の言葉の読み方として、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1", "questionId": "N3K01"},
+        {"no": "2", "questionId": "N3K02"},
+        {"no": "3", "questionId": "N3K03"},
+        {"no": "4", "questionId": "N3K04"},
+        {"no": "5", "questionId": "N3K05"},
+        {"no": "6", "questionId": "N3K06"}
+       ]
+      },
+      {
+       "no": 2,
+       "type": "context",
+       "name": "文脈規定",
+       "instruction": "（　）に入れるのに最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "7", "questionId": "N3V01"},
+        {"no": "8", "questionId": "N3V02"},
+        {"no": "9", "questionId": "N3V03"},
+        {"no": "10", "questionId": "N3V04"},
+        {"no": "11", "questionId": "N3V05"},
+        {"no": "12", "questionId": "N3V06"}
+       ]
+      },
+      {
+       "no": 3,
+       "type": "grammar",
+       "name": "文法形式の判断",
+       "instruction": "（　）に入れるのに最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "13", "questionId": "N3G01"},
+        {"no": "14", "questionId": "N3G02"},
+        {"no": "15", "questionId": "N3G03"},
+        {"no": "16", "questionId": "N3G04"},
+        {"no": "17", "questionId": "N3G05"},
+        {"no": "18", "questionId": "N3G06"}
+       ]
+      },
+      {
+       "no": 4,
+       "type": "short",
+       "name": "内容理解（短文）",
+       "instruction": "次の文章を読んで、質問の答えとして最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "19", "questionId": "N3R01a", "group": "N3R01a-passage"},
+        {"no": "20", "questionId": "N3R01b", "group": "N3R01a-passage"},
+        {"no": "21", "questionId": "N3R02a", "group": "N3R02a-passage"},
+        {"no": "22", "questionId": "N3R02b", "group": "N3R02a-passage"}
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mock-n2",
+   "level": "N2",
+   "name": "N2 自作模擬題",
+   "kind": "mock",
+   "sections": [
+    {
+     "id": "practice",
+     "name": "文字・語彙・文法・読解",
+     "blocks": [
+      {
+       "no": 1,
+       "type": "kanji",
+       "name": "漢字読み",
+       "instruction": "下線の言葉の読み方として、最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "1", "questionId": "N2K01"},
+        {"no": "2", "questionId": "N2K02"},
+        {"no": "3", "questionId": "N2K03"},
+        {"no": "4", "questionId": "N2K04"},
+        {"no": "5", "questionId": "N2K05"},
+        {"no": "6", "questionId": "N2K06"}
+       ]
+      },
+      {
+       "no": 2,
+       "type": "context",
+       "name": "文脈規定",
+       "instruction": "（　）に入れるのに最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "7", "questionId": "N2V01"},
+        {"no": "8", "questionId": "N2V02"},
+        {"no": "9", "questionId": "N2V03"},
+        {"no": "10", "questionId": "N2V04"},
+        {"no": "11", "questionId": "N2V05"},
+        {"no": "12", "questionId": "N2V06"}
+       ]
+      },
+      {
+       "no": 3,
+       "type": "grammar",
+       "name": "文法形式の判断",
+       "instruction": "（　）に入れるのに最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "13", "questionId": "N2G01"},
+        {"no": "14", "questionId": "N2G02"},
+        {"no": "15", "questionId": "N2G03"},
+        {"no": "16", "questionId": "N2G05"},
+        {"no": "17", "questionId": "N2G06"},
+        {"no": "18", "questionId": "N2G07"}
+       ]
+      },
+      {
+       "no": 4,
+       "type": "short",
+       "name": "内容理解（短文）",
+       "instruction": "次の文章を読んで、質問の答えとして最もよいものを一つ選びなさい。",
+       "items": [
+        {"no": "19", "questionId": "N2R01a", "group": "N2R01a-passage"},
+        {"no": "20", "questionId": "N2R01b", "group": "N2R01a-passage"},
+        {"no": "21", "questionId": "N2R02a", "group": "N2R02a-passage"},
+        {"no": "22", "questionId": "N2R02b", "group": "N2R02a-passage"}
+       ]
+      }
+     ]
+    }
+   ]
   }
  ]
 }

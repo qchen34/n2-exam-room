@@ -7,6 +7,7 @@
   "questions": [
     {
       "id": "N3S2607-CH01",
+      "paperOptions": ["ア・イ", "ア・ウ", "イ・ウ", "ア・イ・ウ"],
       "lv": "N3",
       "cat": "聴解",
       "tags": [
