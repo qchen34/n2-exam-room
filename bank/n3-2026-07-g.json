@@ -672,7 +672,9 @@
           "m": "当时在售"
         }
       ],
-      "materialId": "N3S2607-G19-passage"
+      "materialId": "N3S2607-G19-passage",
+      "g": "～ていたのです",
+      "gm": "说明过去持续的状态"
     },
     {
       "id": "N3S2607-G20",
@@ -699,7 +701,9 @@
           "m": "例如"
         }
       ],
-      "materialId": "N3S2607-G19-passage"
+      "materialId": "N3S2607-G19-passage",
+      "g": "例えば",
+      "gm": "例如，用于从总述过渡到举例"
     },
     {
       "id": "N3S2607-G21",
@@ -726,7 +730,9 @@
           "m": "试着买了"
         }
       ],
-      "materialId": "N3S2607-G19-passage"
+      "materialId": "N3S2607-G19-passage",
+      "g": "～てみる",
+      "gm": "试着做某事"
     },
     {
       "id": "N3S2607-G22",
@@ -747,7 +753,9 @@
       "exp": "「それ」指发现平时不会注意的书这件事，以「が」标记「楽しい」的对象，说明常去的原因。",
       "qt": "填入【22】最合适的是哪一项？",
       "notes": [],
-      "materialId": "N3S2607-G19-passage"
+      "materialId": "N3S2607-G19-passage",
+      "g": "～が楽しい",
+      "gm": "用「が」标记让人觉得开心的事"
     },
     {
       "id": "N3S2607-G23",
