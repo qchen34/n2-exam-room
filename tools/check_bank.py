@@ -37,6 +37,62 @@ def items_of(bank):
             return bank[k]
     return []
 
+def check_passage(item, tag, bad, required=False):
+    paragraphs, translations = item.get("p"), item.get("pt")
+    if required and not (
+        isinstance(paragraphs, list) and paragraphs
+        and all(isinstance(p, str) and p.strip() for p in paragraphs)
+    ):
+        bad.append(f"{tag}: 本文 p が空または形式が不正")
+    if "pt" in item and not (
+        isinstance(paragraphs, list) and isinstance(translations, list)
+        and len(paragraphs) == len(translations) and all(isinstance(t, str) for t in translations)
+    ):
+        bad.append(f"{tag}: pt の段落数が p と合わないか形式が不正")
+
+def check_audio(item, tag, bad):
+    au = item.get("au")
+    if not isinstance(au, dict):
+        au = {}
+    if not isinstance(au.get("u"), str) or not au["u"].strip():
+        bad.append(f"{tag}: 聴解なのに au.u がない")
+    s, e = au.get("s"), au.get("e")
+    if not (type(s) in (int, float) and type(e) in (int, float) and math.isfinite(s) and math.isfinite(e) and 0 <= s < e):
+        bad.append(f"{tag}: 0 <= s < e になっていない（{s} / {e}）")
+
+def check_figure(item, tag, bad):
+    if "figure" not in item:
+        return
+    figure = item["figure"]
+    src = figure.get("src", "") if isinstance(figure, dict) else ""
+    alt = figure.get("alt", "") if isinstance(figure, dict) else ""
+    if not (isinstance(src, str) and re.fullmatch(r"bank/figures/[a-z0-9-]+\.webp", src) and os.path.isfile(os.path.join(ROOT, src))):
+        bad.append(f"{tag}: 図版ファイルが見つからない（{src}）")
+    if not isinstance(alt, str) or not alt.strip():
+        bad.append(f"{tag}: 図版の説明がない")
+
+def check_materials(book, name, bad):
+    items = book.get("materials", []) if isinstance(book, dict) else []
+    if not isinstance(items, list):
+        bad.append(f"{name}: materials が配列でない")
+        return {}
+    materials = {}
+    for item in items:
+        material_id = item.get("id") if isinstance(item, dict) else None
+        if not isinstance(material_id, str) or not material_id.strip() or material_id in materials:
+            bad.append(f"{name}: 資料の ID が空または重複（{material_id}）")
+            continue
+        materials[material_id] = item
+        tag = f"{name} {material_id}"
+        if item.get("type") == "reading":
+            check_passage(item, tag, bad, required=True)
+        elif item.get("type") == "listening":
+            check_audio(item, tag, bad)
+        else:
+            bad.append(f"{tag}: 資料の type が不正")
+        check_figure(item, tag, bad)
+    return materials
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("-v", "--verbose", action="store_true")
@@ -61,6 +117,7 @@ def main():
             bad.append(f"{name}: 問題がない")
         if isinstance(bank, dict) and "count" in bank and bank["count"] != len(qs):
             bad.append(f"{name}: count={bank['count']} だが実際は {len(qs)} 問")
+        materials = check_materials(bank, name, bad)
         for i, q in enumerate(qs):
             tag = f"{name} #{i+1}"
             if not isinstance(q, dict):
@@ -91,25 +148,17 @@ def main():
                 bad.append(f"{tag} {qid}: q（設問）が空")
             if not str(q.get("exp", "")).strip():
                 bad.append(f"{tag} {qid}: exp（解説）が空")
-            if "pt" in q and (not isinstance(q.get("p"), list) or not isinstance(q["pt"], list) or len(q["p"]) != len(q["pt"])):
-                bad.append(f"{tag} {qid}: pt の段落数が p と合わない")
-            if "figure" in q:
-                figure = q["figure"]
-                src = figure.get("src", "") if isinstance(figure, dict) else ""
-                alt = figure.get("alt", "") if isinstance(figure, dict) else ""
-                if not (isinstance(src, str) and re.fullmatch(r"bank/figures/[a-z0-9-]+\.webp", src) and os.path.isfile(os.path.join(ROOT, src))):
-                    bad.append(f"{tag} {qid}: 図版ファイルが見つからない（{src}）")
-                if not isinstance(alt, str) or not alt.strip():
-                    bad.append(f"{tag} {qid}: 図版の説明がない")
-            if q.get("cat") == "聴解":
-                au = q.get("au")
-                if not isinstance(au, dict):
-                    au = {}
-                if not isinstance(au.get("u"), str) or not au["u"].strip():
-                    bad.append(f"{tag} {qid}: 聴解なのに au.u がない")
-                s, e = au.get("s"), au.get("e")
-                if not (type(s) in (int, float) and type(e) in (int, float) and math.isfinite(s) and math.isfinite(e) and 0 <= s < e):
-                    bad.append(f"{tag} {qid}: 0 <= s < e になっていない（{s} / {e}）")
+            check_passage(q, f"{tag} {qid}", bad)
+            check_figure(q, f"{tag} {qid}", bad)
+            if "materialId" in q:
+                material_id = q["materialId"]
+                material = materials.get(material_id) if isinstance(material_id, str) else None
+                if material is None:
+                    bad.append(f"{tag} {qid}: 資料が見つからない（{material_id}）")
+                elif (material.get("type") == "listening") != (q.get("cat") == "聴解"):
+                    bad.append(f"{tag} {qid}: 資料の種類が分野に合わない")
+            elif q.get("cat") == "聴解":
+                check_audio(q, f"{tag} {qid}", bad)
 
     # manifest の count 照合
     mp = os.path.join(ROOT, "bank", "manifest.json")
